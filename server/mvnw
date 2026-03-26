@@ -1,8 +1,0 @@
-﻿#!/bin/sh
-
-BASEDIR=$(dirname "$0")
-if [ -f "$BASEDIR/.mvn/wrapper/maven-wrapper.jar" ]; then
-	exec java -classpath "$BASEDIR/.mvn/wrapper/maven-wrapper.jar" org.apache.maven.wrapper.MavenWrapperMain "$@"
-else
-	exec mvn "$@"
-fi
