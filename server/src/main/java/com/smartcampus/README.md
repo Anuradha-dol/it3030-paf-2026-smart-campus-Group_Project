@@ -1,1 +1,0 @@
-Smart Campus package root.
