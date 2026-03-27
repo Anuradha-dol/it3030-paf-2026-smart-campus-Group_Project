@@ -1,0 +1,12 @@
+com\smartcampus\service\ResourceService.class
+com\smartcampus\model\Resource.class
+com\smartcampus\enums\ResourceStatus.class
+com\smartcampus\enums\ResourceType.class
+com\smartcampus\dto\ResourceRequestDTO.class
+com\smartcampus\controller\ResourceController.class
+com\smartcampus\service\ResourceServiceImpl.class
+com\smartcampus\exception\ResourceNotFoundException.class
+com\smartcampus\repository\ResourceRepository.class
+com\smartcampus\SmartCampusApplication.class
+com\smartcampus\dto\ResourceResponseDTO.class
+com\smartcampus\exception\GlobalExceptionHandler.class
