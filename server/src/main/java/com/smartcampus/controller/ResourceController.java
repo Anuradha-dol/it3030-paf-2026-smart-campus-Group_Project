@@ -42,19 +42,19 @@ public class ResourceController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResourceResponseDTO> getResourceById(@PathVariable Long id) {
+    public ResponseEntity<ResourceResponseDTO> getResourceById(@PathVariable("id") Long id) {
         return ResponseEntity.ok(resourceService.getResourceById(id));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ResourceResponseDTO> updateResource(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @Valid @RequestBody ResourceRequestDTO requestDTO) {
         return ResponseEntity.ok(resourceService.updateResource(id, requestDTO));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteResource(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteResource(@PathVariable("id") Long id) {
         resourceService.deleteResource(id);
         return ResponseEntity.noContent().build();
     }

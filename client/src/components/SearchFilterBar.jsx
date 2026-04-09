@@ -1,9 +1,18 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const SearchFilterBar = ({ onSearch }) => {
     const [searchText, setSearchText] = useState('');
     const [type, setType] = useState('');
     const [status, setStatus] = useState('');
+
+    useEffect(() => {
+        // Debounce typing so results update live without excessive rerenders.
+        const timer = setTimeout(() => {
+            onSearch({ text: searchText, type, status });
+        }, 180);
+
+        return () => clearTimeout(timer);
+    }, [searchText, type, status, onSearch]);
 
     const handleSearch = () => {
         onSearch({ text: searchText, type, status });

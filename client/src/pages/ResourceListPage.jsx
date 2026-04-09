@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getAllResources, deleteResource } from '../services/resourceService';
 import ResourceTable from '../components/ResourceTable';
@@ -35,13 +35,14 @@ const ResourceListPage = () => {
         }
     };
 
-    const handleSearch = ({ text, type, status }) => {
+    const handleSearch = useCallback(({ text, type, status }) => {
         let filtered = resources;
+        const normalizedText = text.trim().toLowerCase();
         
-        if (text) {
+        if (normalizedText) {
             filtered = filtered.filter(item => 
-                item.name.toLowerCase().includes(text.toLowerCase()) || 
-                item.location.toLowerCase().includes(text.toLowerCase())
+                (item.name || '').toLowerCase().includes(normalizedText) || 
+                (item.location || '').toLowerCase().includes(normalizedText)
             );
         }
         if (type) {
@@ -52,7 +53,7 @@ const ResourceListPage = () => {
         }
 
         setFilteredResources(filtered);
-    };
+    }, [resources]);
 
     const confirmDelete = (resource) => {
         setResourceToDelete(resource);
