@@ -7,7 +7,7 @@ const AddResourcePage = () => {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
-
+    //handle create resource
     const handleCreate = async (resourceData) => {
         try {
             setIsLoading(true);
