@@ -62,3 +62,18 @@
 2026-04-21T02:44:02.274+05:30  INFO 37484 --- [smart-campus] [nio-8081-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
 2026-04-21T02:44:02.274+05:30  INFO 37484 --- [smart-campus] [nio-8081-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
 2026-04-21T02:44:02.276+05:30  INFO 37484 --- [smart-campus] [nio-8081-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2026-04-21T03:19:16.333+05:30  WARN 37484 --- [smart-campus] [nio-8081-exec-4] com.smartcampus.security.JWTAuthFilter   : Authentication error for user: IT23687882@my.sliit.lk
+2026-04-21T03:20:19.257+05:30  INFO 37484 --- [smart-campus] [nio-8081-exec-8] com.smartcampus.utils.EmailUtils         : Email sent successfully to IT23687882@my.sliit.lk
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  44:06 min
+[INFO] Finished at: 2026-04-21T03:27:32+05:30
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:3.3.5:run (default-cli) on project smart-campus-management-system: Process terminated with exit code: 1 -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException
