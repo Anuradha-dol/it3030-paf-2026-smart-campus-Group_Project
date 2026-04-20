@@ -1,9 +1,13 @@
 package com.smartcampus.model;
 
+
+import com.smartcampus.enums.Role;
+import com.smartcampus.enums.Semester;
+import com.smartcampus.enums.Year;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.springframework.lang.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -95,7 +99,7 @@ public class User implements UserDetails {
 
     @Override
     @JsonIgnore
-    public String getPassword() {
+    public @Nullable String getPassword() {
         return password;
     }
 
