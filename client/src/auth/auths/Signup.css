@@ -103,6 +103,15 @@
   transform: translateY(-1px);
 }
 
+.signup-screen .btn {
+  text-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .signup-screen .btn.btn-primary {
   grid-column: 1 / -1;
   border: 0;

@@ -183,6 +183,12 @@
   font-weight: 800;
   font-family: inherit;
   cursor: pointer;
+  text-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   transition: transform 0.2s ease, filter 0.2s ease, box-shadow 0.2s ease;
 }
 

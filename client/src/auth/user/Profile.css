@@ -95,6 +95,12 @@
   border: 1px solid #d9e6f5;
   background: #f7fbff;
   color: var(--auth-ink-700);
+  text-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .profile-screen .btn.btn-danger {
