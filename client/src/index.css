@@ -226,7 +226,13 @@ h3 {
 
 .action-buttons {
   display: flex;
-  gap: 12px;
+  gap: 10px;
+}
+
+.action-buttons .btn {
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  border-radius: 12px;
 }
 
 /* ================================
