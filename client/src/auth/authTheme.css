@@ -1,0 +1,82 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap");
+
+:root {
+  --auth-ink-900: #0f1f35;
+  --auth-ink-700: #2a4066;
+  --auth-ink-500: #4d6489;
+  --auth-ink-300: #95a7c4;
+
+  --auth-surface-0: #f8fcff;
+  --auth-surface-1: #ffffff;
+  --auth-surface-2: #eef4ff;
+
+  --auth-brand-600: #0b8f8c;
+  --auth-brand-500: #0fa9a4;
+  --auth-brand-400: #31c2bc;
+
+  --auth-warm-600: #d96226;
+  --auth-warm-500: #ef7f3a;
+  --auth-warm-300: #f8c8a5;
+
+  --auth-danger-500: #dc4f5f;
+  --auth-success-500: #1f9d73;
+
+  --auth-shadow-soft: 0 18px 44px rgba(19, 34, 66, 0.14);
+  --auth-shadow-hard: 0 24px 60px rgba(12, 30, 60, 0.2);
+  --auth-radius-xl: 28px;
+}
+
+.login-page,
+.signup-screen,
+.verify-screen,
+.forgot-screen,
+.home-screen,
+.dashboard-screen,
+.profile-screen,
+.settings-screen {
+  font-family: "Manrope", sans-serif;
+  color: var(--auth-ink-900);
+}
+
+.login-page h1,
+.login-page h2,
+.signup-screen h1,
+.signup-screen h2,
+.verify-screen h1,
+.verify-screen h2,
+.forgot-screen h1,
+.forgot-screen h2,
+.home-screen h1,
+.home-screen h2,
+.dashboard-screen h1,
+.dashboard-screen h2,
+.profile-screen h1,
+.profile-screen h2,
+.settings-screen h1,
+.settings-screen h2 {
+  font-family: "Fraunces", serif;
+  letter-spacing: 0.01em;
+}
+
+@keyframes authRiseIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes authFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
