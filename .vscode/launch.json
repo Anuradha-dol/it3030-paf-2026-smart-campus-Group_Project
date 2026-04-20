@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Run Smart Campus Server",
+      "request": "launch",
+      "mainClass": "com.smartcampus.SmartCampusApplication",
+      "projectName": "smart-campus-management-system",
+      "cwd": "${workspaceFolder}/server"
+    }
+  ]
+}
