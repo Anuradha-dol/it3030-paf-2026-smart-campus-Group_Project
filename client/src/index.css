@@ -187,6 +187,7 @@ h3 {
 
 .icon {
   font-size: 1.3rem;
+  font-style: normal;
   background: rgba(255, 255, 255, 0.1);
   width: 42px;
   height: 42px;
