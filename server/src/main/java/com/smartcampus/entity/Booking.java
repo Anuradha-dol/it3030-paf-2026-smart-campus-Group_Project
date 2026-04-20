@@ -15,31 +15,29 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
+    @NotBlank(message = "Facility name is required")
     private String facilityName;
 
-    @NotBlank
+    @NotBlank(message = "Booked by is required")
     private String bookedBy;
 
-    @NotNull
+    @NotNull(message = "Booking date is required")
     private LocalDate bookingDate;
 
-    @NotNull
+    @NotNull(message = "Start time is required")
     private LocalTime startTime;
 
-    @NotNull
+    @NotNull(message = "End time is required")
     private LocalTime endTime;
 
-    @Min(1)
+    @Min(value = 1, message = "Attendees must be at least 1")
     private int attendees;
 
-    @NotBlank
+    @NotBlank(message = "Purpose is required")
     private String purpose;
 
     @Enumerated(EnumType.STRING)
     private BookingStatus status = BookingStatus.PENDING;
-
-    // Getters & Setters
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
