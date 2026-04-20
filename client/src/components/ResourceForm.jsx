@@ -12,15 +12,24 @@ const ResourceForm = ({ initialData, onSubmit, isLoading }) => {
         description: '',
         ...initialData
     });
+    const [validationError, setValidationError] = useState('');
 
     const handleChange = (e) => {
         const { name, value } = e.target;
+        setValidationError('');
         setFormData({ ...formData, [name]: value });
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        if (formData.availableFrom && formData.availableTo && formData.availableFrom >= formData.availableTo) {
+            setValidationError('Available From must be earlier than Available To.');
+            return;
+        }
+
         // Convert capacity to integer before sending
+        setValidationError('');
         onSubmit({ ...formData, capacity: parseInt(formData.capacity, 10) });
     };
 
@@ -73,6 +82,8 @@ const ResourceForm = ({ initialData, onSubmit, isLoading }) => {
                 <label>Description:</label>
                 <textarea name="description" value={formData.description} onChange={handleChange} rows="3" />
             </div>
+
+            {validationError && <div className="alert error">{validationError}</div>}
 
             <button type="submit" className="btn btn-primary" disabled={isLoading}>
                 {isLoading ? 'Saving...' : 'Save Resource'}
