@@ -28,7 +28,7 @@ const ResourceForm = ({ initialData, onSubmit, isLoading }) => {
             return;
         }
 
-        // Convert capacity to integer before sending
+        // Convert capacity to integer before sending...
         setValidationError('');
         onSubmit({ ...formData, capacity: parseInt(formData.capacity, 10) });
     };
