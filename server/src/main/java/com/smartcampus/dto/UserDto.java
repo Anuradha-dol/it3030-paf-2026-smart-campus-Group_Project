@@ -1,6 +1,10 @@
 package com.smartcampus.dto;
 
-import javax.management.relation.Role;
+import com.smartcampus.enums.Role;
+import com.smartcampus.enums.Semester;
+import com.smartcampus.enums.Year;
+
+import jakarta.validation.constraints.*;
 
 public class UserDto {
 
@@ -103,4 +107,3 @@ public class UserDto {
             String verifyCode
     ) {}
 }
-

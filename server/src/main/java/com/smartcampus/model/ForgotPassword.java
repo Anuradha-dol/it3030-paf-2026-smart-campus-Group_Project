@@ -1,5 +1,6 @@
 package com.smartcampus.model;
 
+import com.smartcampus.enums.RecoveryChannel;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
