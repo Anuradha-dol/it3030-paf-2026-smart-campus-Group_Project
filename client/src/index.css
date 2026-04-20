@@ -303,14 +303,14 @@ h3 {
 }
 
 .btn-edit {
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.4) 0%, rgba(217, 119, 6, 0.6) 100%);
-  border: 1px solid rgba(251, 191, 36, 0.3);
-  border-top: 1px solid rgba(253, 230, 138, 0.5);
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.4) 0%, rgba(13, 148, 136, 0.6) 100%);
+  border: 1px solid rgba(45, 212, 191, 0.3);
+  border-top: 1px solid rgba(153, 246, 228, 0.5);
   flex: 1;
 }
 
 .btn-edit:hover {
-  background: linear-gradient(135deg, rgba(251, 191, 36, 0.5) 0%, rgba(245, 158, 11, 0.7) 100%);
+  background: linear-gradient(135deg, rgba(45, 212, 191, 0.5) 0%, rgba(20, 184, 166, 0.7) 100%);
 }
 
 .btn-delete {
