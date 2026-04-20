@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c107fa9e-e75b-42c1-8829-8963013c7712" name="Changes" comment="" />
+    <list default="true" id="c107fa9e-e75b-42c1-8829-8963013c7712" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -59,6 +61,7 @@
     &quot;git-widget-placeholder&quot;: &quot;feature/IT23687882/usermanagement&quot;,
     &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/MSI/Documents/it3030-paf-2026-smart-campus-Group_Project/it3030-paf-2026-smart-campus-Group_Project&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -106,6 +109,8 @@
       <workItem from="1776671646050" duration="2195000" />
       <workItem from="1776676420572" duration="400000" />
       <workItem from="1776677492560" duration="14000" />
+      <workItem from="1776710249928" duration="235000" />
+      <workItem from="1776710543039" duration="8000" />
     </task>
     <servers />
   </component>

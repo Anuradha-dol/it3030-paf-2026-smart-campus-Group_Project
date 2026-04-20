@@ -3,6 +3,13 @@
   "configurations": [
     {
       "type": "java",
+      "name": "SmartCampusApplication",
+      "request": "launch",
+      "mainClass": "SmartCampusApplication",
+      "projectName": "smart-campus-management-system"
+    },
+    {
+      "type": "java",
       "name": "Run Smart Campus Server",
       "request": "launch",
       "mainClass": "com.smartcampus.SmartCampusApplication",
