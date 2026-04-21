@@ -39,13 +39,13 @@ public class BookingService {
         }
 
         Booking booking = new Booking();
-        booking.setFacilityName(dto.getFacilityName());
+        booking.setFacilityName(dto.getFacilityName().trim());
         booking.setBookedBy(dto.getBookedBy());
         booking.setBookingDate(dto.getBookingDate());
         booking.setStartTime(dto.getStartTime());
         booking.setEndTime(dto.getEndTime());
         booking.setAttendees(dto.getAttendees());
-        booking.setPurpose(dto.getPurpose());
+        booking.setPurpose(dto.getPurpose().trim());
         booking.setStatus(BookingStatus.PENDING);
 
         Booking savedBooking = bookingRepository.save(booking);
