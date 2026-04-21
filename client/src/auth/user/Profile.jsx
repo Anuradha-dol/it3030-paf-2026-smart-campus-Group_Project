@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import api from "../../api";
+import RoleNavbar from "../../comp/RoleNavbar";
 import "./Profile.css";
 
 function buildAssetUrl(path) {
@@ -98,9 +99,7 @@ export default function Profile() {
                     </div>
 
                     <div className="nav-group">
-                        <Link className="nav-link" to="/home">Home</Link>
-                        <Link className="nav-link" to="/dashboard">Dashboard</Link>
-                        <Link className="nav-link" to="/settings">Settings</Link>
+                        <RoleNavbar role={profile?.role} />
                         <button className="btn btn-danger" type="button" onClick={handleLogout}>
                             Logout
                         </button>

@@ -53,6 +53,8 @@ export default function Login() {
                 // Navigate based on role
                 if (role.includes("ADMIN")) {
                     navigate("/dashboard", { replace: true });
+                } else if (role.includes("TECHNICIAN")) {
+                    navigate("/techome", { replace: true });
                 } else {
                     navigate("/home", { replace: true });
                 }
