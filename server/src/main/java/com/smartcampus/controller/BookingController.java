@@ -1,5 +1,7 @@
 package com.smartcampus.controller;
 
+import com.smartcampus.dto.BookingRequestDTO;
+import com.smartcampus.dto.BookingResponseDTO;
 import com.smartcampus.entity.Booking;
 import com.smartcampus.enums.BookingStatus;
 import com.smartcampus.service.BookingService;
@@ -18,8 +20,8 @@ public class BookingController {
     private BookingService bookingService;
 
     @PostMapping
-    public Booking createBooking(@Valid @RequestBody Booking booking) {
-        return bookingService.createBooking(booking);
+    public BookingResponseDTO createBooking(@Valid @RequestBody BookingRequestDTO bookingRequestDTO) {
+        return bookingService.createBooking(bookingRequestDTO);
     }
 
     @GetMapping

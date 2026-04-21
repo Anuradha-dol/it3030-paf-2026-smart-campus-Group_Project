@@ -1,5 +1,7 @@
 package com.smartcampus.service;
 
+import com.smartcampus.dto.BookingRequestDTO;
+import com.smartcampus.dto.BookingResponseDTO;
 import com.smartcampus.entity.Booking;
 import com.smartcampus.enums.BookingStatus;
 import com.smartcampus.repository.BookingRepository;
@@ -15,17 +17,27 @@ public class BookingService {
     @Autowired
     private BookingRepository bookingRepository;
 
-    public Booking createBooking(Booking booking) {
-        if (booking.getBookingDate().isBefore(LocalDate.now())) {
+    public BookingResponseDTO createBooking(BookingRequestDTO dto) {
+        if (dto.getBookingDate().isBefore(LocalDate.now())) {
             throw new RuntimeException("Booking date cannot be in the past");
         }
 
-        if (!booking.getEndTime().isAfter(booking.getStartTime())) {
+        if (!dto.getEndTime().isAfter(dto.getStartTime())) {
             throw new RuntimeException("End time must be after start time");
         }
 
+        Booking booking = new Booking();
+        booking.setFacilityName(dto.getFacilityName());
+        booking.setBookedBy(dto.getBookedBy());
+        booking.setBookingDate(dto.getBookingDate());
+        booking.setStartTime(dto.getStartTime());
+        booking.setEndTime(dto.getEndTime());
+        booking.setAttendees(dto.getAttendees());
+        booking.setPurpose(dto.getPurpose());
         booking.setStatus(BookingStatus.PENDING);
-        return bookingRepository.save(booking);
+
+        Booking savedBooking = bookingRepository.save(booking);
+        return mapToResponseDTO(savedBooking);
     }
 
     public List<Booking> getAllBookings() {
@@ -49,5 +61,19 @@ public class BookingService {
 
     public void deleteBooking(Long id) {
         bookingRepository.deleteById(id);
+    }
+
+    private BookingResponseDTO mapToResponseDTO(Booking booking) {
+        BookingResponseDTO dto = new BookingResponseDTO();
+        dto.setId(booking.getId());
+        dto.setFacilityName(booking.getFacilityName());
+        dto.setBookedBy(booking.getBookedBy());
+        dto.setBookingDate(booking.getBookingDate());
+        dto.setStartTime(booking.getStartTime());
+        dto.setEndTime(booking.getEndTime());
+        dto.setAttendees(booking.getAttendees());
+        dto.setPurpose(booking.getPurpose());
+        dto.setStatus(booking.getStatus());
+        return dto;
     }
 }
