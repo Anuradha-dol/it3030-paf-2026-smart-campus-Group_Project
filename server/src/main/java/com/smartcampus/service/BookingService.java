@@ -60,6 +60,45 @@ public class BookingService {
         return bookingRepository.findById(id).orElse(null);
     }
 
+    public BookingResponseDTO updateBooking(Long id, BookingRequestDTO dto) {
+
+        Booking existingBooking = bookingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+        if (dto.getBookingDate().isBefore(LocalDate.now())) {
+            throw new RuntimeException("Booking date cannot be in the past");
+        }
+
+        if (!dto.getEndTime().isAfter(dto.getStartTime())) {
+            throw new RuntimeException("End time must be after start time");
+        }
+
+        List<Booking> conflicts = bookingRepository.findConflictingBookings(
+                dto.getFacilityName(),
+                dto.getBookingDate(),
+                dto.getStartTime(),
+                dto.getEndTime()
+        );
+
+        boolean hasRealConflict = conflicts.stream()
+                .anyMatch(booking -> !booking.getId().equals(id));
+
+        if (hasRealConflict) {
+            throw new RuntimeException("Time slot already booked for this facility");
+        }
+
+        existingBooking.setFacilityName(dto.getFacilityName());
+        existingBooking.setBookedBy(dto.getBookedBy());
+        existingBooking.setBookingDate(dto.getBookingDate());
+        existingBooking.setStartTime(dto.getStartTime());
+        existingBooking.setEndTime(dto.getEndTime());
+        existingBooking.setAttendees(dto.getAttendees());
+        existingBooking.setPurpose(dto.getPurpose());
+
+        Booking updatedBooking = bookingRepository.save(existingBooking);
+        return mapToResponseDTO(updatedBooking);
+    }
+
     public Booking updateStatus(Long id, BookingStatus status) {
         Booking booking = bookingRepository.findById(id).orElse(null);
 

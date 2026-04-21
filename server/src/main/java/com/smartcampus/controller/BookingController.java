@@ -34,6 +34,12 @@ public class BookingController {
         return bookingService.getBookingById(id);
     }
 
+    @PutMapping("/{id}")
+    public BookingResponseDTO updateBooking(@PathVariable Long id,
+                                            @Valid @RequestBody BookingRequestDTO dto) {
+        return bookingService.updateBooking(id, dto);
+    }
+
     @PutMapping("/{id}/status")
     public Booking updateStatus(@PathVariable Long id, @RequestParam BookingStatus status) {
         return bookingService.updateStatus(id, status);
