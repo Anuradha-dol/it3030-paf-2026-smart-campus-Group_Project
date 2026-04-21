@@ -1,3 +1,10 @@
 .idea/misc.xml
 client/src/components/Navbar.jsx
 .idea/compiler.xml
+.idea/compiler.xml
+.idea/compiler.xml
+.idea/workspace.xml
+run-server.cmd
+server/src/main/java/com/smartcampus/dto/ResourceRequestDTO.java
+server/target/classes/com/smartcampus/dto/ResourceRequestDTO.class
+server/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
