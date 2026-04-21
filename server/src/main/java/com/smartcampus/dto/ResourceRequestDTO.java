@@ -10,6 +10,8 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+
+
 public class ResourceRequestDTO {
     @NotBlank(message = "Name is required")
     private String name;
