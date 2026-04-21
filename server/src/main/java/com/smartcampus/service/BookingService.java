@@ -18,12 +18,24 @@ public class BookingService {
     private BookingRepository bookingRepository;
 
     public BookingResponseDTO createBooking(BookingRequestDTO dto) {
+
         if (dto.getBookingDate().isBefore(LocalDate.now())) {
             throw new RuntimeException("Booking date cannot be in the past");
         }
 
         if (!dto.getEndTime().isAfter(dto.getStartTime())) {
             throw new RuntimeException("End time must be after start time");
+        }
+
+        List<Booking> conflicts = bookingRepository.findConflictingBookings(
+                dto.getFacilityName(),
+                dto.getBookingDate(),
+                dto.getStartTime(),
+                dto.getEndTime()
+        );
+
+        if (!conflicts.isEmpty()) {
+            throw new RuntimeException("Time slot already booked for this facility");
         }
 
         Booking booking = new Booking();
