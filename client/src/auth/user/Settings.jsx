@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import api from "../../api";
+import RoleNavbar from "../../comp/RoleNavbar";
 import "./Settings.css";
 
 function buildAssetUrl(path) {
@@ -278,9 +279,7 @@ export default function Settings() {
                         <p className="subtitle">Manage profile, credentials, and account security.</p>
                     </div>
                     <div className="nav-group">
-                        <Link className="nav-link" to="/home">Home</Link>
-                        <Link className="nav-link" to="/dashboard">Dashboard</Link>
-                        <Link className="nav-link" to="/profile">Profile</Link>
+                        <RoleNavbar role={user.role} />
                     </div>
                 </header>
                 {notice.text && <p className={`message ${notice.type}`}>{notice.text}</p>}

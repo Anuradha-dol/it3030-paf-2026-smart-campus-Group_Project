@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../../api";
+import RoleNavbar from "../../comp/RoleNavbar";
 import "./Home.css";
 
 export default function Home() {
@@ -69,8 +70,7 @@ export default function Home() {
                     </div>
 
                     <div className="nav-group">
-                        <Link className="nav-link" to="/profile">Profile</Link>
-                        <Link className="nav-link" to="/settings">Settings</Link>
+                        <RoleNavbar role={profile?.role} />
                         <button className="btn btn-danger" type="button" onClick={handleLogout}>
                             Logout
                         </button>
