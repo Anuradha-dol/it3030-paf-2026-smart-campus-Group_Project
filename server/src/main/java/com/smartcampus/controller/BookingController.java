@@ -2,8 +2,8 @@ package com.smartcampus.controller;
 
 import com.smartcampus.dto.BookingRequestDTO;
 import com.smartcampus.dto.BookingResponseDTO;
+import com.smartcampus.dto.BookingStatusUpdateDTO;
 import com.smartcampus.entity.Booking;
-import com.smartcampus.enums.BookingStatus;
 import com.smartcampus.service.BookingService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,9 +40,10 @@ public class BookingController {
         return bookingService.updateBooking(id, dto);
     }
 
-    @PutMapping("/{id}/status")
-    public Booking updateStatus(@PathVariable Long id, @RequestParam BookingStatus status) {
-        return bookingService.updateStatus(id, status);
+    @PatchMapping("/{id}/status")
+    public BookingResponseDTO updateStatus(@PathVariable Long id,
+                                           @Valid @RequestBody BookingStatusUpdateDTO dto) {
+        return bookingService.updateStatus(id, dto.getStatus());
     }
 
     @DeleteMapping("/{id}")

@@ -40,7 +40,7 @@ public class BookingService {
 
         Booking booking = new Booking();
         booking.setFacilityName(dto.getFacilityName().trim());
-        booking.setBookedBy(dto.getBookedBy());
+        booking.setBookedBy(dto.getBookedBy().trim());
         booking.setBookingDate(dto.getBookingDate());
         booking.setStartTime(dto.getStartTime());
         booking.setEndTime(dto.getEndTime());
@@ -57,7 +57,8 @@ public class BookingService {
     }
 
     public Booking getBookingById(Long id) {
-        return bookingRepository.findById(id).orElse(null);
+        return bookingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
     }
 
     public BookingResponseDTO updateBooking(Long id, BookingRequestDTO dto) {
@@ -87,31 +88,37 @@ public class BookingService {
             throw new RuntimeException("Time slot already booked for this facility");
         }
 
-        existingBooking.setFacilityName(dto.getFacilityName());
-        existingBooking.setBookedBy(dto.getBookedBy());
+        existingBooking.setFacilityName(dto.getFacilityName().trim());
+        existingBooking.setBookedBy(dto.getBookedBy().trim());
         existingBooking.setBookingDate(dto.getBookingDate());
         existingBooking.setStartTime(dto.getStartTime());
         existingBooking.setEndTime(dto.getEndTime());
         existingBooking.setAttendees(dto.getAttendees());
-        existingBooking.setPurpose(dto.getPurpose());
+        existingBooking.setPurpose(dto.getPurpose().trim());
 
         Booking updatedBooking = bookingRepository.save(existingBooking);
         return mapToResponseDTO(updatedBooking);
     }
 
-    public Booking updateStatus(Long id, BookingStatus status) {
-        Booking booking = bookingRepository.findById(id).orElse(null);
+    public BookingResponseDTO updateStatus(Long id, BookingStatus status) {
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
 
-        if (booking != null) {
-            booking.setStatus(status);
-            return bookingRepository.save(booking);
+        if (booking.getStatus() == BookingStatus.CANCELLED) {
+            throw new RuntimeException("Cancelled booking status cannot be changed");
         }
 
-        return null;
+        booking.setStatus(status);
+
+        Booking updatedBooking = bookingRepository.save(booking);
+        return mapToResponseDTO(updatedBooking);
     }
 
     public void deleteBooking(Long id) {
-        bookingRepository.deleteById(id);
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+        bookingRepository.delete(booking);
     }
 
     private BookingResponseDTO mapToResponseDTO(Booking booking) {
