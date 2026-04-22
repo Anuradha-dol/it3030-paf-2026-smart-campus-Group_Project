@@ -6,42 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="c107fa9e-e75b-42c1-8829-8963013c7712" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/auth/auths/Signup.css" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/auths/Signup.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/auth/auths/Signup.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/auths/Signup.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/auth/auths/VerifyOtp.css" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/auths/VerifyOtp.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/auth/auths/VerifyOtp.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/auths/VerifyOtp.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/auth/user/ForgotPassword.css" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/user/ForgotPassword.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/auth/user/ForgotPassword.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/user/ForgotPassword.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/auth/user/Profile.css" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/user/Profile.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/auth/user/Profile.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/user/Profile.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/auth/user/Settings.css" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/user/Settings.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/auth/user/Settings.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/user/Settings.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/controller/UserController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/dto/UserDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/dto/UserDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/exception/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/exception/GlobalExceptionHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/service/AuthServiceimpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/service/AuthServiceimpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/service/UserProfileService.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/service/UserProfileService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/service/UserProfileServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/service/UserProfileServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/target/boot.err.log" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/target/boot.out.log" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/controller/UserController.class" beforeDir="false" afterPath="$PROJECT_DIR$/server/target/classes/com/smartcampus/controller/UserController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/UserDto$ChangePassword.class" beforeDir="false" afterPath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/UserDto$ChangePassword.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/UserDto$DeleteAccountDto.class" beforeDir="false" afterPath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/UserDto$DeleteAccountDto.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/UserDto$DeleteAccountForgotRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/UserDto$DeleteAccountForgotRequest.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/UserDto$DeleteAccountForgotVerifyDto.class" beforeDir="false" afterPath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/UserDto$DeleteAccountForgotVerifyDto.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/UserDto$RegisterRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/UserDto$RegisterRequest.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/UserDto$UpdateEmailDto.class" beforeDir="false" afterPath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/UserDto$UpdateEmailDto.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/UserDto$UpdateNameDto.class" beforeDir="false" afterPath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/UserDto$UpdateNameDto.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/UserDto$UpdatePasswordDto.class" beforeDir="false" afterPath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/UserDto$UpdatePasswordDto.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/UserDto$UserHomeDto.class" beforeDir="false" afterPath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/UserDto$UserHomeDto.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/UserDto$UserProfileDto.class" beforeDir="false" afterPath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/UserDto$UserProfileDto.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/UserDto$VerifyCodeDto.class" beforeDir="false" afterPath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/UserDto$VerifyCodeDto.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/UserDto.class" beforeDir="false" afterPath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/UserDto.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/exception/GlobalExceptionHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/server/target/classes/com/smartcampus/exception/GlobalExceptionHandler.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/service/AuthServiceimpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/server/target/classes/com/smartcampus/service/AuthServiceimpl.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/service/UserProfileService.class" beforeDir="false" afterPath="$PROJECT_DIR$/server/target/classes/com/smartcampus/service/UserProfileService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/service/UserProfileServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/server/target/classes/com/smartcampus/service/UserProfileServiceImpl.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/server/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/auth/auths/OAuth2Success.css" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/auths/OAuth2Success.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/auth/auths/OAuth2Success.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/auths/OAuth2Success.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
