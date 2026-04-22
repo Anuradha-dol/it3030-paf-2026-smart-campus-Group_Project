@@ -5,14 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c107fa9e-e75b-42c1-8829-8963013c7712" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/client/src/auth/auths/OAuth2Success.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/api.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/api.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/auth/auths/Login.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/auths/Login.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/auth/auths/Signup.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/auths/Signup.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/auth/auths/VerifyOtp.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/auths/VerifyOtp.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/auth/user/Profile.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/user/Profile.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/auth/user/Settings.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/user/Settings.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -148,7 +141,7 @@
       <workItem from="1776677492560" duration="14000" />
       <workItem from="1776710249928" duration="235000" />
       <workItem from="1776710543039" duration="8000" />
-      <workItem from="1776836093623" duration="978000" />
+      <workItem from="1776836093623" duration="1226000" />
     </task>
     <servers />
   </component>
