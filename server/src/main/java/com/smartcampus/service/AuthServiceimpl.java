@@ -46,13 +46,6 @@ public class AuthServiceimpl implements AuthService {
                     .build();
         }
 
-        if (request.phoneNumber() == null || request.phoneNumber().isBlank()) {
-            return AuthResponse.builder()
-                    .message("Phone number required")
-                    .success(false)
-                    .build();
-        }
-
         Optional<User> existing = userRepo.findByEmail(request.email());
 
         if (existing.isPresent() && existing.get().getIsVerified()) {
@@ -63,12 +56,16 @@ public class AuthServiceimpl implements AuthService {
         }
 
         User user = existing.orElse(new User());
+        String phoneNumber = request.phoneNumber() == null ? null : request.phoneNumber().trim();
+        if (phoneNumber != null && phoneNumber.isEmpty()) {
+            phoneNumber = null;
+        }
 
         user.setFirstname(request.firstname());
         user.setLastName(request.lastName());
         user.setEmail(request.email());
         user.setPassword(passwordEncoder.encode(request.password()));
-        user.setPhoneNumber(request.phoneNumber());
+        user.setPhoneNumber(phoneNumber);
         user.setTempEmail(request.tempEmail());
 
         user.setRole(request.role() != null ? request.role() : Role.USER);

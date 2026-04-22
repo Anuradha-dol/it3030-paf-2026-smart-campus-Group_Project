@@ -23,8 +23,18 @@ public interface UserProfileService {
     // ================= PASSWORD =================
     void updatePassword(User user, UserDto.UpdatePasswordDto dto);
 
+    // ================= PROFILE FIELDS =================
+    void updatePhoneNumber(User user, String phoneNumber);
+    
+    void updateYear(User user, String year);
+    
+    void updateSemester(User user, String semester);
+    
+    void updateProfileField(User user, UserDto.UpdateProfileFieldDto dto);
+
     // ================= ACCOUNT DELETE =================
     void deleteAccount(User user, UserDto.DeleteAccountDto dto);
+    void deleteOAuthAccount(User user);
 
     void requestDeletion(User user);
 
