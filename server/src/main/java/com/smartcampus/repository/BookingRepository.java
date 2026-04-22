@@ -12,10 +12,10 @@ import java.util.List;
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("SELECT b FROM Booking b WHERE " +
-           "b.facilityName = :facilityName AND " +
-           "b.bookingDate = :bookingDate AND " +
-           "b.startTime < :endTime AND " +
-           "b.endTime > :startTime")
+           "b.facilityName = :facilityName " +
+           "AND b.bookingDate = :bookingDate " +
+           "AND b.status = 'APPROVED' " +
+           "AND (b.startTime < :endTime AND b.endTime > :startTime)")
     List<Booking> findConflictingBookings(
             @Param("facilityName") String facilityName,
             @Param("bookingDate") LocalDate bookingDate,

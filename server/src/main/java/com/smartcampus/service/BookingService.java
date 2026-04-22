@@ -4,6 +4,9 @@ import com.smartcampus.dto.BookingRequestDTO;
 import com.smartcampus.dto.BookingResponseDTO;
 import com.smartcampus.entity.Booking;
 import com.smartcampus.enums.BookingStatus;
+import com.smartcampus.exception.BookingConflictException;
+import com.smartcampus.exception.BookingNotFoundException;
+import com.smartcampus.exception.InvalidBookingException;
 import com.smartcampus.repository.BookingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,11 +23,11 @@ public class BookingService {
     public BookingResponseDTO createBooking(BookingRequestDTO dto) {
 
         if (dto.getBookingDate().isBefore(LocalDate.now())) {
-            throw new RuntimeException("Booking date cannot be in the past");
+            throw new InvalidBookingException("Booking date cannot be in the past");
         }
 
         if (!dto.getEndTime().isAfter(dto.getStartTime())) {
-            throw new RuntimeException("End time must be after start time");
+            throw new InvalidBookingException("End time must be after start time");
         }
 
         List<Booking> conflicts = bookingRepository.findConflictingBookings(
@@ -35,7 +38,7 @@ public class BookingService {
         );
 
         if (!conflicts.isEmpty()) {
-            throw new RuntimeException("Time slot already booked for this facility");
+            throw new BookingConflictException("Time slot already booked for this facility");
         }
 
         Booking booking = new Booking();
@@ -58,20 +61,20 @@ public class BookingService {
 
     public Booking getBookingById(Long id) {
         return bookingRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Booking not found"));
+                .orElseThrow(() -> new BookingNotFoundException("Booking not found with id: " + id));
     }
 
     public BookingResponseDTO updateBooking(Long id, BookingRequestDTO dto) {
 
         Booking existingBooking = bookingRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Booking not found"));
+                .orElseThrow(() -> new BookingNotFoundException("Booking not found with id: " + id));
 
         if (dto.getBookingDate().isBefore(LocalDate.now())) {
-            throw new RuntimeException("Booking date cannot be in the past");
+            throw new InvalidBookingException("Booking date cannot be in the past");
         }
 
         if (!dto.getEndTime().isAfter(dto.getStartTime())) {
-            throw new RuntimeException("End time must be after start time");
+            throw new InvalidBookingException("End time must be after start time");
         }
 
         List<Booking> conflicts = bookingRepository.findConflictingBookings(
@@ -85,7 +88,7 @@ public class BookingService {
                 .anyMatch(booking -> !booking.getId().equals(id));
 
         if (hasRealConflict) {
-            throw new RuntimeException("Time slot already booked for this facility");
+            throw new BookingConflictException("Time slot already booked for this facility");
         }
 
         existingBooking.setFacilityName(dto.getFacilityName().trim());
@@ -102,10 +105,10 @@ public class BookingService {
 
     public BookingResponseDTO updateStatus(Long id, BookingStatus status) {
         Booking booking = bookingRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Booking not found"));
+                .orElseThrow(() -> new BookingNotFoundException("Booking not found with id: " + id));
 
         if (booking.getStatus() == BookingStatus.CANCELLED) {
-            throw new RuntimeException("Cancelled booking status cannot be changed");
+            throw new InvalidBookingException("Cancelled booking status cannot be changed");
         }
 
         booking.setStatus(status);
@@ -116,7 +119,7 @@ public class BookingService {
 
     public void deleteBooking(Long id) {
         Booking booking = bookingRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Booking not found"));
+                .orElseThrow(() -> new BookingNotFoundException("Booking not found with id: " + id));
 
         bookingRepository.delete(booking);
     }
