@@ -63,6 +63,14 @@ public class User implements UserDetails {
     private Date otpFirstResendTime;
     private Date otpBlockUntil;
 
+    // ✅ OAUTH2 FIELDS
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private AuthProvider provider;
+
+    @Column(length = 100)
+    private String providerId;
+
     @OneToOne(
             mappedBy = "user",
             cascade = CascadeType.ALL,
