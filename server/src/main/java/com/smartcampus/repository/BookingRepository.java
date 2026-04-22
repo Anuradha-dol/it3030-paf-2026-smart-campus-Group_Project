@@ -1,6 +1,7 @@
 package com.smartcampus.repository;
 
 import com.smartcampus.entity.Booking;
+import com.smartcampus.enums.BookingStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,5 +22,32 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             @Param("bookingDate") LocalDate bookingDate,
             @Param("startTime") LocalTime startTime,
             @Param("endTime") LocalTime endTime
+    );
+
+    List<Booking> findByFacilityNameContainingIgnoreCase(String facilityName);
+
+    List<Booking> findByBookingDate(LocalDate bookingDate);
+
+    List<Booking> findByStatus(BookingStatus status);
+
+    List<Booking> findByFacilityNameContainingIgnoreCaseAndBookingDateAndStatus(
+            String facilityName,
+            LocalDate bookingDate,
+            BookingStatus status
+    );
+
+    List<Booking> findByFacilityNameContainingIgnoreCaseAndBookingDate(
+            String facilityName,
+            LocalDate bookingDate
+    );
+
+    List<Booking> findByFacilityNameContainingIgnoreCaseAndStatus(
+            String facilityName,
+            BookingStatus status
+    );
+
+    List<Booking> findByBookingDateAndStatus(
+            LocalDate bookingDate,
+            BookingStatus status
     );
 }

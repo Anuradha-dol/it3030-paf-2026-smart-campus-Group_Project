@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BookingService {
@@ -55,13 +56,18 @@ public class BookingService {
         return mapToResponseDTO(savedBooking);
     }
 
-    public List<Booking> getAllBookings() {
-        return bookingRepository.findAll();
+    public List<BookingResponseDTO> getAllBookings() {
+        return bookingRepository.findAll()
+                .stream()
+                .map(this::mapToResponseDTO)
+                .collect(Collectors.toList());
     }
 
-    public Booking getBookingById(Long id) {
-        return bookingRepository.findById(id)
+    public BookingResponseDTO getBookingById(Long id) {
+        Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new BookingNotFoundException("Booking not found with id: " + id));
+
+        return mapToResponseDTO(booking);
     }
 
     public BookingResponseDTO updateBooking(Long id, BookingRequestDTO dto) {
@@ -122,6 +128,38 @@ public class BookingService {
                 .orElseThrow(() -> new BookingNotFoundException("Booking not found with id: " + id));
 
         bookingRepository.delete(booking);
+    }
+
+    public List<BookingResponseDTO> searchBookings(String facility, LocalDate date, BookingStatus status) {
+        List<Booking> results;
+
+        if (facility != null && !facility.isBlank() && date != null && status != null) {
+            results = bookingRepository.findByFacilityNameContainingIgnoreCaseAndBookingDateAndStatus(
+                    facility, date, status
+            );
+        } else if (facility != null && !facility.isBlank() && date != null) {
+            results = bookingRepository.findByFacilityNameContainingIgnoreCaseAndBookingDate(
+                    facility, date
+            );
+        } else if (facility != null && !facility.isBlank() && status != null) {
+            results = bookingRepository.findByFacilityNameContainingIgnoreCaseAndStatus(
+                    facility, status
+            );
+        } else if (date != null && status != null) {
+            results = bookingRepository.findByBookingDateAndStatus(date, status);
+        } else if (facility != null && !facility.isBlank()) {
+            results = bookingRepository.findByFacilityNameContainingIgnoreCase(facility);
+        } else if (date != null) {
+            results = bookingRepository.findByBookingDate(date);
+        } else if (status != null) {
+            results = bookingRepository.findByStatus(status);
+        } else {
+            results = bookingRepository.findAll();
+        }
+
+        return results.stream()
+                .map(this::mapToResponseDTO)
+                .collect(Collectors.toList());
     }
 
     private BookingResponseDTO mapToResponseDTO(Booking booking) {
