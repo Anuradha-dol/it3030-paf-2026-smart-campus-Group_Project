@@ -3,6 +3,7 @@ package com.smartcampus.controller;
 import com.smartcampus.dto.AuthResponse;
 import com.smartcampus.dto.UserDto;
 import com.smartcampus.enums.Token;
+import com.smartcampus.model.User;
 import com.smartcampus.records.LoginRequest;
 import com.smartcampus.repository.UserRepo;
 import com.smartcampus.service.AuthService;

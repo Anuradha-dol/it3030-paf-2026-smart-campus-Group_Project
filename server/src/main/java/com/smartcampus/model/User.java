@@ -1,6 +1,7 @@
 package com.smartcampus.model;
 
 
+import com.smartcampus.enums.AuthProvider;
 import com.smartcampus.enums.Role;
 import com.smartcampus.enums.Semester;
 import com.smartcampus.enums.Year;

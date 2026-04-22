@@ -24,7 +24,7 @@ public interface UserProfileService {
     void updatePassword(User user, UserDto.UpdatePasswordDto dto);
 
     // ================= ACCOUNT DELETE =================
-    void deleteAccount(User user);
+    void deleteAccount(User user, UserDto.DeleteAccountDto dto);
 
     void requestDeletion(User user);
 

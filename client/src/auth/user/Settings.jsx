@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 import api from "../../api";
 
 function buildAssetUrl(path) {
@@ -14,6 +13,19 @@ function buildAssetUrl(path) {
 
     return `${api.defaults.baseURL}${path}`;
 }
+
+const toast = {
+    success: (message) => {
+        if (message) {
+            console.log(message);
+        }
+    },
+    error: (message) => {
+        const text = typeof message === "string" ? message : "Operation failed.";
+        console.error(text);
+        window.alert(text);
+    },
+};
 
 export default function Settings() {
     const navigate = useNavigate();

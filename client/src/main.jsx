@@ -12,6 +12,7 @@ import ResourceDetailsPage from './pages/ResourceDetailsPage';
 import Login from './auth/auths/Login';
 import Signup from './auth/auths/Signup';
 import VerifyOtp from './auth/auths/VerifyOtp';
+import OAuth2Success from './auth/auths/OAuth2Success';
 import Dashboard from './auth/user/Dashboard';
 import ForgotPassword from './auth/user/ForgotPassword';
 import Home from './auth/user/Home';
@@ -32,8 +33,10 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Route path="/resources/:id" element={<ResourceDetailsPage />} />
 
 
-         <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/oauth-success" element={<OAuth2Success />} />
+          <Route path="/verify" element={<VerifyOtp />} />
           <Route path="/verify-email" element={<VerifyOtp />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />

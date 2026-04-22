@@ -7,6 +7,7 @@ C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-202
 C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\dto\ResourceRequestDTO.java
 C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\dto\ResourceResponseDTO.java
 C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\dto\UserDto.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\enums\AuthProvider.java
 C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\enums\RecoveryChannel.java
 C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\enums\ResourceStatus.java
 C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\enums\ResourceType.java
@@ -26,6 +27,8 @@ C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-202
 C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\repository\UserRepo.java
 C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\security\AuthConfig.java
 C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\security\JWTAuthFilter.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\security\OAuth2SuccessHandler.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\security\OAuth2UserService.java
 C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\security\SecurityConfig.java
 C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\service\AuthService.java
 C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\service\AuthServiceimpl.java

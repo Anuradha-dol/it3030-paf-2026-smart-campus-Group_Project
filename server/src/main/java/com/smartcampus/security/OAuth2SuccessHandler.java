@@ -1,5 +1,9 @@
 package com.smartcampus.security;
 
+import com.smartcampus.enums.AuthProvider;
+import com.smartcampus.enums.Role;
+import com.smartcampus.enums.Token;
+import com.smartcampus.model.User;
 import com.smartcampus.repository.UserRepo;
 import com.smartcampus.utils.JwtUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -76,13 +81,13 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         if (user.getRole() == null) {
             user.setRole(Role.USER);
         }
-        if (user.getIsVerified() == null || !user.getIsVerified()) {
-            user.setIsVerified(true);
-        }
         if (user.getProvider() == null) {
             user.setProvider(AuthProvider.GOOGLE);
+            user.setProviderId(providerId);
         }
-        if (!StringUtils.hasText(user.getProviderId()) && StringUtils.hasText(providerId)) {
+        if (user.getProvider() == AuthProvider.GOOGLE
+                && !StringUtils.hasText(user.getProviderId())
+                && StringUtils.hasText(providerId)) {
             user.setProviderId(providerId);
         }
 
