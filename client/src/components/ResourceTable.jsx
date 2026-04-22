@@ -30,103 +30,103 @@ const ResourceTable = ({ resources, onDeleteClick, basePath = '/resources', canM
             {resources.map((resource) => {
                 const imageSource = resolveResourceImage(resource);
                 return (
-                <div key={resource.id} className="resource-card glass-panel">
-                    {/* Modern Image Header edge-to-edge */}
-                    {imageSource && (
-                        <div className="resource-image-header">
-                            <img
-                                src={imageSource}
-                                alt={`${resource.name} preview`}
-                                className="resource-card-cover"
-                                loading="lazy"
-                            />
-                            <div className="glassy-overlay"></div>
-                            <span className={`floating-status status-indicator status-${resource.status?.toLowerCase()}`}>
-                                {resource.status}
-                            </span>
-                        </div>
-                    )}
-
-                    <div className="card-content-padding">
-                        <div className="card-header">
-                            <div className="card-title-group">
-                                <h3>{resource.name}</h3>
-                                <span className="badge badge-type">{resource.type?.replace('_', ' ')}</span>
-                            </div>
-                            {!imageSource && (
-                                <span className={`status-indicator status-${resource.status?.toLowerCase()}`}>
+                    <div key={resource.id} className="resource-card glass-panel">
+                        {/* Modern Image Header edge-to-edge */}
+                        {imageSource && (
+                            <div className="resource-image-header">
+                                <img
+                                    src={imageSource}
+                                    alt={`${resource.name} preview`}
+                                    className="resource-card-cover"
+                                    loading="lazy"
+                                />
+                                <div className="glassy-overlay"></div>
+                                <span className={`floating-status status-indicator status-${resource.status?.toLowerCase()}`}>
                                     {resource.status}
                                 </span>
-                            )}
-                        </div>
-
-                        <div className="card-body">
-                            <div className="info-row">
-                                <i className="icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle>
-                                    </svg>
-                                </i>
-                                <div className="info-content">
-                                    <span className="label">Location</span>
-                                    <span className="value">{resource.location}</span>
-                                </div>
                             </div>
-                            
-                            <div className="info-row">
-                                <i className="icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                        <circle cx="9" cy="7" r="4"></circle>
-                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                                    </svg>
-                                </i>
-                                <div className="info-content">
-                                    <span className="label">Capacity</span>
-                                    <span className="value">{resource.capacity} {resource.type === 'EQUIPMENT' ? 'units' : 'people'}</span>
-                                </div>
-                            </div>
+                        )}
 
-                            <div className="info-row">
-                                <i className="icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
-                                    </svg>
-                                </i>
-                                <div className="info-content">
-                                    <span className="label">Availability</span>
-                                    <span className="value">
-                                        {resource.availableFrom ? `${resource.availableFrom} - ${resource.availableTo}` : 'Anytime'}
+                        <div className="card-content-padding">
+                            <div className="card-header">
+                                <div className="card-title-group">
+                                    <h3>{resource.name}</h3>
+                                    <span className="badge badge-type">{resource.type?.replace('_', ' ')}</span>
+                                </div>
+                                {!imageSource && (
+                                    <span className={`status-indicator status-${resource.status?.toLowerCase()}`}>
+                                        {resource.status}
                                     </span>
+                                )}
+                            </div>
+
+                            <div className="card-body">
+                                <div className="info-row">
+                                    <i className="icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle>
+                                        </svg>
+                                    </i>
+                                    <div className="info-content">
+                                        <span className="label">Location</span>
+                                        <span className="value">{resource.location}</span>
+                                    </div>
+                                </div>
+
+                                <div className="info-row">
+                                    <i className="icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="9" cy="7" r="4"></circle>
+                                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                        </svg>
+                                    </i>
+                                    <div className="info-content">
+                                        <span className="label">Capacity</span>
+                                        <span className="value">{resource.capacity} {resource.type === 'EQUIPMENT' ? 'units' : 'people'}</span>
+                                    </div>
+                                </div>
+
+                                <div className="info-row">
+                                    <i className="icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+                                        </svg>
+                                    </i>
+                                    <div className="info-content">
+                                        <span className="label">Availability</span>
+                                        <span className="value">
+                                            {resource.availableFrom ? `${resource.availableFrom} - ${resource.availableTo}` : 'Anytime'}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div className="card-footer">
-                            <div className="action-buttons">
-                                <Link to={`${basePath}/${resource.id}`} className="btn btn-view">
-                                    View
-                                </Link>
-                                {canManage && (
-                                    <>
-                                        <Link to={`${basePath}/edit/${resource.id}`} className="btn btn-edit">
-                                            Edit
-                                        </Link>
-                                        <button onClick={() => onDeleteClick(resource)} className="btn btn-delete">
-                                            Delete
+                            <div className="card-footer">
+                                <div className="action-buttons">
+                                    <Link to={`${basePath}/${resource.id}`} className="btn btn-view">
+                                        View
+                                    </Link>
+                                    {canManage && (
+                                        <>
+                                            <Link to={`${basePath}/edit/${resource.id}`} className="btn btn-edit">
+                                                Edit
+                                            </Link>
+                                            <button onClick={() => onDeleteClick(resource)} className="btn btn-delete">
+                                                Delete
+                                            </button>
+                                        </>
+                                    )}
+                                    {!canManage && showBook && (
+                                        <button type="button" className="btn btn-primary">
+                                            Book Now
                                         </button>
-                                    </>
-                                )}
-                                {!canManage && showBook && (
-                                    <button type="button" className="btn btn-primary">
-                                        Book Now
-                                    </button>
-                                )}
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
                 );
             })}
         </div>
