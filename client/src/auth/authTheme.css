@@ -1,27 +1,28 @@
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@600;700&display=swap");
+/* authTheme.css - Updated Modern Theme Variables */
+@import url("https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap");
 
 :root {
-  --auth-bg-0: #f2f7fc;
-  --auth-bg-1: #e6f1fb;
-  --auth-bg-2: #d9e8f8;
+  --auth-bg-0: #f8fafc;
+  --auth-bg-1: #f1f5f9;
+  --auth-bg-2: #e2e8f0;
 
-  --auth-card-0: rgba(255, 255, 255, 0.86);
-  --auth-card-1: rgba(247, 251, 255, 0.94);
-  --auth-card-border: rgba(119, 157, 194, 0.32);
+  --auth-card-0: rgba(255, 255, 255, 0.98);
+  --auth-card-1: #ffffff;
+  --auth-card-border: rgba(203, 213, 225, 0.5);
 
-  --auth-ink-100: #18314c;
-  --auth-ink-200: #5a748f;
-  --auth-ink-300: #7f96af;
+  --auth-ink-100: #0f172a;
+  --auth-ink-200: #334155;
+  --auth-ink-300: #64748b;
 
-  --auth-brand-600: #1c5f95;
-  --auth-brand-500: #2f78b4;
-  --auth-brand-400: #569acf;
+  --auth-brand-600: #2563eb;
+  --auth-brand-500: #3b82f6;
+  --auth-brand-400: #60a5fa;
 
-  --auth-cyan-500: #34a8cc;
-  --auth-cyan-400: #73cde6;
+  --auth-cyan-500: #06b6d4;
+  --auth-cyan-400: #22d3ee;
 
-  --auth-shadow-soft: 0 14px 35px rgba(30, 74, 115, 0.14);
-  --auth-shadow-hard: 0 24px 55px rgba(27, 68, 107, 0.18);
+  --auth-shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+  --auth-shadow-hard: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
 }
 
 *,
@@ -31,7 +32,7 @@
 }
 
 body {
-  font-family: "Plus Jakarta Sans", "Trebuchet MS", "Segoe UI", sans-serif;
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
   color: var(--auth-ink-100);
 }
 
@@ -39,8 +40,8 @@ h1,
 h2,
 h3,
 h4 {
-  font-family: "Sora", "Plus Jakarta Sans", sans-serif;
-  letter-spacing: -0.01em;
+  font-family: "Inter", sans-serif;
+  letter-spacing: -0.02em;
 }
 
 .bg-auth,
@@ -51,7 +52,7 @@ h4 {
 @keyframes authRiseIn {
   from {
     opacity: 0;
-    transform: translateY(10px) scale(0.985);
+    transform: translateY(10px) scale(0.98);
   }
   to {
     opacity: 1;
