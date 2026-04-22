@@ -21,11 +21,6 @@ export default function VerifyOtp() {
         setError("");
         setSuccess("");
 
-        if (!emailHint.trim()) {
-            setError("Email is required to verify OTP. Open this page from signup.");
-            return;
-        }
-
         if (!otp.trim()) {
             setError("OTP is required.");
             return;
@@ -35,7 +30,6 @@ export default function VerifyOtp() {
 
         try {
             const response = await api.post("/auth/verify-code", {
-                email: emailHint.trim(),
                 verifyCode: otp.trim(),
             });
 
@@ -57,18 +51,10 @@ export default function VerifyOtp() {
     const handleResend = async () => {
         setError("");
         setSuccess("");
-
-        if (!emailHint.trim()) {
-            setError("Email is required to resend OTP.");
-            return;
-        }
-
         setResending(true);
 
         try {
-            const response = await api.post("/auth/resend-otp", {
-                email: emailHint.trim(),
-            });
+            const response = await api.post("/auth/resend-otp");
 
             if (!response.data?.success) {
                 setError(response.data?.message || "Failed to resend OTP.");
@@ -84,7 +70,7 @@ export default function VerifyOtp() {
     };
 
     return (
-        <div className="verify-screen page-shell">
+        <div className="verify-screen">
             <div className="bg-layer bg-auth" />
             <div className="glass-card auth-card">
                 <h1 className="brand">Verify Account</h1>

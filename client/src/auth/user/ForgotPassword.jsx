@@ -132,7 +132,7 @@ export default function ForgotPassword() {
     };
 
     return (
-        <div className="forgot-screen page-shell">
+        <div className="forgot-screen">
             <div className="bg-layer bg-auth" />
             <div className="glass-card auth-card">
                 <h1 className="brand">Forgot Password</h1>

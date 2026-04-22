@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../../api";
-import RoleNavbar from "../../comp/RoleNavbar";
 import "./Settings.css";
 
 function buildAssetUrl(path) {
@@ -15,6 +14,19 @@ function buildAssetUrl(path) {
 
     return `${api.defaults.baseURL}${path}`;
 }
+
+const toast = {
+    success: (message) => {
+        if (message) {
+            console.log(message);
+        }
+    },
+    error: (message) => {
+        const text = typeof message === "string" ? message : "Operation failed.";
+        console.error(text);
+        window.alert(text);
+    },
+};
 
 export default function Settings() {
     const navigate = useNavigate();
@@ -38,14 +50,8 @@ export default function Settings() {
         newPassword: "",
         confirmPassword: "",
     });
-    const [notice, setNotice] = useState({ type: "", text: "" });
-    const [deletePassword, setDeletePassword] = useState("");
     const [profileFile, setProfileFile] = useState(null);
     const [coverFile, setCoverFile] = useState(null);
-    const toast = {
-        success: (text) => setNotice({ type: "success", text }),
-        error: (text) => setNotice({ type: "error", text }),
-    };
 
     const loadProfile = async () => {
         try {
@@ -196,27 +202,12 @@ export default function Settings() {
     };
 
     const deleteAccount = async () => {
-        if (!deletePassword) {
-            toast.error("Current password is required.");
-            return;
-        }
-
         setWorking(true);
         try {
-            const response = await api.delete("/user/delete", {
-                data: {
-                    currentPassword: deletePassword,
-                },
-            });
+            const response = await api.delete("/user/delete");
 
             toast.success(response.data || "Account deleted.");
-            
-            // Call logout to clear cookies
-            try {
-                await api.post("/auth/logout", {}, { withCredentials: true });
-            } catch (err) {
-                console.log("Logout error:", err.message);
-            }
+
             navigate("/login", { replace: true });
         } catch (err) {
             toast.error(err.response?.data?.message || err.response?.data || "Failed to delete account.");
@@ -279,10 +270,11 @@ export default function Settings() {
                         <p className="subtitle">Manage profile, credentials, and account security.</p>
                     </div>
                     <div className="nav-group">
-                        <RoleNavbar role={user.role} />
+                        <Link className="nav-link" to="/home">Home</Link>
+                        <Link className="nav-link" to="/dashboard">Dashboard</Link>
+                        <Link className="nav-link" to="/profile">Profile</Link>
                     </div>
                 </header>
-                {notice.text && <p className={`message ${notice.type}`}>{notice.text}</p>}
 
                 <section className="settings-grid">
                     <article className="section">
@@ -465,14 +457,6 @@ export default function Settings() {
                         <h3>Delete Account</h3>
                         <p className="muted">This action cannot be undone.</p>
                         <div className="form-grid">
-                            <label className="field">
-                                <span>Current Password</span>
-                                <input
-                                    type="password"
-                                    value={deletePassword}
-                                    onChange={(event) => setDeletePassword(event.target.value)}
-                                />
-                            </label>
                             <button className="btn btn-danger" type="button" onClick={deleteAccount} disabled={working}>
                                 Delete Account
                             </button>

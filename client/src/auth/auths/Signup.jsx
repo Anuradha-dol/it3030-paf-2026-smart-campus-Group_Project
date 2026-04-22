@@ -49,6 +49,15 @@ export default function Signup() {
         setLoading(true);
 
         try {
+            const phoneCheck = await api.post("/auth/check-phone", {
+                phoneNumber: form.phoneNumber.trim(),
+            });
+
+            if (!phoneCheck.data?.available) {
+                setError("Phone number already exists.");
+                return;
+            }
+
             const response = await api.post("/auth/register", {
                 firstname: form.firstName.trim(),
                 lastName: form.lastName.trim(),
@@ -68,7 +77,7 @@ export default function Signup() {
 
             // Email stored in backend cookie, no need for localStorage
             setSuccess("Registration successful. Enter OTP to verify your account.");
-            navigate("/verify-email", { state: { email: form.email.trim() } });
+            navigate("/verify", { state: { email: form.email.trim() } });
         } catch (err) {
             setError(err.response?.data?.message || "Signup failed.");
         } finally {
@@ -77,7 +86,7 @@ export default function Signup() {
     };
 
     return (
-        <div className="signup-screen page-shell">
+        <div className="signup-screen">
             <div className="bg-layer bg-auth" />
             <div className="glass-card auth-card">
                 <h1 className="brand">Create Account</h1>

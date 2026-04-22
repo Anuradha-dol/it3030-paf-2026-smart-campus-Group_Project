@@ -1,41 +1,44 @@
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\config\WebConfig.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\controller\AuthController.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\controller\ForgotPasswordController.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\controller\ResourceController.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\controller\UserController.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\dto\AuthResponse.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\dto\ResourceRequestDTO.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\dto\ResourceResponseDTO.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\dto\UserDto.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\enums\RecoveryChannel.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\enums\ResourceStatus.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\enums\ResourceType.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\enums\Role.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\enums\Semester.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\enums\Token.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\enums\Year.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\exception\GlobalExceptionHandler.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\exception\ResourceNotFoundException.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\model\ForgotPassword.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\model\Resource.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\model\User.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\records\LoginRequest.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\records\MailBody.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\repository\ForgotPasswordRepository.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\repository\ResourceRepository.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\repository\UserRepo.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\security\AuthConfig.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\security\JWTAuthFilter.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\security\SecurityConfig.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\service\AuthService.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\service\AuthServiceimpl.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\service\EmailService.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\service\ForgotPasswordService.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\service\ForgotPasswordServiceImpl.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\service\ResourceService.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\service\ResourceServiceImpl.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\service\UserProfileService.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\service\UserProfileServiceImpl.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\SmartCampusApplication.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\utils\EmailUtils.java
-C:\Users\sasin\Desktop\Smart Campus\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\utils\JwtUtils.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\config\WebConfig.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\controller\AuthController.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\controller\ForgotPasswordController.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\controller\ResourceController.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\controller\UserController.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\dto\AuthResponse.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\dto\ResourceRequestDTO.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\dto\ResourceResponseDTO.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\dto\UserDto.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\enums\AuthProvider.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\enums\RecoveryChannel.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\enums\ResourceStatus.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\enums\ResourceType.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\enums\Role.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\enums\Semester.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\enums\Token.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\enums\Year.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\exception\GlobalExceptionHandler.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\exception\ResourceNotFoundException.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\model\ForgotPassword.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\model\Resource.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\model\User.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\records\LoginRequest.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\records\MailBody.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\repository\ForgotPasswordRepository.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\repository\ResourceRepository.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\repository\UserRepo.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\security\AuthConfig.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\security\JWTAuthFilter.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\security\OAuth2SuccessHandler.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\security\OAuth2UserService.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\security\SecurityConfig.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\service\AuthService.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\service\AuthServiceimpl.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\service\EmailService.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\service\ForgotPasswordService.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\service\ForgotPasswordServiceImpl.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\service\ResourceService.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\service\ResourceServiceImpl.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\service\UserProfileService.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\service\UserProfileServiceImpl.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\SmartCampusApplication.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\utils\EmailUtils.java
+C:\Users\MSI\Documents\it3030-paf-2026-smart-campus-Group_Project\it3030-paf-2026-smart-campus-Group_Project\server\src\main\java\com\smartcampus\utils\JwtUtils.java
