@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../../api";
+import "./Settings.css";
 
 function buildAssetUrl(path) {
     if (!path) {
@@ -252,7 +253,7 @@ export default function Settings() {
 
     if (initialLoading) {
         return (
-            <div className="loading-center">
+            <div className="settings-screen loading-center">
                 <div className="spinner" />
                 <p>Loading settings...</p>
             </div>
@@ -260,7 +261,7 @@ export default function Settings() {
     }
 
     return (
-        <div className="page-shell">
+        <div className="settings-screen page-shell">
             <div className="bg-layer bg-user" />
             <div className="panel page-panel">
                 <header className="top-nav">

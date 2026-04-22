@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api';
+import './OAuth2Success.css';
 
 export default function OAuth2Success() {
     const navigate = useNavigate();

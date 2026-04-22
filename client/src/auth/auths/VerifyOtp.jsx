@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import api from "../../api";
+import "./VerifyOtp.css";
 
 export default function VerifyOtp() {
     const navigate = useNavigate();
@@ -69,7 +70,7 @@ export default function VerifyOtp() {
     };
 
     return (
-        <div className="page-shell">
+        <div className="verify-screen">
             <div className="bg-layer bg-auth" />
             <div className="glass-card auth-card">
                 <h1 className="brand">Verify Account</h1>

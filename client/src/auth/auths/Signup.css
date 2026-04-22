@@ -4,7 +4,8 @@
   position: fixed;
   inset: 0;
   overflow: auto;
-  padding: clamp(16px, 2vw, 30px);
+  padding: clamp(14px, 2vw, 28px);
+  background: linear-gradient(145deg, var(--auth-bg-0), var(--auth-bg-1) 50%, var(--auth-bg-2));
 }
 
 .signup-screen .bg-layer {
@@ -12,94 +13,113 @@
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(circle at 8% 8%, rgba(15, 169, 164, 0.26), transparent 36%),
-    radial-gradient(circle at 88% 20%, rgba(239, 127, 58, 0.2), transparent 34%),
-    linear-gradient(140deg, #eef8ff 0%, #f6fbff 50%, #fff6ee 100%);
+    radial-gradient(circle at 10% 14%, rgba(128, 196, 234, 0.32), transparent 35%),
+    radial-gradient(circle at 88% 18%, rgba(107, 180, 216, 0.24), transparent 34%),
+    radial-gradient(circle at 82% 86%, rgba(104, 155, 210, 0.2), transparent 40%);
 }
 
 .signup-screen .glass-card.auth-card {
   position: relative;
   z-index: 1;
-  width: min(1040px, 100%);
+  width: min(980px, 100%);
   margin: 0 auto;
-  border-radius: 30px;
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.88));
-  box-shadow: var(--auth-shadow-hard);
-  padding: clamp(20px, 2.4vw, 34px);
-  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 26px;
+  padding: clamp(22px, 2.6vw, 34px);
+  background: linear-gradient(165deg, var(--auth-card-0), var(--auth-card-1));
+  border: 1px solid var(--auth-card-border);
+  box-shadow: var(--auth-shadow-soft);
   animation: authRiseIn 0.55s ease both;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.signup-screen .glass-card.auth-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 8px;
+  border-radius: 26px 26px 0 0;
+  background: linear-gradient(90deg, var(--auth-cyan-500), var(--auth-brand-500), var(--auth-brand-400));
 }
 
 .signup-screen .brand {
-  margin: 0;
+  margin: 10px 0 0;
   text-align: left;
-  font-size: clamp(2rem, 3vw, 2.6rem);
-  color: var(--auth-ink-900);
+  font-size: clamp(1.9rem, 2.8vw, 2.4rem);
+  color: var(--auth-ink-100);
 }
 
 .signup-screen .subtitle {
-  margin: 8px 0 18px;
-  color: var(--auth-ink-500);
-  font-size: 0.98rem;
+  margin: 8px 0 16px;
+  color: var(--auth-ink-200);
+  font-size: 0.92rem;
 }
 
 .signup-screen .message {
   margin: 10px 0 14px;
-  border-radius: 14px;
+  border-radius: 11px;
   padding: 10px 12px;
-  font-size: 0.9rem;
+  font-size: 0.86rem;
   border: 1px solid transparent;
 }
 
 .signup-screen .message.error {
-  color: #8f2441;
-  background: rgba(220, 79, 95, 0.14);
-  border-color: rgba(220, 79, 95, 0.27);
+  color: #b44767;
+  background: rgba(227, 140, 168, 0.18);
+  border-color: rgba(210, 122, 150, 0.34);
 }
 
 .signup-screen .message.success {
-  color: #13644b;
-  background: rgba(31, 157, 115, 0.14);
-  border-color: rgba(31, 157, 115, 0.27);
+  color: #1b7057;
+  background: rgba(125, 208, 183, 0.22);
+  border-color: rgba(92, 184, 154, 0.36);
 }
 
 .signup-screen .form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px 16px;
+  gap: 12px 14px;
 }
 
 .signup-screen .field {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 6px;
 }
 
 .signup-screen .field span {
-  font-size: 0.82rem;
-  letter-spacing: 0.03em;
-  font-weight: 700;
-  color: var(--auth-ink-700);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #4d6581;
 }
 
 .signup-screen .field input,
 .signup-screen .field select {
   width: 100%;
   box-sizing: border-box;
-  border: 1px solid #d7e4f4;
-  background: #f9fbff;
-  color: var(--auth-ink-900);
-  border-radius: 12px;
-  padding: 12px 13px;
+  border: 1px solid rgba(132, 166, 199, 0.4);
+  border-radius: 10px;
+  padding: 11px 12px;
+  background: rgba(255, 255, 255, 0.78);
+  color: #1f3852;
   font-family: inherit;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  font-size: 0.91rem;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.signup-screen .field input::placeholder {
+  color: #7b8fa5;
 }
 
 .signup-screen .field input:focus,
 .signup-screen .field select:focus {
   outline: none;
-  border-color: rgba(15, 169, 164, 0.62);
-  box-shadow: 0 0 0 4px rgba(15, 169, 164, 0.14);
+  border-color: var(--auth-brand-500);
+  box-shadow: 0 0 0 4px rgba(80, 152, 201, 0.16);
   transform: translateY(-1px);
 }
 
@@ -115,22 +135,22 @@
 .signup-screen .btn.btn-primary {
   grid-column: 1 / -1;
   border: 0;
-  border-radius: 14px;
-  padding: 13px 16px;
+  border-radius: 11px;
+  padding: 12px 16px;
   margin-top: 4px;
   cursor: pointer;
   color: #fff;
   font-weight: 800;
-  letter-spacing: 0.05em;
-  background: linear-gradient(135deg, var(--auth-brand-500), var(--auth-warm-500));
-  box-shadow: 0 14px 30px rgba(11, 143, 140, 0.28);
+  letter-spacing: 0.04em;
+  background: linear-gradient(105deg, var(--auth-brand-600), var(--auth-brand-500) 52%, var(--auth-cyan-500));
+  box-shadow: 0 14px 24px rgba(32, 90, 138, 0.32);
   transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
 }
 
 .signup-screen .btn.btn-primary:hover {
   transform: translateY(-2px);
-  filter: saturate(1.05);
-  box-shadow: 0 18px 32px rgba(11, 143, 140, 0.34);
+  filter: saturate(1.03);
+  box-shadow: 0 18px 30px rgba(30, 87, 132, 0.35);
 }
 
 .signup-screen .btn.btn-primary:disabled {
@@ -142,14 +162,14 @@
 
 .signup-screen .muted {
   margin: 14px 0 0;
-  color: var(--auth-ink-500);
-  font-size: 0.9rem;
+  color: #687f98;
+  font-size: 0.87rem;
 }
 
 .signup-screen .inline-link {
   text-decoration: none;
   font-weight: 700;
-  color: var(--auth-brand-600);
+  color: var(--auth-brand-500);
 }
 
 .signup-screen .inline-link:hover {
@@ -158,24 +178,11 @@
 
 @media (max-width: 900px) {
   .signup-screen .glass-card.auth-card {
-    border-radius: 22px;
+    border-radius: 20px;
+    padding: 20px 16px;
   }
 
   .signup-screen .form-grid {
     grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 620px) {
-  .signup-screen {
-    padding: 12px;
-  }
-
-  .signup-screen .glass-card.auth-card {
-    padding: 18px;
-  }
-
-  .signup-screen .brand {
-    font-size: 1.7rem;
   }
 }

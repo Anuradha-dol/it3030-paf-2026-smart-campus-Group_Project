@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../../api";
+import "./Signup.css";
 
 const roleOptions = ["USER", "ADMIN", "TECHNICIAN"];
 const yearOptions = ["FIRST", "SECOND", "THIRD", "FOURTH"];
@@ -85,7 +86,7 @@ export default function Signup() {
     };
 
     return (
-        <div className="page-shell">
+        <div className="signup-screen">
             <div className="bg-layer bg-auth" />
             <div className="glass-card auth-card">
                 <h1 className="brand">Create Account</h1>
