@@ -5,18 +5,90 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c107fa9e-e75b-42c1-8829-8963013c7712" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run-server.cmd" beforeDir="false" afterPath="$PROJECT_DIR$/run-server.cmd" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/dto/ResourceRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/dto/ResourceRequestDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/ResourceRequestDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/ResourceRequestDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/server/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/main.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/model/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/model/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/repository/UserRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/repository/UserRepo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/security/OAuth2SuccessHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/security/OAuth2SuccessHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/security/OAuth2UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/security/OAuth2UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/security/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/service/UserProfileService.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/service/UserProfileService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/service/UserProfileServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/service/UserProfileServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/server/target/classes/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/SmartCampusApplication.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/config/WebConfig.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/controller/AuthController$EmailRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/controller/AuthController$VerifyCodeRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/controller/AuthController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/controller/ForgotPasswordController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/controller/ResourceController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/controller/UserController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/AuthResponse$AuthResponseBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/AuthResponse.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/ResourceResponseDTO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/UserDto$ChangePassword.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/UserDto$DeleteAccountDto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/UserDto$DeleteAccountForgotRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/UserDto$DeleteAccountForgotVerifyDto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/UserDto$RegisterRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/UserDto$UpdateEmailDto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/UserDto$UpdateNameDto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/UserDto$UpdatePasswordDto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/UserDto$UserHomeDto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/UserDto$UserProfileDto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/UserDto$VerifyCodeDto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/dto/UserDto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/enums/RecoveryChannel.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/enums/ResourceStatus.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/enums/ResourceType.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/enums/Role.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/enums/Semester.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/enums/Token.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/enums/Year.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/exception/GlobalExceptionHandler.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/exception/ResourceNotFoundException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/model/ForgotPassword$ForgotPasswordBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/model/ForgotPassword.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/model/Resource.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/model/User$UserBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/model/User.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/records/LoginRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/records/MailBody$MailBodyBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/records/MailBody.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/repository/ForgotPasswordRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/repository/ResourceRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/repository/UserRepo.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/security/AuthConfig.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/security/JWTAuthFilter.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/security/SecurityConfig.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/service/AuthService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/service/AuthServiceimpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/service/EmailService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/service/ForgotPasswordService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/service/ForgotPasswordServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/service/UserProfileService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/service/UserProfileServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/utils/EmailUtils.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/utils/JwtUtils$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/classes/com/smartcampus/utils/JwtUtils.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/server/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="49" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Enum" />
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
@@ -61,35 +133,39 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Maven.Run Server (Maven).executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.MCP Project settings loaded": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "Spring Boot.SmartCampusApplication.executor": "Run",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "feature/IT23687882/usermanagement",
-    "junie.onboarding.icon.badge.shown": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/MSI/Documents/it3030-paf-2026-smart-campus-Group_Project/it3030-paf-2026-smart-campus-Group_Project",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "to.speed.mode.migration.done": "true",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Maven.Run Server (Maven).executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;Spring Boot.SmartCampusApplication.executor&quot;: &quot;Run&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/IT23687882/usermanagement&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/MSI/Documents/it3030-paf-2026-smart-campus-Group_Project/it3030-paf-2026-smart-campus-Group_Project&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
-  <component name="RunManager">
+}</component>
+  <component name="RunManager" selected="Spring Boot.SmartCampusApplication">
     <configuration default="true" type="JetRunConfigurationType">
       <module name="it3030-paf-2026-smart-campus-Group_Project" />
       <method v="2">
@@ -132,6 +208,7 @@
       <workItem from="1776677492560" duration="14000" />
       <workItem from="1776710249928" duration="235000" />
       <workItem from="1776710543039" duration="8000" />
+      <workItem from="1776836093623" duration="2110000" />
     </task>
     <servers />
   </component>

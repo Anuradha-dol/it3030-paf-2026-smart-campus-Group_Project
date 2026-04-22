@@ -1,6 +1,7 @@
 package com.smartcampus.model;
 
 
+import com.smartcampus.enums.AuthProvider;
 import com.smartcampus.enums.Role;
 import com.smartcampus.enums.Semester;
 import com.smartcampus.enums.Year;
@@ -62,6 +63,14 @@ public class User implements UserDetails {
     private Integer otpResendCount;
     private Date otpFirstResendTime;
     private Date otpBlockUntil;
+
+    // ✅ OAUTH2 FIELDS
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private AuthProvider provider;
+
+    @Column(length = 100)
+    private String providerId;
 
     @OneToOne(
             mappedBy = "user",

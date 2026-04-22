@@ -35,11 +35,9 @@ public class UserProfileServiceImpl implements UserProfileService {
     @Transactional
     @Override
     public void deleteAccount(User user, UserDto.DeleteAccountDto dto) {
-
         if (!passwordEncoder.matches(dto.currentPassword(), user.getPassword())) {
             throw new RuntimeException("Current password is incorrect");
         }
-
         userRepo.delete(user);
     }
 

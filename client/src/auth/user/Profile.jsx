@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../../api";
-import RoleNavbar from "../../comp/RoleNavbar";
-import "./Profile.css";
 
 function buildAssetUrl(path) {
     if (!path) {
@@ -75,7 +73,7 @@ export default function Profile() {
 
     if (!profile && !error) {
         return (
-            <div className="profile-screen loading-center">
+            <div className="loading-center">
                 <div className="spinner" />
                 <p>Loading profile...</p>
             </div>
@@ -89,7 +87,7 @@ export default function Profile() {
     const fullName = `${profile?.name || ""} ${profile?.lastName || ""}`.trim();
 
     return (
-        <div className="profile-screen page-shell">
+        <div className="page-shell">
             <div className="bg-layer bg-user" />
             <div className="panel page-panel">
                 <header className="top-nav">
@@ -99,7 +97,9 @@ export default function Profile() {
                     </div>
 
                     <div className="nav-group">
-                        <RoleNavbar role={profile?.role} />
+                        <Link className="nav-link" to="/home">Home</Link>
+                        <Link className="nav-link" to="/dashboard">Dashboard</Link>
+                        <Link className="nav-link" to="/settings">Settings</Link>
                         <button className="btn btn-danger" type="button" onClick={handleLogout}>
                             Logout
                         </button>
