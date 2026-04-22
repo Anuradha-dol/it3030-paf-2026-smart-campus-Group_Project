@@ -9,11 +9,11 @@ import com.smartcampus.exception.BookingNotFoundException;
 import com.smartcampus.exception.InvalidBookingException;
 import com.smartcampus.repository.BookingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,7 +27,7 @@ public class BookingService {
 
     public BookingResponseDTO createBooking(BookingRequestDTO dto) {
 
-      if (dto.getBookingDate().isBefore(LocalDate.now())) {
+        if (dto.getBookingDate().isBefore(LocalDate.now())) {
             throw new InvalidBookingException("Booking date cannot be in the past");
         }
 
@@ -61,59 +61,6 @@ public class BookingService {
     }
 
     public List<BookingResponseDTO> getAllBookings() {
-        return bookingRepository.findAll()
-                .stream()
-                .map(this::mapToResponseDTO)
-                .collect(Collectors.toList());
-    }
-
-    public BookingResponseDTO getBookingById(Long id) {
-        Booking booking = bookingRepository.findById(id)
-                .orElseThrow(() -> new BookingNotFoundException("Booking not found with id: " + id));
-
-        return mapToResponseDTO(booking);
-    }
-
-    public BookingResponseDTO updateBooking(Long id, BookingRequestDTO dto) {
-
-        Booking existingBooking = bookingRepository.findById(id)
-                .orElseThrow(() -> new BookingNotFoundException("Booking not found with id: " + id));
-
-        if (dto.getBookingDate().isBefore(LocalDate.now())) {
-            throw new InvalidBookingException("Booking date cannot be in the past");
-        }
-
-        if (!dto.getEndTime().isAfter(dto.getStartTime())) {
-            throw new InvalidBookingException("End time must be after start time");
-        }
-
-        List<Booking> conflicts = bookingRepository.findConflictingBookings(
-                dto.getFacilityName(),
-                dto.getBookingDate(),
-                dto.getStartTime(),
-                dto.getEndTime()
-        );
-
-        boolean hasRealConflict = conflicts.stream()
-                .anyMatch(booking -> !booking.getId().equals(id));
-
-        if (hasRealConflict) {
-            throw new BookingConflictException("Time slot already booked for this facility");
-        }
-
-        existingBooking.setFacilityName(dto.getFacilityName().trim());
-        existingBooking.setBookedBy(dto.getBookedBy().trim());
-        existingBooking.setBookingDate(dto.getBookingDate());
-        existingBooking.setStartTime(dto.getStartTime());
-        existingBooking.setEndTime(dto.getEndTime());
-        existingBooking.setAttendees(dto.getAttendees());
-        existingBooking.setPurpose(dto.getPurpose().trim());
-
-        Booking updatedBooking = bookingRepository.save(existingBooking);
-        return mapToResponseDTO(updatedBooking);
-    }
-
-     public List<BookingResponseDTO> getAllBookings() {
         return bookingRepository.findAll()
                 .stream()
                 .map(this::mapToResponseDTO)
@@ -237,6 +184,39 @@ public class BookingService {
         Pageable pageable = PageRequest.of(page, size, sort);
 
         Page<Booking> bookingPage = bookingRepository.findAll(pageable);
+
+        return bookingPage.map(this::mapToResponseDTO);
+    }
+
+    public Page<BookingResponseDTO> advancedSearch(
+            String facility,
+            LocalDate date,
+            BookingStatus status,
+            int page,
+            int size,
+            String sortBy,
+            String direction
+    ) {
+        List<String> allowedSortFields = List.of(
+                "id", "facilityName", "bookedBy", "bookingDate",
+                "startTime", "endTime", "attendees", "purpose", "status"
+        );
+
+        if (!allowedSortFields.contains(sortBy)) {
+            throw new InvalidBookingException("Invalid sort field: " + sortBy);
+        }
+
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        String safeFacility = (facility != null && !facility.isBlank()) ? facility : null;
+
+        Page<Booking> bookingPage = bookingRepository.advancedSearch(
+                safeFacility, date, status, pageable
+        );
 
         return bookingPage.map(this::mapToResponseDTO);
     }

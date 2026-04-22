@@ -51,7 +51,6 @@ public class BookingController {
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @RequestParam(required = false) BookingStatus status
     ) {
-
         List<BookingResponseDTO> results = bookingService.searchBookings(facility, date, status);
 
         return ResponseEntity.ok(
@@ -69,6 +68,27 @@ public class BookingController {
 
         Page<BookingResponseDTO> result =
                 bookingService.getBookingsWithPagination(page, size, sortBy, direction);
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(true, result, null)
+        );
+    }
+
+    @GetMapping("/advanced-search")
+    public ResponseEntity<ApiResponse<Page<BookingResponseDTO>>> advancedSearch(
+            @RequestParam(required = false) String facility,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @RequestParam(required = false) BookingStatus status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction
+    ) {
+
+        Page<BookingResponseDTO> result = bookingService.advancedSearch(
+                facility, date, status, page, size, sortBy, direction
+        );
 
         return ResponseEntity.ok(
                 new ApiResponse<>(true, result, null)
