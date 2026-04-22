@@ -5,23 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c107fa9e-e75b-42c1-8829-8963013c7712" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/enums/AuthProvider.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/security/OAuth2SuccessHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/security/OAuth2UserService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/client/src/auth/auths/OAuth2Success.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/server/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/controller/AuthController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/model/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/model/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/repository/UserRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/repository/UserRepo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/security/AuthConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/security/AuthConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/security/JWTAuthFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/security/JWTAuthFilter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/security/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/service/AuthService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/service/AuthServiceimpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/service/AuthServiceimpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/service/UserProfileService.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/service/UserProfileService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/service/UserProfileServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/service/UserProfileServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/utils/EmailUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/utils/EmailUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/utils/JwtUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/com/smartcampus/utils/JwtUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/api.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/api.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/auth/auths/Login.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/auths/Login.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/auth/auths/Signup.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/auths/Signup.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/auth/auths/VerifyOtp.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/auths/VerifyOtp.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/auth/user/Profile.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/user/Profile.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/auth/user/Settings.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/user/Settings.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -157,7 +148,7 @@
       <workItem from="1776677492560" duration="14000" />
       <workItem from="1776710249928" duration="235000" />
       <workItem from="1776710543039" duration="8000" />
-      <workItem from="1776836093623" duration="727000" />
+      <workItem from="1776836093623" duration="978000" />
     </task>
     <servers />
   </component>

@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import api from "../../api";
-import RoleNavbar from "../../comp/RoleNavbar";
-import "./Settings.css";
 
 function buildAssetUrl(path) {
     if (!path) {
@@ -38,14 +37,8 @@ export default function Settings() {
         newPassword: "",
         confirmPassword: "",
     });
-    const [notice, setNotice] = useState({ type: "", text: "" });
-    const [deletePassword, setDeletePassword] = useState("");
     const [profileFile, setProfileFile] = useState(null);
     const [coverFile, setCoverFile] = useState(null);
-    const toast = {
-        success: (text) => setNotice({ type: "success", text }),
-        error: (text) => setNotice({ type: "error", text }),
-    };
 
     const loadProfile = async () => {
         try {
@@ -196,27 +189,12 @@ export default function Settings() {
     };
 
     const deleteAccount = async () => {
-        if (!deletePassword) {
-            toast.error("Current password is required.");
-            return;
-        }
-
         setWorking(true);
         try {
-            const response = await api.delete("/user/delete", {
-                data: {
-                    currentPassword: deletePassword,
-                },
-            });
+            const response = await api.delete("/user/delete");
 
             toast.success(response.data || "Account deleted.");
-            
-            // Call logout to clear cookies
-            try {
-                await api.post("/auth/logout", {}, { withCredentials: true });
-            } catch (err) {
-                console.log("Logout error:", err.message);
-            }
+
             navigate("/login", { replace: true });
         } catch (err) {
             toast.error(err.response?.data?.message || err.response?.data || "Failed to delete account.");
@@ -262,7 +240,7 @@ export default function Settings() {
 
     if (initialLoading) {
         return (
-            <div className="settings-screen loading-center">
+            <div className="loading-center">
                 <div className="spinner" />
                 <p>Loading settings...</p>
             </div>
@@ -270,7 +248,7 @@ export default function Settings() {
     }
 
     return (
-        <div className="settings-screen page-shell">
+        <div className="page-shell">
             <div className="bg-layer bg-user" />
             <div className="panel page-panel">
                 <header className="top-nav">
@@ -279,10 +257,11 @@ export default function Settings() {
                         <p className="subtitle">Manage profile, credentials, and account security.</p>
                     </div>
                     <div className="nav-group">
-                        <RoleNavbar role={user.role} />
+                        <Link className="nav-link" to="/home">Home</Link>
+                        <Link className="nav-link" to="/dashboard">Dashboard</Link>
+                        <Link className="nav-link" to="/profile">Profile</Link>
                     </div>
                 </header>
-                {notice.text && <p className={`message ${notice.type}`}>{notice.text}</p>}
 
                 <section className="settings-grid">
                     <article className="section">
@@ -465,14 +444,6 @@ export default function Settings() {
                         <h3>Delete Account</h3>
                         <p className="muted">This action cannot be undone.</p>
                         <div className="form-grid">
-                            <label className="field">
-                                <span>Current Password</span>
-                                <input
-                                    type="password"
-                                    value={deletePassword}
-                                    onChange={(event) => setDeletePassword(event.target.value)}
-                                />
-                            </label>
                             <button className="btn btn-danger" type="button" onClick={deleteAccount} disabled={working}>
                                 Delete Account
                             </button>
