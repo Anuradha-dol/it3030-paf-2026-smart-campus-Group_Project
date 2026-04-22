@@ -76,6 +76,7 @@ export default function Dashboard() {
 
     const roleLabel = String(profile?.role || "").replace("ROLE_", "") || "USER";
     const isAdmin = String(profile?.role || "").toUpperCase().includes("ADMIN");
+    const homePath = isAdmin ? "/dashboard" : "/home";
 
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const currentMonth = monthNames[time.getMonth()];
@@ -106,7 +107,7 @@ export default function Dashboard() {
                     <div className="md-nav-group">
                         <p className="md-nav-label">QUICK NAVIGATION</p>
                         <nav className="md-nav">
-                            <Link to="/home" className="md-nav-item">Home</Link>
+                            <Link to={homePath} className="md-nav-item">Dashboard</Link>
                             <Link to="/profile" className="md-nav-item">Profile</Link>
                             <Link to="/settings" className="md-nav-item">Settings</Link>
                         </nav>
@@ -132,7 +133,7 @@ export default function Dashboard() {
                                 </div>
                             </div>
                             <div className="md-stat-card-slim">
-                                <div className="md-stat-icon-slim">📋</div>
+                                <div className="md-stat-icon-slim">🗂️</div>
                                 <div className="details">
                                     <p>Tasks</p>
                                     <h3>{homeData?.tasks ?? 0}</h3>

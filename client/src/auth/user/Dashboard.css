@@ -333,16 +333,30 @@
 .md-stat-card-slim:nth-child(3)::before { background: #a3907e; }
 
 .md-stat-icon-slim {
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  background-color: #f7f3ed;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #fffefb, #f2e8db);
+  border: 1px solid rgba(216, 202, 185, 0.55);
   flex-shrink: 0;
-  box-shadow: inset 0 2px 4px rgba(138, 120, 100, 0.04);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.75), 0 6px 12px rgba(138, 120, 100, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.md-stat-card-slim:nth-child(1) .md-stat-icon-slim {
+  background: linear-gradient(145deg, #fff8ea, #f2e3c6);
+}
+
+.md-stat-card-slim:nth-child(2) .md-stat-icon-slim {
+  background: linear-gradient(145deg, #fff4eb, #f4deca);
+}
+
+.md-stat-card-slim:nth-child(3) .md-stat-icon-slim {
+  background: linear-gradient(145deg, #f4f0ea, #e8ddd0);
 }
 
 .md-stat-card-slim .details {
