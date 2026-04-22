@@ -3,3 +3,7 @@ target/
 *.class
 *.log
 node_modules/
+.idea/
+.tools/
+server/target/
+uploads/
