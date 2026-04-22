@@ -2,6 +2,7 @@ package com.smartcampus.service;
 
 import com.smartcampus.dto.BookingRequestDTO;
 import com.smartcampus.dto.BookingResponseDTO;
+import com.smartcampus.dto.DashboardStatsDTO;
 import com.smartcampus.entity.Booking;
 import com.smartcampus.enums.BookingStatus;
 import com.smartcampus.exception.BookingConflictException;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import com.smartcampus.dto.DashboardStatsDTO;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -219,6 +221,19 @@ public class BookingService {
         );
 
         return bookingPage.map(this::mapToResponseDTO);
+    }
+
+
+    public DashboardStatsDTO getDashboardStats() {
+        DashboardStatsDTO stats = new DashboardStatsDTO();
+
+        stats.setTotalBookings(bookingRepository.count());
+        stats.setPendingBookings(bookingRepository.countByStatus(BookingStatus.PENDING));
+        stats.setApprovedBookings(bookingRepository.countByStatus(BookingStatus.APPROVED));
+        stats.setRejectedBookings(bookingRepository.countByStatus(BookingStatus.REJECTED));
+        stats.setCancelledBookings(bookingRepository.countByStatus(BookingStatus.CANCELLED));
+
+        return stats;
     }
 
     private BookingResponseDTO mapToResponseDTO(Booking booking) {

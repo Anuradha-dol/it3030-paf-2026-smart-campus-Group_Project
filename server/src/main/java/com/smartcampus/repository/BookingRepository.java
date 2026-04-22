@@ -47,6 +47,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             BookingStatus status
     );
 
+    long countByStatus(BookingStatus status);
+
     @Query("SELECT b FROM Booking b WHERE " +
            "(:facility IS NULL OR LOWER(b.facilityName) LIKE LOWER(CONCAT('%', :facility, '%'))) " +
            "AND (:date IS NULL OR b.bookingDate = :date) " +

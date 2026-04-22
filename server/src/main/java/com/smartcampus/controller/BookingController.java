@@ -4,6 +4,7 @@ import com.smartcampus.dto.ApiResponse;
 import com.smartcampus.dto.BookingRequestDTO;
 import com.smartcampus.dto.BookingResponseDTO;
 import com.smartcampus.dto.BookingStatusUpdateDTO;
+import com.smartcampus.dto.DashboardStatsDTO;
 import com.smartcampus.enums.BookingStatus;
 import com.smartcampus.service.BookingService;
 import jakarta.validation.Valid;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.smartcampus.dto.DashboardStatsDTO;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -93,6 +95,15 @@ public class BookingController {
         return ResponseEntity.ok(
                 new ApiResponse<>(true, result, null)
         );
+    }
+
+    @GetMapping("/dashboard")
+    public ResponseEntity<ApiResponse<DashboardStatsDTO>> getDashboardStats() {
+        DashboardStatsDTO stats = bookingService.getDashboardStats();
+
+       return ResponseEntity.ok(
+              new ApiResponse<>(true, stats, null)
+       );
     }
 
     @GetMapping("/{id:\\d+}")
