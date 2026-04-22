@@ -7,6 +7,7 @@
   display: grid;
   place-items: center;
   padding: clamp(14px, 2vw, 24px);
+  background: linear-gradient(130deg, var(--auth-bg-0), var(--auth-bg-2) 42%, #09031f 100%);
 }
 
 .verify-screen .bg-layer {
@@ -14,58 +15,68 @@
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(circle at 82% 16%, rgba(15, 169, 164, 0.24), transparent 35%),
-    radial-gradient(circle at 20% 85%, rgba(239, 127, 58, 0.2), transparent 34%),
-    linear-gradient(125deg, #eef8ff, #f9fcff, #fff7f0);
+    radial-gradient(circle at 12% 14%, rgba(105, 231, 255, 0.18), transparent 32%),
+    radial-gradient(circle at 82% 16%, rgba(134, 102, 255, 0.22), transparent 34%),
+    radial-gradient(circle at 82% 86%, rgba(80, 56, 198, 0.36), transparent 40%);
 }
 
 .verify-screen .glass-card.auth-card {
   position: relative;
   z-index: 1;
-  width: min(560px, 100%);
-  border-radius: 26px;
-  background: linear-gradient(165deg, rgba(255, 255, 255, 0.95), #fff);
+  width: min(600px, 100%);
+  border-radius: 24px;
+  background: linear-gradient(165deg, var(--auth-card-0), var(--auth-card-1));
   box-shadow: var(--auth-shadow-hard);
-  border: 1px solid rgba(255, 255, 255, 0.88);
-  padding: clamp(20px, 2.8vw, 32px);
+  border: 1px solid var(--auth-card-border);
+  padding: clamp(22px, 3vw, 34px);
   animation: authRiseIn 0.5s ease both;
 }
 
+.verify-screen .glass-card.auth-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 8px;
+  border-radius: 24px 24px 0 0;
+  background: linear-gradient(90deg, var(--auth-cyan-500), var(--auth-brand-500), var(--auth-cyan-400));
+}
+
 .verify-screen .brand {
-  margin: 0;
+  margin: 10px 0 0;
   text-align: left;
-  color: var(--auth-ink-900);
-  font-size: clamp(1.9rem, 2.6vw, 2.3rem);
+  color: #f2f0ff;
+  font-size: clamp(1.82rem, 2.5vw, 2.25rem);
 }
 
 .verify-screen .subtitle {
-  margin: 10px 0 16px;
-  color: var(--auth-ink-500);
+  margin: 8px 0 16px;
+  color: var(--auth-ink-200);
 }
 
 .verify-screen .message {
   margin: 10px 0 14px;
-  border-radius: 13px;
+  border-radius: 11px;
   padding: 10px 12px;
-  font-size: 0.9rem;
+  font-size: 0.87rem;
   border: 1px solid transparent;
 }
 
 .verify-screen .message.error {
-  color: #8f2441;
-  background: rgba(220, 79, 95, 0.13);
-  border-color: rgba(220, 79, 95, 0.27);
+  color: #ffb0cb;
+  background: rgba(255, 111, 159, 0.14);
+  border-color: rgba(255, 111, 159, 0.3);
 }
 
 .verify-screen .message.success {
-  color: #14664d;
-  background: rgba(31, 157, 115, 0.14);
-  border-color: rgba(31, 157, 115, 0.29);
+  color: #aef4d7;
+  background: rgba(71, 207, 154, 0.14);
+  border-color: rgba(71, 207, 154, 0.27);
 }
 
 .verify-screen .form-grid {
   display: grid;
-  grid-template-columns: 1fr;
   gap: 12px;
 }
 
@@ -76,19 +87,20 @@
 }
 
 .verify-screen .field span {
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  color: var(--auth-ink-700);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #d2cef5;
 }
 
 .verify-screen .field input {
   width: 100%;
   box-sizing: border-box;
-  border: 1px solid #d8e5f5;
-  background: #f8fbff;
-  color: var(--auth-ink-900);
-  border-radius: 12px;
+  border: 1px solid rgba(150, 141, 226, 0.36);
+  background: rgba(18, 12, 47, 0.66);
+  color: #f2f1ff;
+  border-radius: 10px;
   padding: 12px 13px;
   font-family: inherit;
   letter-spacing: 0.06em;
@@ -98,13 +110,13 @@
 
 .verify-screen .field input:focus {
   outline: none;
-  border-color: rgba(15, 169, 164, 0.62);
-  box-shadow: 0 0 0 4px rgba(15, 169, 164, 0.14);
+  border-color: #7adfff;
+  box-shadow: 0 0 0 4px rgba(122, 223, 255, 0.14);
 }
 
 .verify-screen .btn {
   border: 0;
-  border-radius: 13px;
+  border-radius: 11px;
   padding: 11px 14px;
   font-family: inherit;
   font-weight: 800;
@@ -122,20 +134,20 @@
 
 .verify-screen .btn.btn-primary {
   color: #fff;
-  background: linear-gradient(135deg, var(--auth-brand-500), var(--auth-warm-500));
-  box-shadow: 0 12px 26px rgba(11, 143, 140, 0.29);
+  background: linear-gradient(100deg, var(--auth-brand-600), var(--auth-brand-500) 48%, var(--auth-cyan-500));
+  box-shadow: 0 12px 24px rgba(10, 7, 33, 0.52);
 }
 
 .verify-screen .btn.btn-secondary {
-  color: var(--auth-brand-600);
-  background: #e8fbfa;
-  border: 1px solid rgba(15, 169, 164, 0.28);
+  color: #f0efff;
+  background: rgba(83, 69, 178, 0.44);
+  border: 1px solid rgba(151, 141, 230, 0.38);
 }
 
 .verify-screen .btn.btn-ghost {
-  color: var(--auth-ink-700);
-  background: #f4f8ff;
-  border: 1px solid #d9e4f4;
+  color: #d3cef7;
+  background: rgba(25, 18, 63, 0.65);
+  border: 1px solid rgba(151, 141, 230, 0.26);
 }
 
 .verify-screen .btn:hover {
@@ -157,6 +169,11 @@
 }
 
 @media (max-width: 560px) {
+  .verify-screen .glass-card.auth-card {
+    border-radius: 18px;
+    padding: 20px 16px;
+  }
+
   .verify-screen .actions-row {
     grid-template-columns: 1fr;
   }

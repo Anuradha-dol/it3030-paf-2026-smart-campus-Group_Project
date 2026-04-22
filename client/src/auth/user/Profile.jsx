@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../../api";
+import "./Profile.css";
 
 function buildAssetUrl(path) {
     if (!path) {
@@ -73,7 +74,7 @@ export default function Profile() {
 
     if (!profile && !error) {
         return (
-            <div className="loading-center">
+            <div className="profile-screen loading-center">
                 <div className="spinner" />
                 <p>Loading profile...</p>
             </div>
@@ -87,7 +88,7 @@ export default function Profile() {
     const fullName = `${profile?.name || ""} ${profile?.lastName || ""}`.trim();
 
     return (
-        <div className="page-shell">
+        <div className="profile-screen page-shell">
             <div className="bg-layer bg-user" />
             <div className="panel page-panel">
                 <header className="top-nav">
