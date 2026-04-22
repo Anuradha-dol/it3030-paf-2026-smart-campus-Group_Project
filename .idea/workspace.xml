@@ -6,22 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="c107fa9e-e75b-42c1-8829-8963013c7712" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/auth/authTheme.css" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/authTheme.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/auth/auths/Login.css" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/auths/Login.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/auth/auths/Login.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/auths/Login.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/auth/auths/OAuth2Success.css" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/auths/OAuth2Success.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/src/auth/auths/OAuth2Success.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/auths/OAuth2Success.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/auth/auths/Signup.css" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/auths/Signup.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/auth/auths/Signup.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/auths/Signup.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/auth/auths/VerifyOtp.css" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/auths/VerifyOtp.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/auth/auths/VerifyOtp.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/auths/VerifyOtp.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/auth/user/Dashboard.css" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/user/Dashboard.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/auth/user/ForgotPassword.css" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/user/ForgotPassword.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/auth/user/ForgotPassword.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/user/ForgotPassword.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/auth/user/Home.css" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/user/Home.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/auth/user/Profile.css" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/user/Profile.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/auth/user/Profile.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/user/Profile.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/auth/user/Settings.css" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/user/Settings.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/auth/user/Settings.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/auth/user/Settings.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,7 +15,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="49" />
+    <option name="cachedIndexableFilesCount" value="52" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">

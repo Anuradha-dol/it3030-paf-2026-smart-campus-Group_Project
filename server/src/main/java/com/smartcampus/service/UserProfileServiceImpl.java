@@ -1,6 +1,9 @@
 package com.smartcampus.service;
 
 import com.smartcampus.dto.UserDto;
+import com.smartcampus.enums.AuthProvider;
+import com.smartcampus.enums.Semester;
+import com.smartcampus.enums.Year;
 import com.smartcampus.model.ForgotPassword;
 import com.smartcampus.model.User;
 import com.smartcampus.records.MailBody;
@@ -13,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.Locale;
 import java.util.Random;
 
 @Service
@@ -35,9 +39,30 @@ public class UserProfileServiceImpl implements UserProfileService {
     @Transactional
     @Override
     public void deleteAccount(User user, UserDto.DeleteAccountDto dto) {
-        if (!passwordEncoder.matches(dto.currentPassword(), user.getPassword())) {
-            throw new RuntimeException("Current password is incorrect");
+        boolean isLocalAccount = user.getProvider() == null || user.getProvider() == AuthProvider.LOCAL;
+
+        if (isLocalAccount) {
+            if (dto.currentPassword() == null || dto.currentPassword().trim().isEmpty()) {
+                throw new RuntimeException("Current password is required");
+            }
+
+            if (!passwordEncoder.matches(dto.currentPassword(), user.getPassword())) {
+                throw new RuntimeException("Current password is incorrect");
+            }
         }
+
+        userRepo.delete(user);
+    }
+
+    @Transactional
+    @Override
+    public void deleteOAuthAccount(User user) {
+        boolean isLocalAccount = user.getProvider() == null || user.getProvider() == AuthProvider.LOCAL;
+
+        if (isLocalAccount) {
+            throw new RuntimeException("Password is required for local account deletion");
+        }
+
         userRepo.delete(user);
     }
 
@@ -207,5 +232,106 @@ public class UserProfileServiceImpl implements UserProfileService {
                 user.getYear(),
                 user.getSemester()
         );
+    }
+
+    // ================= UPDATE PHONE NUMBER =================
+    @Transactional
+    @Override
+    public void updatePhoneNumber(User user, String phoneNumber) {
+        if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
+            throw new RuntimeException("Phone number cannot be empty");
+        }
+        user.setPhoneNumber(phoneNumber.trim());
+        userRepo.save(user);
+    }
+
+    // ================= UPDATE YEAR =================
+    @Transactional
+    @Override
+    public void updateYear(User user, String year) {
+        if (year == null || year.trim().isEmpty()) {
+            throw new RuntimeException("Year cannot be empty");
+        }
+        try {
+            user.setYear(parseYear(year));
+            userRepo.save(user);
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid year format");
+        }
+    }
+
+    // ================= UPDATE SEMESTER =================
+    @Transactional
+    @Override
+    public void updateSemester(User user, String semester) {
+        if (semester == null || semester.trim().isEmpty()) {
+            throw new RuntimeException("Semester cannot be empty");
+        }
+        try {
+            user.setSemester(parseSemester(semester));
+            userRepo.save(user);
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid semester format");
+        }
+    }
+
+    // ================= GENERIC PROFILE FIELD UPDATE =================
+    @Transactional
+    @Override
+    public void updateProfileField(User user, UserDto.UpdateProfileFieldDto dto) {
+        String field = dto.field();
+        String value = dto.value();
+
+        if (value == null || value.trim().isEmpty()) {
+            throw new RuntimeException("Field value cannot be empty");
+        }
+
+        switch (field.toLowerCase()) {
+            case "phonenumber":
+            case "phone":
+                updatePhoneNumber(user, value);
+                break;
+            case "year":
+                updateYear(user, value);
+                break;
+            case "semester":
+                updateSemester(user, value);
+                break;
+            default:
+                throw new RuntimeException("Unknown field: " + field);
+        }
+    }
+
+    private Year parseYear(String rawValue) {
+        String value = normalizeEnumInput(rawValue);
+
+        return switch (value) {
+            case "1", "FIRST", "YEAR1", "Y1", "1ST" -> Year.FIRST;
+            case "2", "SECOND", "YEAR2", "Y2", "2ND" -> Year.SECOND;
+            case "3", "THIRD", "YEAR3", "Y3", "3RD" -> Year.THIRD;
+            case "4", "FOURTH", "YEAR4", "Y4", "4TH" -> Year.FOURTH;
+            default -> throw new IllegalArgumentException("Invalid year: " + rawValue);
+        };
+    }
+
+    private Semester parseSemester(String rawValue) {
+        String value = normalizeEnumInput(rawValue);
+
+        return switch (value) {
+            case "1", "SEM1", "SEMESTER1", "FIRST", "FIRSTSEMESTER" -> Semester.SEM1;
+            case "2", "SEM2", "SEMESTER2", "SECOND", "SECONDSEMESTER" -> Semester.SEM2;
+            default -> throw new IllegalArgumentException("Invalid semester: " + rawValue);
+        };
+    }
+
+    private String normalizeEnumInput(String rawValue) {
+        return rawValue
+                .trim()
+                .replace("\"", "")
+                .replace("'", "")
+                .replace("-", "")
+                .replace("_", "")
+                .replace(" ", "")
+                .toUpperCase(Locale.ROOT);
     }
 }
