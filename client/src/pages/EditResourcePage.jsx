@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link, useLocation } from 'react-router-dom';
 import ResourceForm from '../components/ResourceForm';
 import { getResourceById, updateResource } from '../services/resourceService';
+import './ResourceTheme.css';
 
 const EditResourcePage = () => {
     const { id } = useParams();
@@ -47,23 +48,25 @@ const EditResourcePage = () => {
     };
 
     return (
-        <div className="container" style={{ maxWidth: '600px', margin: '0 auto' }}>
-            <div className="top-bar">
-                <h1>Edit Resource</h1>
-                <Link to={listPath} className="btn btn-clear">Back to List</Link>
+        <div className="resource-theme-root" style={{ padding: '40px 20px' }}>
+            <div className="container" style={{ maxWidth: '600px', margin: '0 auto' }}>
+                <div className="top-bar">
+                    <h1>Edit Resource</h1>
+                    <Link to={listPath} className="btn btn-clear">Back to List</Link>
+                </div>
+
+                {error && <div className="alert error">{error}</div>}
+
+                {initialData ? (
+                    <ResourceForm 
+                        initialData={initialData} 
+                        onSubmit={handleUpdate} 
+                        isLoading={isLoading} 
+                    />
+                ) : (
+                    !error && <p>Loading resource data...</p>
+                )}
             </div>
-
-            {error && <div className="alert error">{error}</div>}
-
-            {initialData ? (
-                <ResourceForm 
-                    initialData={initialData} 
-                    onSubmit={handleUpdate} 
-                    isLoading={isLoading} 
-                />
-            ) : (
-                !error && <p>Loading resource data...</p>
-            )}
         </div>
     );
 };

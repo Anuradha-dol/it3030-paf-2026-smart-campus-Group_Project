@@ -4,6 +4,7 @@ import { getAllResources, deleteResource } from '../services/resourceService';
 import ResourceTable from '../components/ResourceTable';
 import SearchFilterBar from '../components/SearchFilterBar';
 import DeleteConfirmModal from '../components/DeleteConfirmModal';
+import './ResourceTheme.css';
 
 const ResourceListPage = ({ embedded = false, basePath = '/resources', canManage = true, showBook = false }) => {
     const [resources, setResources] = useState([]);
@@ -83,7 +84,7 @@ const ResourceListPage = ({ embedded = false, basePath = '/resources', canManage
     };
 
     return (
-        <div className="resource-list-container">
+        <div className={`resource-list-container ${!embedded ? 'resource-theme-root' : ''}`} style={!embedded ? { padding: '40px 20px' } : {}}>
             {!embedded && <h1>Facilities & Assets Catalogue</h1>}
 
             {error && <div className="alert error">{error}</div>}
