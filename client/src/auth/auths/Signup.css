@@ -270,8 +270,84 @@
   font-weight: 500;
 }
 
+.signup-steps {
+  margin: 0 0 14px;
+  border-radius: 14px;
+  border: 1px solid #f1dccc;
+  background: linear-gradient(180deg, #fff, #fff8f2);
+  padding: 9px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.signup-step {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #a08976;
+}
+
+.signup-step span {
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  border: 1px solid #e9cdb8;
+  background: #fff7ef;
+  color: #9e6b4d;
+  display: grid;
+  place-items: center;
+  font-size: 0.72rem;
+  font-weight: 800;
+  flex: 0 0 auto;
+}
+
+.signup-step small {
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.signup-step.active {
+  color: #71462f;
+}
+
+.signup-step.active span {
+  border-color: #f29c6f;
+  background: linear-gradient(130deg, #ff8a53, #ffb27f);
+  color: #fff;
+  box-shadow: 0 8px 14px rgba(211, 117, 66, 0.24);
+}
+
+.signup-step-connector {
+  width: 16px;
+  height: 2px;
+  border-radius: 999px;
+  background: #efd8c7;
+  flex: 0 0 auto;
+}
+
 .signup-form {
   margin: 0;
+}
+
+.step-panel {
+  border-radius: 14px;
+  border: 1px solid #f1dccd;
+  background: linear-gradient(160deg, #fff, #fff9f4);
+  padding: 11px;
+}
+
+.step-panel__hint {
+  margin: 0 0 9px;
+  color: #886b59;
+  font-size: 0.79rem;
+  font-weight: 600;
 }
 
 .signup-grid {
@@ -368,7 +444,6 @@
 
 .signup-btn {
   width: 100%;
-  margin-top: 10px;
   border: 0;
   border-radius: 999px;
   padding: 10px 14px;
@@ -395,6 +470,26 @@
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
+}
+
+.signup-actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 9px;
+}
+
+.signup-actions .signup-btn {
+  margin-top: 0;
+  flex: 1;
+}
+
+.signup-btn.signup-btn-secondary {
+  color: #8f5e42;
+  border: 1px solid #f0c4a4;
+  background: linear-gradient(180deg, #ffeede, #ffead8);
+  box-shadow:
+    0 8px 14px rgba(214, 145, 101, 0.17),
+    inset 0 -1px 0 rgba(154, 89, 53, 0.16);
 }
 
 .signup-card__footer {
@@ -474,6 +569,19 @@
 }
 
 @media (max-width: 760px) {
+  .signup-steps {
+    gap: 5px;
+    padding: 8px;
+  }
+
+  .signup-step small {
+    font-size: 0.66rem;
+  }
+
+  .signup-step-connector {
+    width: 10px;
+  }
+
   .signup-grid {
     grid-template-columns: 1fr;
   }

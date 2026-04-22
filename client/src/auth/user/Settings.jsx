@@ -1,14 +1,28 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import api from "../../api";
-import "./Settings.css";
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import api from '../../api';
+import './Settings.css';
+
+function getRoleHomePath(role) {
+    const normalized = String(role || '').replace('ROLE_', '').toUpperCase();
+
+    if (normalized.includes('ADMIN')) {
+        return '/dashboard';
+    }
+
+    if (normalized.includes('TECHNICIAN')) {
+        return '/techome';
+    }
+
+    return '/home';
+}
 
 function buildAssetUrl(path) {
     if (!path) {
-        return "";
+        return '';
     }
 
-    if (path.startsWith("http://") || path.startsWith("https://")) {
+    if (path.startsWith('http://') || path.startsWith('https://')) {
         return path;
     }
 
@@ -22,9 +36,8 @@ const toast = {
         }
     },
     error: (message) => {
-        const text = typeof message === "string" ? message : "Operation failed.";
+        const text = typeof message === 'string' ? message : 'Operation failed.';
         console.error(text);
-        window.alert(text);
     },
 };
 
@@ -33,51 +46,83 @@ export default function Settings() {
 
     const [initialLoading, setInitialLoading] = useState(true);
     const [working, setWorking] = useState(false);
+    const [now, setNow] = useState(() => new Date());
+    const [showPassword, setShowPassword] = useState({
+        current: false,
+        next: false,
+        confirm: false,
+    });
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [deletePassword, setDeletePassword] = useState('');
+    const [showDeletePassword, setShowDeletePassword] = useState(false);
 
     const [user, setUser] = useState({
-        firstName: "",
-        lastName: "",
-        email: "",
-        role: "",
-        profileImageUrl: "",
-        coverImageUrl: "",
+        firstName: '',
+        lastName: '',
+        email: '',
+        role: '',
+        provider: '',
+        profileImageUrl: '',
+        coverImageUrl: '',
     });
 
-    const [nameForm, setNameForm] = useState({ firstName: "", lastName: "" });
-    const [emailForm, setEmailForm] = useState({ newEmail: "", otp: "" });
+    const [nameForm, setNameForm] = useState({ firstName: '', lastName: '' });
+    const [emailForm, setEmailForm] = useState({ newEmail: '', otp: '' });
     const [passwordForm, setPasswordForm] = useState({
-        currentPassword: "",
-        newPassword: "",
-        confirmPassword: "",
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: '',
     });
     const [profileFile, setProfileFile] = useState(null);
     const [coverFile, setCoverFile] = useState(null);
+
+    const calendarYear = now.getFullYear();
+    const calendarMonth = now.getMonth();
+    const calendarLabel = now.toLocaleString('default', { month: 'long', year: 'numeric' });
+    const clockLabel = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const calendarFirstDay = new Date(calendarYear, calendarMonth, 1).getDay();
+    const calendarDaysCount = new Date(calendarYear, calendarMonth + 1, 0).getDate();
+    const calendarCells = [
+        ...Array.from({ length: calendarFirstDay }, () => null),
+        ...Array.from({ length: calendarDaysCount }, (_, index) => index + 1),
+    ];
 
     const loadProfile = async () => {
         try {
             let response;
 
             try {
-                response = await api.get("/user/me");
+                response = await api.get('/user/me');
             } catch (err) {
                 if (err.response?.status === 403) {
-                    response = await api.get("/user/Admin/me");
+                    response = await api.get('/user/Admin/me');
                 } else {
                     throw err;
                 }
             }
 
             const data = response.data;
-            const firstName = data.name || data.firstname || "";
-            const lastName = data.lastName || "";
+            const firstName = data.name || data.firstname || '';
+            const lastName = data.lastName || '';
+            let provider = '';
+
+            try {
+                const authMeResponse = await api.get('/auth/me');
+                provider = String(
+                    authMeResponse?.data?.provider || authMeResponse?.data?.user?.provider || ''
+                ).toUpperCase();
+            } catch (providerErr) {
+                console.log('Provider fetch skipped:', providerErr?.message);
+            }
 
             setUser({
                 firstName,
                 lastName,
-                email: data.email || "",
-                role: String(data.role || "").replace("ROLE_", ""),
-                profileImageUrl: data.profileImageUrl || "",
-                coverImageUrl: data.coverImageUrl || "",
+                email: data.email || '',
+                role: String(data.role || '').replace('ROLE_', ''),
+                provider,
+                profileImageUrl: data.profileImageUrl || '',
+                coverImageUrl: data.coverImageUrl || '',
             });
 
             setNameForm({
@@ -87,11 +132,11 @@ export default function Settings() {
         } catch (err) {
             const status = err.response?.status;
             if (status === 401 || status === 403) {
-                navigate("/login");
+                navigate('/login');
                 return;
             }
 
-            toast.error(err.response?.data?.message || "Failed to load settings.");
+            toast.error(err.response?.data?.message || 'Failed to load settings.');
         } finally {
             setInitialLoading(false);
         }
@@ -101,27 +146,35 @@ export default function Settings() {
         loadProfile();
     }, []);
 
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setNow(new Date());
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, []);
+
     const updateName = async () => {
         if (!nameForm.firstName.trim() || !nameForm.lastName.trim()) {
-            toast.error("First name and last name are required.");
+            toast.error('First name and last name are required.');
             return;
         }
 
         setWorking(true);
         try {
-            await api.put("/user/update-name", {
+            await api.put('/user/update-name', {
                 name: nameForm.firstName.trim(),
                 lastName: nameForm.lastName.trim(),
             });
 
-            toast.success("Name updated successfully.");
+            toast.success('Name updated successfully.');
             setUser((prev) => ({
                 ...prev,
                 firstName: nameForm.firstName.trim(),
                 lastName: nameForm.lastName.trim(),
             }));
         } catch (err) {
-            toast.error(err.response?.data?.message || err.response?.data || "Failed to update name.");
+            toast.error(err.response?.data?.message || err.response?.data || 'Failed to update name.');
         } finally {
             setWorking(false);
         }
@@ -129,18 +182,18 @@ export default function Settings() {
 
     const requestEmailChange = async () => {
         if (!emailForm.newEmail.trim()) {
-            toast.error("New email is required.");
+            toast.error('New email is required.');
             return;
         }
 
         setWorking(true);
         try {
-            const response = await api.put("/user/update-email", {
+            const response = await api.put('/user/update-email', {
                 newEmail: emailForm.newEmail.trim(),
             });
-            toast.success(response.data || "OTP sent to your new email.");
+            toast.success(response.data || 'OTP sent to your new email.');
         } catch (err) {
-            toast.error(err.response?.data?.message || err.response?.data || "Failed to send OTP.");
+            toast.error(err.response?.data?.message || err.response?.data || 'Failed to send OTP.');
         } finally {
             setWorking(false);
         }
@@ -148,27 +201,26 @@ export default function Settings() {
 
     const verifyEmailChange = async () => {
         if (!emailForm.otp.trim()) {
-            toast.error("OTP is required.");
+            toast.error('OTP is required.');
             return;
         }
 
         setWorking(true);
         try {
-            const response = await api.post("/user/verify-new-email", null, {
+            const response = await api.post('/user/verify-new-email', null, {
                 params: { otp: emailForm.otp.trim() },
             });
 
-            toast.success(response.data || "Email updated. Please login again.");
+            toast.success(response.data || 'Email updated. Please login again.');
 
-            // Call logout to clear cookies
             try {
-                await api.post("/auth/logout", {}, { withCredentials: true });
+                await api.post('/auth/logout', {}, { withCredentials: true });
             } catch (err) {
-                console.log("Logout error:", err.message);
+                console.log('Logout error:', err.message);
             }
-            navigate("/login", { replace: true });
+            navigate('/login', { replace: true });
         } catch (err) {
-            toast.error(err.response?.data?.message || err.response?.data || "Failed to verify OTP.");
+            toast.error(err.response?.data?.message || err.response?.data || 'Failed to verify OTP.');
         } finally {
             setWorking(false);
         }
@@ -176,66 +228,97 @@ export default function Settings() {
 
     const updatePassword = async () => {
         if (!passwordForm.currentPassword || !passwordForm.newPassword || !passwordForm.confirmPassword) {
-            toast.error("All password fields are required.");
+            toast.error('All password fields are required.');
             return;
         }
 
         if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-            toast.error("New password and confirm password must match.");
+            toast.error('New password and confirm password must match.');
             return;
         }
 
         setWorking(true);
         try {
-            const response = await api.put("/user/update-password", passwordForm);
-            toast.success(response.data || "Password updated successfully.");
+            const response = await api.put('/user/update-password', passwordForm);
+            toast.success(response.data || 'Password updated successfully.');
             setPasswordForm({
-                currentPassword: "",
-                newPassword: "",
-                confirmPassword: "",
+                currentPassword: '',
+                newPassword: '',
+                confirmPassword: '',
             });
         } catch (err) {
-            toast.error(err.response?.data?.message || err.response?.data || "Failed to update password.");
+            toast.error(err.response?.data?.message || err.response?.data || 'Failed to update password.');
         } finally {
             setWorking(false);
         }
     };
 
     const deleteAccount = async () => {
+        const isOAuthUser = Boolean(user.provider) && user.provider !== 'LOCAL';
+        const currentPassword = deletePassword.trim();
+
+        if (!isOAuthUser && !currentPassword) {
+            toast.error('Current password is required to delete account.');
+            return;
+        }
+
         setWorking(true);
         try {
-            const response = await api.delete("/user/delete");
+            const response = isOAuthUser
+                ? await api.delete('/user/delete-oauth')
+                : await api.delete('/user/delete', {
+                    data: { currentPassword },
+                });
 
-            toast.success(response.data || "Account deleted.");
+            toast.success(response.data || 'Account deleted.');
+            setDeleteModalOpen(false);
+            setDeletePassword('');
+            setShowDeletePassword(false);
 
-            navigate("/login", { replace: true });
+            navigate('/login', { replace: true });
         } catch (err) {
-            toast.error(err.response?.data?.message || err.response?.data || "Failed to delete account.");
+            toast.error(err.response?.data?.message || err.response?.data || 'Failed to delete account.');
         } finally {
             setWorking(false);
         }
     };
 
+    const openDeleteModal = () => {
+        setDeletePassword('');
+        setShowDeletePassword(false);
+        setDeleteModalOpen(true);
+    };
+
+    const closeDeleteModal = () => {
+        if (working) {
+            return;
+        }
+
+        setDeleteModalOpen(false);
+        setDeletePassword('');
+        setShowDeletePassword(false);
+    };
+
     const uploadImage = async (type) => {
-        const file = type === "profile" ? profileFile : coverFile;
+        const file = type === 'profile' ? profileFile : coverFile;
 
         if (!file) {
-            toast.error("Choose an image first.");
+            toast.error('Choose an image first.');
             return;
         }
 
         setWorking(true);
         try {
             const formData = new FormData();
-            formData.append("file", file);
+            formData.append('file', file);
 
             const endpoint =
-                type === "profile" ? "/user/upload-profile-image" : "/user/upload-cover-image";
+                type === 'profile' ? '/user/upload-profile-image' : '/user/upload-cover-image';
 
             const response = await api.post(endpoint, formData);
-            const imagePath = typeof response.data === "string" ? response.data : "";
+            const imagePath = typeof response.data === 'string' ? response.data : '';
 
-            if (type === "profile") {
+            if (type === 'profile') {
                 setUser((prev) => ({ ...prev, profileImageUrl: imagePath }));
                 setProfileFile(null);
             } else {
@@ -243,9 +326,9 @@ export default function Settings() {
                 setCoverFile(null);
             }
 
-            toast.success("Image uploaded successfully.");
+            toast.success('Image uploaded successfully.');
         } catch (err) {
-            toast.error(err.response?.data?.message || err.response?.data || "Image upload failed.");
+            toast.error(err.response?.data?.message || err.response?.data || 'Image upload failed.');
         } finally {
             setWorking(false);
         }
@@ -253,35 +336,115 @@ export default function Settings() {
 
     if (initialLoading) {
         return (
-            <div className="settings-screen loading-center">
-                <div className="spinner" />
+            <div className='settings-page settings-loading'>
+                <div className='spinner' />
                 <p>Loading settings...</p>
             </div>
         );
     }
 
     return (
-        <div className="settings-screen page-shell">
-            <div className="bg-layer bg-user" />
-            <div className="panel page-panel">
-                <header className="top-nav">
-                    <div>
-                        <h1 className="brand">Settings</h1>
-                        <p className="subtitle">Manage profile, credentials, and account security.</p>
-                    </div>
-                    <div className="nav-group">
-                        <Link className="nav-link" to="/home">Home</Link>
-                        <Link className="nav-link" to="/dashboard">Dashboard</Link>
-                        <Link className="nav-link" to="/profile">Profile</Link>
-                    </div>
-                </header>
+        <div className='settings-page'>
+            <div className='settings-page__canvas' />
 
-                <section className="settings-grid">
-                    <article className="section">
-                        <h3>Basic Profile</h3>
-                        <p className="muted">Role: {user.role || "USER"}</p>
-                        <div className="form-grid">
-                            <label className="field">
+            <div className='settings-workbench'>
+                <aside className='settings-sidebar-enhanced'>
+                    <div className='sidebar-header-enhanced'>
+                        <div className='sidebar-brand-enhanced'>
+                            <span className='brand-avatar-enhanced'>
+                                {user.profileImageUrl ? (
+                                    <img
+                                        src={buildAssetUrl(user.profileImageUrl)}
+                                        alt='Profile avatar'
+                                    />
+                                ) : (
+                                    (user.firstName?.[0] || 'U').toUpperCase()
+                                )}
+                            </span>
+                            <div className='brand-info-enhanced'>
+                                <strong>{user.firstName || 'User'} {user.lastName || ''}</strong>
+                                <small>{user.email || 'No email'}</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <nav className='sidebar-nav-enhanced'>
+                        <p className='nav-label'>Quick Navigation</p>
+                        <Link className='nav-item-enhanced' to={getRoleHomePath(user.role)}>
+                            Home
+                        </Link>
+                        <Link className='nav-item-enhanced' to='/profile'>
+                            Profile
+                        </Link>
+                        <Link className='nav-item-enhanced active' to='/settings'>
+                            Settings
+                        </Link>
+                    </nav>
+
+                    <div className='sidebar-divider-enhanced' />
+
+                    <div className='sidebar-info-enhanced'>
+                        <p className='info-label'>Account Info</p>
+                        <div className='info-item'>
+                            <span className='item-label'>Role</span>
+                            <strong className='item-value'>{user.role || 'USER'}</strong>
+                        </div>
+                        <div className='info-item'>
+                            <span className='item-label'>Login Type</span>
+                            <strong className='item-value'>{user.provider || 'LOCAL'}</strong>
+                        </div>
+                        <div className='info-item'>
+                            <span className='item-label'>Email</span>
+                            <strong className='item-value email-value'>{user.email || '-'}</strong>
+                        </div>
+                    </div>
+
+                    <div className='sidebar-calendar-enhanced'>
+                        <p className='calendar-label'>Calendar</p>
+                        <div className='calendar-header-enhanced'>
+                            <strong>{calendarLabel}</strong>
+                            <span className='today-badge'>Today {now.getDate()}</span>
+                        </div>
+                        <div className='sidebar-clock'>{clockLabel}</div>
+                        <div className='calendar-grid-enhanced'>
+                            <div className='calendar-weekdays-enhanced'>
+                                {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map((day) => (
+                                    <span key={day} className='weekday'>{day}</span>
+                                ))}
+                            </div>
+                            <div className='calendar-days-enhanced'>
+                                {calendarCells.map((day, index) => (
+                                    <span
+                                        key={`day-${index}`}
+                                        className={`day${day === null ? ' empty' : ''}${day === now.getDate() ? ' today' : ''}`}
+                                        aria-hidden={day === null}
+                                    >
+                                        {day ?? ''}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <main className='settings-main'>
+                    <header className='settings-main__header'>
+                        <div>
+                            <h1>Preferences</h1>
+                            <p>Manage profile, credentials, image uploads, and account security.</p>
+                        </div>
+                        <span className={`status-chip${working ? ' active' : ''}`}>
+                            {working ? 'Processing...' : 'Ready'}
+                        </span>
+                    </header>
+
+                    <section className='settings-section password-zone'>
+                        <div className='section-header'>
+                            <h3>Basic Profile</h3>
+                            <p>Update your first and last name</p>
+                        </div>
+                        <div className='section-grid two-col name-grid'>
+                            <label className='field'>
                                 <span>First Name</span>
                                 <input
                                     value={nameForm.firstName}
@@ -290,7 +453,7 @@ export default function Settings() {
                                     }
                                 />
                             </label>
-                            <label className="field">
+                            <label className='field'>
                                 <span>Last Name</span>
                                 <input
                                     value={nameForm.lastName}
@@ -299,20 +462,22 @@ export default function Settings() {
                                     }
                                 />
                             </label>
-                            <button className="btn btn-primary" type="button" onClick={updateName} disabled={working}>
+                            <button className='btn btn-primary full' type='button' onClick={updateName} disabled={working}>
                                 Save Name
                             </button>
                         </div>
-                    </article>
+                    </section>
 
-                    <article className="section">
-                        <h3>Email Update</h3>
-                        <p className="muted">Current email: {user.email}</p>
-                        <div className="form-grid">
-                            <label className="field">
+                    <section className='settings-section'>
+                        <div className='section-header'>
+                            <h3>Email Update</h3>
+                            <p>Current email: {user.email || '-'}</p>
+                        </div>
+                        <div className='section-grid two-col email-grid'>
+                            <label className='field'>
                                 <span>New Email</span>
                                 <input
-                                    type="email"
+                                    type='email'
                                     value={emailForm.newEmail}
                                     onChange={(event) =>
                                         setEmailForm((prev) => ({ ...prev, newEmail: event.target.value }))
@@ -320,14 +485,14 @@ export default function Settings() {
                                 />
                             </label>
                             <button
-                                className="btn btn-secondary"
-                                type="button"
+                                className='btn btn-secondary'
+                                type='button'
                                 onClick={requestEmailChange}
                                 disabled={working}
                             >
                                 Send OTP
                             </button>
-                            <label className="field">
+                            <label className='field'>
                                 <span>Email OTP</span>
                                 <input
                                     value={emailForm.otp}
@@ -337,133 +502,234 @@ export default function Settings() {
                                 />
                             </label>
                             <button
-                                className="btn btn-primary"
-                                type="button"
+                                className='btn btn-primary'
+                                type='button'
                                 onClick={verifyEmailChange}
                                 disabled={working}
                             >
-                                Verify New Email
+                                Verify Email
                             </button>
                         </div>
-                    </article>
+                    </section>
 
-                    <article className="section">
-                        <h3>Password</h3>
-                        <div className="form-grid">
-                            <label className="field">
+                    <section className='settings-section'>
+                        <div className='section-header'>
+                            <h3>Password</h3>
+                            <p>Keep your account protected with a strong password</p>
+                        </div>
+                        <div className='section-grid password-grid'>
+                            <label className='field'>
                                 <span>Current Password</span>
-                                <input
-                                    type="password"
-                                    value={passwordForm.currentPassword}
-                                    onChange={(event) =>
-                                        setPasswordForm((prev) => ({
-                                            ...prev,
-                                            currentPassword: event.target.value,
-                                        }))
-                                    }
-                                />
+                                <div className='password-wrap'>
+                                    <input
+                                        type={showPassword.current ? 'text' : 'password'}
+                                        value={passwordForm.currentPassword}
+                                        onChange={(event) =>
+                                            setPasswordForm((prev) => ({
+                                                ...prev,
+                                                currentPassword: event.target.value,
+                                            }))
+                                        }
+                                    />
+                                    <button
+                                        type='button'
+                                        className='show-btn'
+                                        onClick={() =>
+                                            setShowPassword((prev) => ({ ...prev, current: !prev.current }))
+                                        }
+                                    >
+                                        {showPassword.current ? 'Hide' : 'Show'}
+                                    </button>
+                                </div>
                             </label>
-                            <label className="field">
+                            <label className='field'>
                                 <span>New Password</span>
-                                <input
-                                    type="password"
-                                    value={passwordForm.newPassword}
-                                    onChange={(event) =>
-                                        setPasswordForm((prev) => ({
-                                            ...prev,
-                                            newPassword: event.target.value,
-                                        }))
-                                    }
-                                />
+                                <div className='password-wrap'>
+                                    <input
+                                        type={showPassword.next ? 'text' : 'password'}
+                                        value={passwordForm.newPassword}
+                                        onChange={(event) =>
+                                            setPasswordForm((prev) => ({
+                                                ...prev,
+                                                newPassword: event.target.value,
+                                            }))
+                                        }
+                                    />
+                                    <button
+                                        type='button'
+                                        className='show-btn'
+                                        onClick={() =>
+                                            setShowPassword((prev) => ({ ...prev, next: !prev.next }))
+                                        }
+                                    >
+                                        {showPassword.next ? 'Hide' : 'Show'}
+                                    </button>
+                                </div>
                             </label>
-                            <label className="field">
+                            <label className='field'>
                                 <span>Confirm Password</span>
-                                <input
-                                    type="password"
-                                    value={passwordForm.confirmPassword}
-                                    onChange={(event) =>
-                                        setPasswordForm((prev) => ({
-                                            ...prev,
-                                            confirmPassword: event.target.value,
-                                        }))
-                                    }
-                                />
+                                <div className='password-wrap'>
+                                    <input
+                                        type={showPassword.confirm ? 'text' : 'password'}
+                                        value={passwordForm.confirmPassword}
+                                        onChange={(event) =>
+                                            setPasswordForm((prev) => ({
+                                                ...prev,
+                                                confirmPassword: event.target.value,
+                                            }))
+                                        }
+                                    />
+                                    <button
+                                        type='button'
+                                        className='show-btn'
+                                        onClick={() =>
+                                            setShowPassword((prev) => ({ ...prev, confirm: !prev.confirm }))
+                                        }
+                                    >
+                                        {showPassword.confirm ? 'Hide' : 'Show'}
+                                    </button>
+                                </div>
                             </label>
                             <button
-                                className="btn btn-primary"
-                                type="button"
+                                className='btn btn-primary'
+                                type='button'
                                 onClick={updatePassword}
                                 disabled={working}
                             >
-                                Update Password
+                                Save Password
                             </button>
                         </div>
-                    </article>
+                    </section>
 
-                    <article className="section">
-                        <h3>Profile Images</h3>
-                        <div className="upload-grid">
-                            <div className="upload-card">
-                                <div className="image-preview">
-                                    {user.profileImageUrl ? (
-                                        <img src={buildAssetUrl(user.profileImageUrl)} alt="Profile preview" />
-                                    ) : (
-                                        <span>No profile image</span>
-                                    )}
+                    <section className='settings-section'>
+                        <div className='section-header'>
+                            <h3>Profile Images</h3>
+                            <p>Upload profile and cover visuals</p>
+                        </div>
+                        <div className='media-grid'>
+                            <article className='media-card profile-card'>
+                                <div className='image-shell'>
+                                    <p className='image-label'>Profile Preview</p>
+                                    <div className='image-preview profile'>
+                                        {user.profileImageUrl ? (
+                                            <img src={buildAssetUrl(user.profileImageUrl)} alt='Profile preview' />
+                                        ) : (
+                                            <span>No profile image</span>
+                                        )}
+                                    </div>
                                 </div>
                                 <input
-                                    className="file-input"
-                                    type="file"
-                                    accept="image/*"
+                                    className='file-input'
+                                    type='file'
+                                    accept='image/*'
                                     onChange={(event) => setProfileFile(event.target.files?.[0] || null)}
                                 />
+                                <small className='file-note'>
+                                    {profileFile ? profileFile.name : 'Select JPG or PNG image'}
+                                </small>
                                 <button
-                                    className="btn btn-secondary"
-                                    type="button"
-                                    onClick={() => uploadImage("profile")}
+                                    className='btn btn-secondary'
+                                    type='button'
+                                    onClick={() => uploadImage('profile')}
                                     disabled={working}
                                 >
-                                    Upload Profile Image
+                                    Upload Profile
                                 </button>
-                            </div>
+                            </article>
 
-                            <div className="upload-card">
-                                <div className="image-preview cover">
-                                    {user.coverImageUrl ? (
-                                        <img src={buildAssetUrl(user.coverImageUrl)} alt="Cover preview" />
-                                    ) : (
-                                        <span>No cover image</span>
-                                    )}
+                            <article className='media-card cover-card'>
+                                <div className='image-shell'>
+                                    <p className='image-label'>Cover Preview</p>
+                                    <div className='image-preview cover'>
+                                        {user.coverImageUrl ? (
+                                            <img src={buildAssetUrl(user.coverImageUrl)} alt='Cover preview' />
+                                        ) : (
+                                            <span>No cover image</span>
+                                        )}
+                                    </div>
                                 </div>
                                 <input
-                                    className="file-input"
-                                    type="file"
-                                    accept="image/*"
+                                    className='file-input'
+                                    type='file'
+                                    accept='image/*'
                                     onChange={(event) => setCoverFile(event.target.files?.[0] || null)}
                                 />
+                                <small className='file-note'>
+                                    {coverFile ? coverFile.name : 'Recommended wide image for best result'}
+                                </small>
                                 <button
-                                    className="btn btn-secondary"
-                                    type="button"
-                                    onClick={() => uploadImage("cover")}
+                                    className='btn btn-secondary'
+                                    type='button'
+                                    onClick={() => uploadImage('cover')}
                                     disabled={working}
                                 >
-                                    Upload Cover Image
+                                    Upload Cover
                                 </button>
-                            </div>
+                            </article>
                         </div>
-                    </article>
+                    </section>
 
-                    <article className="section danger-zone">
-                        <h3>Delete Account</h3>
-                        <p className="muted">This action cannot be undone.</p>
-                        <div className="form-grid">
-                            <button className="btn btn-danger" type="button" onClick={deleteAccount} disabled={working}>
-                                Delete Account
+                    <section className='settings-section danger-zone'>
+                        <div className='section-header'>
+                            <h3>Delete Account</h3>
+                            <p>This action cannot be undone</p>
+                        </div>
+                        <button className='btn btn-danger' type='button' onClick={openDeleteModal} disabled={working}>
+                            Delete Account
+                        </button>
+                    </section>
+                </main>
+            </div>
+
+            {deleteModalOpen && (
+                <div className='settings-modal-backdrop' onClick={closeDeleteModal}>
+                    <div
+                        className='settings-modal-card'
+                        role='dialog'
+                        aria-modal='true'
+                        aria-label='Delete account confirmation'
+                        onClick={(event) => event.stopPropagation()}
+                    >
+                        <h3>Confirm Account Deletion</h3>
+                        {Boolean(user.provider) && user.provider !== 'LOCAL' ? (
+                            <p>
+                                OAuth account detected ({user.provider}). Password not required for delete.
+                            </p>
+                        ) : (
+                            <>
+                                <p>Enter your current password to continue.</p>
+                                <label className='field'>
+                                    <span>Current Password</span>
+                                    <div className='delete-password-wrap'>
+                                        <input
+                                            type={showDeletePassword ? 'text' : 'password'}
+                                            value={deletePassword}
+                                            onChange={(event) => setDeletePassword(event.target.value)}
+                                            autoFocus
+                                        />
+                                        <button
+                                            type='button'
+                                            className='show-btn'
+                                            onClick={() => setShowDeletePassword((prev) => !prev)}
+                                        >
+                                            {showDeletePassword ? 'Hide' : 'Show'}
+                                        </button>
+                                    </div>
+                                </label>
+                            </>
+                        )}
+
+                        <div className='settings-modal-actions'>
+                            <button className='btn btn-soft' type='button' onClick={closeDeleteModal} disabled={working}>
+                                Cancel
+                            </button>
+                            <button className='btn btn-danger' type='button' onClick={deleteAccount} disabled={working}>
+                                {working ? 'Deleting...' : 'Delete Account'}
                             </button>
                         </div>
-                    </article>
-                </section>
-            </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

@@ -20,18 +20,16 @@ public class UserDto {
             String email,
 
             @NotBlank(message = "Temp email is required")
+            @Email(message = "Please provide a valid temp email")
             String tempEmail,
 
-            @NotBlank(message = "Phone number is required")
             String phoneNumber,
 
             @NotNull(message = "Role is required")
             Role role,
 
-            @NotNull(message = "Year is required")
             Year year,
 
-            @NotNull(message = "Semester is required")
             Semester semester,
 
             @NotBlank(message = "Password is required")
@@ -80,6 +78,14 @@ public class UserDto {
 
             @NotBlank(message = "Confirm password is required")
             String confirmPassword
+    ) {}
+
+    public record UpdateProfileFieldDto(
+            @NotBlank(message = "Field name is required")
+            String field,
+            
+            @NotBlank(message = "Field value is required")
+            String value
     ) {}
 
     public record UserHomeDto(
