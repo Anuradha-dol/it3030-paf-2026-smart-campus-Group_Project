@@ -3,7 +3,6 @@ com\smartcampus\enums\ResourceStatus.class
 com\smartcampus\records\MailBody.class
 com\smartcampus\dto\UserDto$DeleteAccountForgotVerifyDto.class
 com\smartcampus\repository\ResourceRepository.class
-com\smartcampus\controller\AuthController$EmailRequest.class
 com\smartcampus\service\UserProfileServiceImpl.class
 com\smartcampus\dto\ResourceResponseDTO.class
 com\smartcampus\dto\UserDto.class
@@ -23,7 +22,6 @@ com\smartcampus\SmartCampusApplication.class
 com\smartcampus\config\WebConfig.class
 com\smartcampus\dto\UserDto$UpdateNameDto.class
 com\smartcampus\dto\UserDto$UpdateEmailDto.class
-com\smartcampus\controller\AuthController$VerifyCodeRequest.class
 com\smartcampus\utils\JwtUtils.class
 com\smartcampus\records\MailBody$MailBodyBuilder.class
 com\smartcampus\dto\UserDto$VerifyCodeDto.class

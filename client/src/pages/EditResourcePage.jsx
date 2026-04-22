@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useNavigate, useParams, Link, useLocation } from 'react-router-dom';
 import ResourceForm from '../components/ResourceForm';
 import { getResourceById, updateResource } from '../services/resourceService';
 
 const EditResourcePage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
+    const listPath = location.pathname.startsWith('/dashboard/resources') ? '/dashboard' : '/resources';
     const [initialData, setInitialData] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
@@ -34,7 +36,7 @@ const EditResourcePage = () => {
 
             await updateResource(id, resourceData);
             alert('Resource updated successfully!');
-            navigate('/resources');
+            navigate(listPath);
         } catch (err) {
             console.error(err);
             const backendMessage = err?.response?.data?.message || err?.response?.data;
@@ -48,7 +50,7 @@ const EditResourcePage = () => {
         <div className="container" style={{ maxWidth: '600px', margin: '0 auto' }}>
             <div className="top-bar">
                 <h1>Edit Resource</h1>
-                <Link to="/resources" className="btn btn-clear">Back to List</Link>
+                <Link to={listPath} className="btn btn-clear">Back to List</Link>
             </div>
 
             {error && <div className="alert error">{error}</div>}

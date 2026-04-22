@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import { getResourceById } from '../services/resourceService';
+import api from '../api';
 
 const ResourceDetailsPage = () => {
     const { id } = useParams();
+    const location = useLocation();
+    const basePath = location.pathname.startsWith('/dashboard/resources') ? '/dashboard/resources' : '/resources';
+    const listPath = location.pathname.startsWith('/dashboard/resources') ? '/dashboard' : '/resources';
     const [resource, setResource] = useState(null);
     const [error, setError] = useState('');
+    const [role, setRole] = useState('ROLE_USER');
 
     useEffect(() => {
         const fetchResource = async () => {
@@ -20,6 +25,33 @@ const ResourceDetailsPage = () => {
         fetchResource();
     }, [id]);
 
+    useEffect(() => {
+        const loadRole = async () => {
+            try {
+                const adminRes = await api.get('/user/Admin/me');
+                setRole(String(adminRes.data?.role || 'ROLE_ADMIN'));
+                return;
+            } catch (adminErr) {
+                if (adminErr.response?.status === 401) {
+                    return;
+                }
+            }
+
+            try {
+                const userRes = await api.get('/user/me');
+                setRole(String(userRes.data?.role || 'ROLE_USER'));
+            } catch (userErr) {
+                if (userErr.response?.status === 401) {
+                    return;
+                }
+            }
+        };
+
+        loadRole();
+    }, []);
+
+    const isAdmin = role.toUpperCase().includes('ADMIN');
+
     if (error) return <div className="alert error">{error}</div>;
     if (!resource) return <p>Loading details...</p>;
 
@@ -27,7 +59,7 @@ const ResourceDetailsPage = () => {
         <div className="container" style={{ maxWidth: '600px', margin: '0 auto' }}>
             <div className="top-bar">
                 <h1>Resource Details</h1>
-                <Link to="/resources" className="btn btn-clear">Back to List</Link>
+                <Link to={listPath} className="btn btn-clear">Back to List</Link>
             </div>
             
             <div className="details-card" style={{ border: '1px solid #ccc', padding: '20px', borderRadius: '8px' }}>
@@ -42,9 +74,15 @@ const ResourceDetailsPage = () => {
                 <p><strong>Description:</strong> {resource.description || 'No description provided.'}</p>
                 
                 <div style={{ marginTop: '20px' }}>
-                    <Link to={`/resources/edit/${resource.id}`} className="btn btn-primary" style={{ marginRight: '10px' }}>
-                        Edit Resource
-                    </Link>
+                    {isAdmin ? (
+                        <Link to={`${basePath}/edit/${resource.id}`} className="btn btn-primary" style={{ marginRight: '10px' }}>
+                            Edit Resource
+                        </Link>
+                    ) : (
+                        <button type="button" className="btn btn-primary">
+                            Book Now
+                        </button>
+                    )}
                 </div>
             </div>
         </div>

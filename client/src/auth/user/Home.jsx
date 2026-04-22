@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../../api";
 import RoleNavbar from "../../comp/RoleNavbar";
+import ResourceListPage from "../../pages/ResourceListPage";
 import "./Home.css";
 
 export default function Home() {
@@ -58,6 +59,7 @@ export default function Home() {
     }
 
     const role = String(profile?.role || "").replace("ROLE_", "");
+    const isAdmin = role.toUpperCase().includes("ADMIN");
 
     return (
         <div className="home-screen page-shell">
@@ -101,10 +103,20 @@ export default function Home() {
                             <div className="actions-row">
                                 <Link className="btn btn-secondary" to="/profile">View Profile</Link>
                                 <Link className="btn btn-secondary" to="/settings">Manage Settings</Link>
-                                {role.includes("ADMIN") && (
+                                {isAdmin && (
                                     <Link className="btn btn-secondary" to="/dashboard">Open Dashboard</Link>
                                 )}
                             </div>
+                        </section>
+
+                        <section className="section">
+                            <h3>Resources</h3>
+                            <ResourceListPage
+                                embedded
+                                basePath="/dashboard/resources"
+                                canManage={isAdmin}
+                                showBook={!isAdmin}
+                            />
                         </section>
                     </>
                 )}

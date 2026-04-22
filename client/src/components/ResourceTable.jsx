@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const ResourceTable = ({ resources, onDeleteClick }) => {
+const ResourceTable = ({ resources, onDeleteClick, basePath = '/resources', canManage = true, showBook = false }) => {
     if (!resources || resources.length === 0) {
         return (
             <div className="glass-panel" style={{ padding: '40px', textAlign: 'center', marginTop: '20px' }}>
@@ -55,15 +55,24 @@ const ResourceTable = ({ resources, onDeleteClick }) => {
 
                     <div className="card-footer">
                         <div className="action-buttons">
-                            <Link to={`/resources/${resource.id}`} className="btn btn-view">
+                            <Link to={`${basePath}/${resource.id}`} className="btn btn-view">
                                 View
                             </Link>
-                            <Link to={`/resources/edit/${resource.id}`} className="btn btn-edit">
-                                Edit
-                            </Link>
-                            <button onClick={() => onDeleteClick(resource)} className="btn btn-delete">
-                                Delete
-                            </button>
+                            {canManage && (
+                                <>
+                                    <Link to={`${basePath}/edit/${resource.id}`} className="btn btn-edit">
+                                        Edit
+                                    </Link>
+                                    <button onClick={() => onDeleteClick(resource)} className="btn btn-delete">
+                                        Delete
+                                    </button>
+                                </>
+                            )}
+                            {!canManage && showBook && (
+                                <button type="button" className="btn btn-primary">
+                                    Book Now
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>

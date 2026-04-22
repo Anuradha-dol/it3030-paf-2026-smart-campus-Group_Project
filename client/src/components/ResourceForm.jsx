@@ -75,6 +75,7 @@ const ResourceForm = ({ initialData, onSubmit, isLoading }) => {
                 <select name="status" value={formData.status} onChange={handleChange} required>
                     <option value="ACTIVE">Active</option>
                     <option value="OUT_OF_SERVICE">Out of Service</option>
+                    <option value="MAINTENANCE">Maintenance</option>
                 </select>
             </div>
 

@@ -171,6 +171,15 @@ h3 {
 
 .status-out_of_service::before { background: #f87171; }
 
+.status-maintenance {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  white-space: nowrap;
+}
+
+.status-maintenance::before { background: #fbbf24; }
+
 /* Card Body */
 .card-body {
   flex-grow: 1;

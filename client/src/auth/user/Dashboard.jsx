@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../../api";
 import RoleNavbar from "../../comp/RoleNavbar";
+import ResourceListPage from "../../pages/ResourceListPage";
 import "./Dashboard.css";
 
 export default function Dashboard() {
@@ -76,6 +77,7 @@ export default function Dashboard() {
     }
 
     const roleLabel = String(profile?.role || "").replace("ROLE_", "") || "USER";
+    const isAdmin = String(profile?.role || "").toUpperCase().includes("ADMIN");
 
     return (
         <div className="dashboard-screen page-shell">
@@ -115,11 +117,21 @@ export default function Dashboard() {
                         </div>
 
                         <section className="section">
-                            <h3>Admin Quick Actions</h3>
+                            <h3>{isAdmin ? "Admin Quick Actions" : "Quick Actions"}</h3>
                             <div className="actions-row">
                                 <Link className="btn btn-secondary" to="/profile">Manage Profile</Link>
                                 <Link className="btn btn-secondary" to="/settings">User Settings</Link>
                             </div>
+                        </section>
+
+                        <section className="section">
+                            <h3>Resources</h3>
+                            <ResourceListPage
+                                embedded
+                                basePath="/dashboard/resources"
+                                canManage={isAdmin}
+                                showBook={!isAdmin}
+                            />
                         </section>
                     </>
                 )}
