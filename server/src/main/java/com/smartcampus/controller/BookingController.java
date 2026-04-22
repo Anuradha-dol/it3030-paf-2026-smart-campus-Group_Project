@@ -8,6 +8,7 @@ import com.smartcampus.enums.BookingStatus;
 import com.smartcampus.service.BookingService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,13 +29,19 @@ public class BookingController {
             @Valid @RequestBody BookingRequestDTO bookingRequestDTO) {
 
         BookingResponseDTO createdBooking = bookingService.createBooking(bookingRequestDTO);
-        return ResponseEntity.ok(new ApiResponse<>(true, createdBooking, null));
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(true, createdBooking, null)
+        );
     }
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<BookingResponseDTO>>> getAllBookings() {
         List<BookingResponseDTO> bookings = bookingService.getAllBookings();
-        return ResponseEntity.ok(new ApiResponse<>(true, bookings, null));
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(true, bookings, null)
+        );
     }
 
     @GetMapping("/search")
@@ -44,14 +51,37 @@ public class BookingController {
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @RequestParam(required = false) BookingStatus status
     ) {
+
         List<BookingResponseDTO> results = bookingService.searchBookings(facility, date, status);
-        return ResponseEntity.ok(new ApiResponse<>(true, results, null));
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(true, results, null)
+        );
+    }
+
+    @GetMapping("/page")
+    public ResponseEntity<ApiResponse<Page<BookingResponseDTO>>> getBookingsWithPagination(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction
+    ) {
+
+        Page<BookingResponseDTO> result =
+                bookingService.getBookingsWithPagination(page, size, sortBy, direction);
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(true, result, null)
+        );
     }
 
     @GetMapping("/{id:\\d+}")
     public ResponseEntity<ApiResponse<BookingResponseDTO>> getBookingById(@PathVariable Long id) {
         BookingResponseDTO booking = bookingService.getBookingById(id);
-        return ResponseEntity.ok(new ApiResponse<>(true, booking, null));
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(true, booking, null)
+        );
     }
 
     @PutMapping("/{id:\\d+}")
@@ -60,7 +90,10 @@ public class BookingController {
             @Valid @RequestBody BookingRequestDTO dto) {
 
         BookingResponseDTO updatedBooking = bookingService.updateBooking(id, dto);
-        return ResponseEntity.ok(new ApiResponse<>(true, updatedBooking, null));
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(true, updatedBooking, null)
+        );
     }
 
     @PatchMapping("/{id:\\d+}/status")
@@ -69,12 +102,18 @@ public class BookingController {
             @Valid @RequestBody BookingStatusUpdateDTO dto) {
 
         BookingResponseDTO updatedBooking = bookingService.updateStatus(id, dto.getStatus());
-        return ResponseEntity.ok(new ApiResponse<>(true, updatedBooking, null));
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(true, updatedBooking, null)
+        );
     }
 
     @DeleteMapping("/{id:\\d+}")
     public ResponseEntity<ApiResponse<String>> deleteBooking(@PathVariable Long id) {
         bookingService.deleteBooking(id);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Booking deleted successfully", null));
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(true, "Booking deleted successfully", null)
+        );
     }
 }
