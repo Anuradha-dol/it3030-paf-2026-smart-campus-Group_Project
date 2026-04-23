@@ -1,0 +1,9 @@
+# Maven / build output
+target/
+*.class
+
+# Runtime uploads generated locally
+uploads/
+
+# Logs
+*.log
