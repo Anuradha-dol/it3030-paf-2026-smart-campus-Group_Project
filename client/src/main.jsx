@@ -24,6 +24,12 @@ import TechHome from './auth/user/TechHome';
 import Profile from './auth/user/Profile';
 import Settings from './auth/user/Settings';
 
+
+import BookingPage from './pages/BookingPage';
+import MyBookingsPage from './pages/MyBookingsPage';
+import AdminBookingsPage from './pages/AdminBookingsPage';
+
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <Router>
@@ -51,6 +57,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           <Route path="/techome" element={<Navigate to="/techhome" replace />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/settings" element={<Settings />} />
+
+          <Route path="/bookings" element={<BookingPage />} />
+          <Route path="/my-bookings" element={<MyBookingsPage />} />
+          <Route path="/admin/bookings" element={<AdminBookingsPage />} />
+          
 
           <Route path="/tickets" element={<TicketDashboard />} />
           <Route path="/tickets/create" element={<CreateTicket />} />

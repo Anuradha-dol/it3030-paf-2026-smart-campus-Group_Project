@@ -1,3 +1,14 @@
+<<<<<<< HEAD
+target/
+*.jar
+*.class
+*.log
+node_modules/
+.idea/
+.tools/
+server/target/
+uploads/
+=======
 # Maven / build output
 target/
 *.class
@@ -7,3 +18,4 @@ uploads/
 
 # Logs
 *.log
+>>>>>>> Development

@@ -5,6 +5,11 @@ import api from '../api';
 import '../auth/user/Dashboard.css';
 import './ResourceTheme.css';
 
+import { useNavigate } from 'react-router-dom';
+
+
+
+
 const resolveResourceImage = (resource) => {
     const rawImage = resource?.imageUrl || resource?.image || resource?.imageBase64 || resource?.resourceImage;
     if (!rawImage || typeof rawImage !== 'string') {
@@ -28,6 +33,8 @@ const ResourceDetailsPage = () => {
     const [homeData, setHomeData] = useState(null);
     const [profile, setProfile] = useState(null);
     const [time, setTime] = useState(new Date());
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         const timer = setInterval(() => setTime(new Date()), 1000);
@@ -316,9 +323,24 @@ const ResourceDetailsPage = () => {
                                             Edit Resource
                                         </Link>
                                     ) : (
-                                        <button type="button" className="btn btn-primary">
-                                            Book Now
-                                        </button>
+                                       <button
+                                           type="button"
+                                           className="btn btn-primary"
+                                           onClick={() =>
+                                               navigate('/bookings', {
+                                                  state: {
+                                                     resourceId: resource.id,
+                                                     facilityName: resource.name,
+                                                     location: resource.location,
+                                                     capacity: resource.capacity,
+                                                     availableFrom: resource.availableFrom,
+                                                     availableTo: resource.availableTo,
+                                         },
+                                     })
+                            }
+                        >
+                             Book Now
+                        </button>
                                     )}
                                     <Link to={listPath} className="btn btn-clear">
                                         Back to List
