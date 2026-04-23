@@ -17,7 +17,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("SELECT b FROM Booking b WHERE " +
            "b.facilityName = :facilityName " +
            "AND b.bookingDate = :bookingDate " +
-           "AND b.status = 'APPROVED' " +
+           "AND b.status IN ('APPROVED', 'PENDING') " +
            "AND (b.startTime < :endTime AND b.endTime > :startTime)")
     List<Booking> findConflictingBookings(
             @Param("facilityName") String facilityName,
@@ -27,21 +27,27 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     );
 
     List<Booking> findByFacilityNameContainingIgnoreCase(String facilityName);
+
     List<Booking> findByBookingDate(LocalDate bookingDate);
+
     List<Booking> findByStatus(BookingStatus status);
+
     List<Booking> findByFacilityNameContainingIgnoreCaseAndBookingDateAndStatus(
             String facilityName,
             LocalDate bookingDate,
             BookingStatus status
     );
+
     List<Booking> findByFacilityNameContainingIgnoreCaseAndBookingDate(
             String facilityName,
             LocalDate bookingDate
     );
+
     List<Booking> findByFacilityNameContainingIgnoreCaseAndStatus(
             String facilityName,
             BookingStatus status
     );
+
     List<Booking> findByBookingDateAndStatus(
             LocalDate bookingDate,
             BookingStatus status
