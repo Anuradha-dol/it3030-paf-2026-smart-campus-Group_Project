@@ -26,6 +26,8 @@ export default function OAuth2Success() {
                     setTimeout(() => {
                         if (role.includes('ADMIN')) {
                             navigate('/dashboard', { replace: true });
+                        } else if (role.includes('TECHNICIAN')) {
+                            navigate('/techhome', { replace: true });
                         } else {
                             navigate('/home', { replace: true });
                         }
