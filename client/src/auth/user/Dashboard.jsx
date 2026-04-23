@@ -2,8 +2,21 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../../api";
 import "./Dashboard.css";
+import "./Profile.css";
 import RoleNavbar from "../../comp/RoleNavbar";
 import ResourceListPage from "../../pages/ResourceListPage";
+
+function buildAssetUrl(path) {
+    if (!path) {
+        return "";
+    }
+
+    if (path.startsWith("http://") || path.startsWith("https://")) {
+        return path;
+    }
+
+    return `${api.defaults.baseURL}${path}`;
+}
 
 export default function Dashboard() {
     const navigate = useNavigate();
@@ -77,103 +90,103 @@ export default function Dashboard() {
     const roleLabel = String(profile?.role || "").replace("ROLE_", "") || "USER";
     const isAdmin = String(profile?.role || "").toUpperCase().includes("ADMIN");
     const homePath = isAdmin ? "/dashboard" : "/home";
-
-    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    const currentMonth = monthNames[time.getMonth()];
-    const currentYear = time.getFullYear();
+    const firstName = profile?.name || profile?.firstname || "";
+    const lastName = profile?.lastName || profile?.lastname || "";
+    const fullName = `${firstName} ${lastName}`.trim();
+    const initials = (firstName[0] || "U").toUpperCase();
+    const profileImage = buildAssetUrl(profile?.profileImageUrl || profile?.imageUrl);
     const currentDay = time.getDate();
-    
-    // Build calendar mock grid
-    const daysInMonth = new Date(currentYear, time.getMonth() + 1, 0).getDate();
-    const firstDayIndex = new Date(currentYear, time.getMonth(), 1).getDay();
-    const calCells = Array.from({ length: 42 });
+    const calendarLabel = time.toLocaleString("default", { month: "long", year: "numeric" });
+    const clockLabel = time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+    const calendarYear = time.getFullYear();
+    const calendarMonth = time.getMonth();
+    const calendarFirstDay = new Date(calendarYear, calendarMonth, 1).getDay();
+    const calendarDaysCount = new Date(calendarYear, calendarMonth + 1, 0).getDate();
+    const calendarCells = [
+        ...Array.from({ length: calendarFirstDay }, () => null),
+        ...Array.from({ length: calendarDaysCount }, (_, index) => index + 1),
+    ];
+    const completionFields = [
+        firstName,
+        lastName,
+        profile?.email,
+        profile?.phoneNumber,
+        profile?.tempEmail,
+        profile?.year,
+        profile?.semester,
+        profile?.profileImageUrl || profile?.imageUrl,
+        profile?.coverImageUrl,
+    ];
+    const filledFieldsCount = completionFields.filter((field) => field && String(field).trim()).length;
+    const completionPercentage = Math.round((filledFieldsCount / completionFields.length) * 100);
 
     return (
         <div className="md-screen">
             <div className="md-layout">
-                {/* --- Left Floating Sidebar --- */}
-                <aside className="md-sidebar">
-                    {/* User Mini Profile (Optional but good for context) */}
-                    <div className="md-sidebar-profile">
-                        <div className="md-avatar">
-                            {profile?.name ? profile.name[0].toUpperCase() : 'U'}
-                        </div>
-                        <div className="md-user-info">
-                            <h5>{profile?.name || "User"} {profile?.lastName || ""}</h5>
-                            <span>{profile?.email || "user@example.com"}</span>
+                <aside className="md-sidebar profile-sidebar">
+                    <div className="sidebar-brand">
+                        <span className="brand-avatar">
+                            {profileImage ? <img src={profileImage} alt="Profile avatar" /> : initials}
+                        </span>
+                        <div className="brand-info">
+                            <strong>{fullName || "User"}</strong>
+                            <small>{profile?.email || "No email"}</small>
                         </div>
                     </div>
 
-                    <div className="md-nav-group">
-                        <p className="md-nav-label">QUICK NAVIGATION</p>
-                        <nav className="md-nav">
-                            <Link to={homePath} className="md-nav-item">Dashboard</Link>
-                            <Link to="/profile" className="md-nav-item">Profile</Link>
-                            <Link to="/settings" className="md-nav-item">Settings</Link>
-                        </nav>
-                    </div>
+                    <nav className="sidebar-nav">
+                        <p className="sidebar-label">Quick Navigation</p>
+                        <Link className="sidebar-link active" to={homePath}>
+                            Home
+                        </Link>
+                        <Link className="sidebar-link" to="/profile">
+                            Profile
+                        </Link>
+                        <Link className="sidebar-link" to="/settings">
+                            Settings
+                        </Link>
+                    </nav>
 
-                    <div className="md-nav-group">
-                        <p className="md-nav-label">PROFILE STATUS</p>
-                        <div className="md-status-grid">
-                            <span>Completion</span> <strong>44%</strong>
-                            <span>Role</span> <strong>{roleLabel}</strong>
-                            <span>Recovery</span> <strong className="md-status-missing">Missing</strong>
+                    <div className="sidebar-card">
+                        <p className="sidebar-label">Profile Status</p>
+                        <div className="sidebar-item">
+                            <span>Completion</span>
+                            <strong>{completionPercentage}%</strong>
+                        </div>
+                        <div className="sidebar-item">
+                            <span>Role</span>
+                            <strong>{roleLabel}</strong>
+                        </div>
+                        <div className="sidebar-item">
+                            <span>Recovery</span>
+                            <strong>{profile?.tempEmail ? "Added" : "Missing"}</strong>
                         </div>
                     </div>
 
-                    <div className="md-nav-group">
-                        <p className="md-nav-label">DASHBOARD STATS</p>
-                        <div className="md-sidebar-stats">
-                            <div className="md-stat-card-slim">
-                                <div className="md-stat-icon-slim">🔔</div>
-                                <div className="details">
-                                    <p>Notifications</p>
-                                    <h3>{homeData?.notifications ?? 0}</h3>
-                                </div>
+                    <div className="sidebar-calendar-card">
+                        <p className="sidebar-label">Calendar</p>
+                        <div className="sidebar-calendar-header">
+                            <strong>{calendarLabel}</strong>
+                            <span className="sidebar-today-badge">Today {currentDay}</span>
+                        </div>
+                        <div className="sidebar-clock">{clockLabel}</div>
+                        <div className="sidebar-calendar-grid">
+                            <div className="sidebar-calendar-weekdays">
+                                {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((day) => (
+                                    <span key={day} className="weekday">{day}</span>
+                                ))}
                             </div>
-                            <div className="md-stat-card-slim">
-                                <div className="md-stat-icon-slim">🗂️</div>
-                                <div className="details">
-                                    <p>Tasks</p>
-                                    <h3>{homeData?.tasks ?? 0}</h3>
-                                </div>
+                            <div className="sidebar-calendar-days">
+                                {calendarCells.map((day, index) => (
+                                    <span
+                                        key={`day-${index}`}
+                                        className={`day${day === null ? " empty" : ""}${day === currentDay ? " today" : ""}`}
+                                        aria-hidden={day === null}
+                                    >
+                                        {day ?? ""}
+                                    </span>
+                                ))}
                             </div>
-                            <div className="md-stat-card-slim">
-                                <div className="md-stat-icon-slim">{isAdmin ? '🛡️' : '👤'}</div>
-                                <div className="details">
-                                    <p>Current Role</p>
-                                    <h3>{roleLabel}</h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="md-nav-group md-calendar-widget">
-                        <p className="md-nav-label">CALENDAR</p>
-                        <div className="md-cal-header">
-                            <strong>{currentMonth} {currentYear}</strong>
-                            <span className="md-today-badge">Today {currentDay}</span>
-                        </div>
-                        <p className="md-cal-time">{time.toLocaleTimeString()}</p>
-                        <div className="md-cal-grid">
-                            <div className="cal-day-label">Su</div>
-                            <div className="cal-day-label">Mo</div>
-                            <div className="cal-day-label">Tu</div>
-                            <div className="cal-day-label">We</div>
-                            <div className="cal-day-label">Th</div>
-                            <div className="cal-day-label">Fr</div>
-                            <div className="cal-day-label">Sa</div>
-                            {calCells.map((_, i) => {
-                                const dayNum = i - firstDayIndex + 1;
-                                const isCurrentMonth = dayNum > 0 && dayNum <= daysInMonth;
-                                const isToday = isCurrentMonth && dayNum === currentDay;
-                                return (
-                                    <div key={i} className={`cal-cell ${isToday ? 'active' : ''} ${!isCurrentMonth ? 'dim' : ''}`}>
-                                        {dayNum > 0 && dayNum <= daysInMonth ? dayNum : (dayNum <= 0 ? 30+dayNum : dayNum-daysInMonth)}
-                                    </div>
-                                );
-                            })}
                         </div>
                     </div>
                 </aside>
