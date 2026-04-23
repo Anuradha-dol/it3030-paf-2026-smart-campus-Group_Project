@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import './index.css';
 
 import AddResourcePage from './pages/AddResourcePage';
 import EditResourcePage from './pages/EditResourcePage';
@@ -16,9 +17,6 @@ import ForgotPassword from './auth/user/ForgotPassword';
 import Home from './auth/user/Home';
 import Profile from './auth/user/Profile';
 import Settings from './auth/user/Settings';
-
-
-import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

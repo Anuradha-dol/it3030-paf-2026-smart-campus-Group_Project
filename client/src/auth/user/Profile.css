@@ -300,7 +300,7 @@
   background: transparent;
 }
 
-.btn {
+.profile-page .btn {
   border: 0;
   border-radius: 10px;
   padding: 6px 12px;
@@ -313,18 +313,18 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
 }
 
-.btn:hover {
+.profile-page .btn:hover {
   transform: translateY(-1px);
 }
 
-.btn:disabled {
+.profile-page .btn:disabled {
   opacity: 0.7;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
 }
 
-.btn.btn-primary {
+.profile-page .btn.btn-primary {
   color: #fff;
   background: linear-gradient(95deg, #ff6a3d, #ff8352 58%, #ff9763);
   box-shadow:
@@ -332,13 +332,13 @@
     inset 0 -2px 0 rgba(171, 83, 43, 0.2);
 }
 
-.btn.btn-soft {
+.profile-page .btn.btn-soft {
   color: #8f5e42;
   border: 1px solid #f0c4a4;
   background: linear-gradient(180deg, #ffeede, #ffead8);
 }
 
-.btn.btn-danger {
+.profile-page .btn.btn-danger {
   color: #fff8fb;
   background: linear-gradient(112deg, #d63d52, #e4515e 56%, #ef6973);
   box-shadow:
