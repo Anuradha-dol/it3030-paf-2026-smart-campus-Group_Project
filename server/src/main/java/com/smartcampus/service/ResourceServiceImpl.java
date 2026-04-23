@@ -54,6 +54,7 @@ public class ResourceServiceImpl implements ResourceService {
         existing.setAvailableTo(requestDTO.getAvailableTo());
         existing.setStatus(requestDTO.getStatus());
         existing.setDescription(requestDTO.getDescription());
+        existing.setImageUrl(requestDTO.getImageUrl());
 
         Resource updated = resourceRepository.save(existing);
         return mapToResponse(updated);
@@ -76,6 +77,7 @@ public class ResourceServiceImpl implements ResourceService {
         resource.setAvailableTo(requestDTO.getAvailableTo());
         resource.setStatus(requestDTO.getStatus());
         resource.setDescription(requestDTO.getDescription());
+        resource.setImageUrl(requestDTO.getImageUrl());
         return resource;
     }
 
@@ -90,6 +92,7 @@ public class ResourceServiceImpl implements ResourceService {
         responseDTO.setAvailableTo(resource.getAvailableTo());
         responseDTO.setStatus(resource.getStatus());
         responseDTO.setDescription(resource.getDescription());
+        responseDTO.setImageUrl(resource.getImageUrl());
         return responseDTO;
     }
 }

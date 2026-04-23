@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import api from "../../api";
-import "./Dashboard.css"; // Reuse the advanced Dashboard styling
+import "./Dashboard.css";
 import "./Profile.css";
 import ResourceListPage from "../../pages/ResourceListPage";
 
@@ -45,33 +45,25 @@ function buildAssetUrl(path) {
 }
 
 function renderHeaderNavIcon(icon) {
-    if (icon === "booking") {
+    if (icon === "completed") {
         return (
             <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
-                <path d="M7 3v2M17 3v2M4 9h16M6 5h12a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z" />
-                <path d="M12 12v5M9.5 14.5h5" />
-            </svg>
-        );
-    }
-
-    if (icon === "history") {
-        return (
-            <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
-                <path d="M3 12a9 9 0 1 0 3-6.7" />
-                <path d="M3 4v4h4M12 7v5l3 2" />
+                <circle cx="12" cy="12" r="9" />
+                <path d="m8.5 12.5 2.3 2.3 4.8-4.8" />
             </svg>
         );
     }
 
     return (
         <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
-            <path d="M4 7.5h16v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z" />
-            <path d="M9 7.5V6a3 3 0 0 1 6 0v1.5M10 12h4" />
+            <path d="M7 3v2M17 3v2M4 9h16M6 5h12a2 2 0 0 1 2 2v4.5M4 12V7a2 2 0 0 1 2-2" />
+            <path d="m14.5 16.5 2 2 4-4" />
+            <circle cx="17.5" cy="17.5" r="4.5" />
         </svg>
     );
 }
 
-export default function Home() {
+export default function TechHome() {
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -143,11 +135,6 @@ export default function Home() {
                             return;
                         }
 
-                        if (role.includes("TECHNICIAN")) {
-                            navigate("/techhome", { replace: true });
-                            return;
-                        }
-
                         navigate("/home", { replace: true });
                         return;
                     } catch {
@@ -156,7 +143,7 @@ export default function Home() {
                     }
                 }
 
-                setError(err.response?.data?.message || "Failed to load home page.");
+                setError(err.response?.data?.message || "Failed to load technician home page.");
             }
         };
 
@@ -185,15 +172,15 @@ export default function Home() {
             return;
         }
 
-        if (normalizedRole.includes("TECHNICIAN")) {
-            if (location.pathname !== "/techhome") {
-                navigate("/techhome", { replace: true });
+        if (!normalizedRole.includes("TECHNICIAN")) {
+            if (location.pathname !== "/home") {
+                navigate("/home", { replace: true });
             }
             return;
         }
 
-        if (location.pathname !== "/home") {
-            navigate("/home", { replace: true });
+        if (location.pathname !== "/techhome") {
+            navigate("/techhome", { replace: true });
         }
     }, [profile?.role, location.pathname, navigate]);
 
@@ -211,28 +198,30 @@ export default function Home() {
         return (
             <div className="md-screen loading">
                 <div className="md-spinner" />
-                <p>Loading Home...</p>
+                <p>Loading TechHome...</p>
             </div>
         );
     }
 
-    const roleLabel = String(profile?.role || "").replace("ROLE_", "") || "USER";
-    const normalizedRole = String(profile?.role || "").toUpperCase();
-    const isAdmin = normalizedRole.includes("ADMIN");
-    const isTechnician = normalizedRole.includes("TECHNICIAN");
-    const dashboardTitle = "User Dashboard";
-    const dashboardSubtitle = "Welcome back to your portal.";
-    const homePath = "/home";
-    const homeLabel = "Home";
+    const roleLabel = String(profile?.role || "").replace("ROLE_", "") || "TECHNICIAN";
     const roleNavigationLinks = [
-        { label: "Tickets", description: "Your ticket requests", to: "/tickets", icon: "ticket" },
-        { label: "Bookings", description: "Create new booking", to: "/bookings", icon: "booking" },
-        { label: "View Bookings", description: "Your booking history", to: "/bookings/my", icon: "history" },
+        {
+            label: "Work Appointments",
+            description: "Assigned appointments",
+            to: "/technician/appointments",
+            icon: "appointment",
+        },
+        {
+            label: "Completed Works",
+            description: "Finished work list",
+            to: "/technician/completed-works",
+            icon: "completed",
+        },
     ];
     const firstName = profile?.name || profile?.firstname || "";
     const lastName = profile?.lastName || profile?.lastname || "";
     const fullName = `${firstName} ${lastName}`.trim();
-    const initials = (firstName[0] || "U").toUpperCase();
+    const initials = (firstName[0] || "T").toUpperCase();
     const profileImage = buildAssetUrl(extractProfileImagePath(profile));
     const showAvatarImage = Boolean(profileImage) && !avatarFailed;
     const currentDay = time.getDate();
@@ -284,15 +273,15 @@ export default function Home() {
                             )}
                         </span>
                         <div className="brand-info">
-                            <strong>{fullName || "User"}</strong>
+                            <strong>{fullName || "Technician"}</strong>
                             <small>{profile?.email || "No email"}</small>
                         </div>
                     </div>
 
                     <nav className="sidebar-nav">
                         <p className="sidebar-label">Quick Navigation</p>
-                        <Link className="sidebar-link active" to={homePath}>
-                            {homeLabel}
+                        <Link className="sidebar-link active" to="/techhome">
+                            TechHome
                         </Link>
                         <Link className="sidebar-link" to="/profile">
                             Profile
@@ -346,12 +335,11 @@ export default function Home() {
                     </div>
                 </aside>
 
-                {/* --- Main Home Content --- */}
                 <main className="md-main">
                     <header className="md-topbar">
                         <div className="md-topbar-left">
-                            <h1 className="md-title">{dashboardTitle}</h1>
-                            <p className="md-subtitle">{dashboardSubtitle}</p>
+                            <h1 className="md-title">Technician Dashboard</h1>
+                            <p className="md-subtitle">Track assigned work and manage technician operations.</p>
                             <div className="profile-role-nav-inline">
                                 {roleNavigationLinks.map((item) => (
                                     <Link
@@ -379,17 +367,16 @@ export default function Home() {
 
                     {!error && (
                         <div className="md-content-scroll">
-                            {/* Resources Panel takes full clean layout footprint */}
                             <div className="md-panel md-resource-wrapper">
-                                <div className="md-panel-header" style={{ display: 'none' }}>
+                                <div className="md-panel-header" style={{ display: "none" }}>
                                     <h2>Resources</h2>
                                 </div>
                                 <div className="md-panel-body p-0">
-                                    <ResourceListPage 
-                                        embedded 
-                                        basePath="/dashboard/resources" 
-                                        canManage={isAdmin} 
-                                        showBook={!isAdmin} 
+                                    <ResourceListPage
+                                        embedded
+                                        basePath="/dashboard/resources"
+                                        canManage={false}
+                                        showBook
                                     />
                                 </div>
                             </div>

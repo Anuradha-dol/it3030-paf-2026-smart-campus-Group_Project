@@ -12,6 +12,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
         
 @Entity
@@ -42,6 +43,9 @@ public class Resource {
 
     @Column(length = 1000)
     private String description;
+
+    @Lob
+    private String imageUrl;
 
     public Resource() {
     }
@@ -129,5 +133,13 @@ public class Resource {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }
