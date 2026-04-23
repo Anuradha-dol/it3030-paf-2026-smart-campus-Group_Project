@@ -216,7 +216,7 @@ export default function Dashboard() {
     const homePath = "/dashboard";
     const homeLabel = "Dashboard";
     const roleNavigationLinks = [
-        { label: "All Tickets", description: "View every ticket", to: "/admin/tickets", icon: "ticket" },
+        { label: "All Tickets", description: "View every ticket", to: "/tickets", icon: "ticket" },
         { label: "All Bookings", description: "View every booking", to: "/admin/bookings", icon: "history" },
     ];
     const firstName = profile?.name || profile?.firstname || "";
@@ -283,6 +283,9 @@ export default function Dashboard() {
                         <p className="sidebar-label">Quick Navigation</p>
                         <Link className="sidebar-link active" to={homePath}>
                             {homeLabel}
+                        </Link>
+                        <Link className="sidebar-link" to="/tickets">
+                            Tickets
                         </Link>
                         <Link className="sidebar-link" to="/profile">
                             Profile

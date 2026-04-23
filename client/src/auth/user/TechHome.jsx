@@ -206,6 +206,12 @@ export default function TechHome() {
     const roleLabel = String(profile?.role || "").replace("ROLE_", "") || "TECHNICIAN";
     const roleNavigationLinks = [
         {
+            label: "My Tickets",
+            description: "View & update assigned tickets",
+            to: "/technician/my-tickets",
+            icon: "ticket",
+        },
+        {
             label: "Work Appointments",
             description: "Assigned appointments",
             to: "/technician/appointments",
@@ -214,7 +220,7 @@ export default function TechHome() {
         {
             label: "Completed Works",
             description: "Finished work list",
-            to: "/technician/completed-works",
+            to: "/technician/my-tickets",
             icon: "completed",
         },
     ];
@@ -282,6 +288,9 @@ export default function TechHome() {
                         <p className="sidebar-label">Quick Navigation</p>
                         <Link className="sidebar-link active" to="/techhome">
                             TechHome
+                        </Link>
+                        <Link className="sidebar-link" to="/technician/my-tickets">
+                            My Tickets
                         </Link>
                         <Link className="sidebar-link" to="/profile">
                             Profile

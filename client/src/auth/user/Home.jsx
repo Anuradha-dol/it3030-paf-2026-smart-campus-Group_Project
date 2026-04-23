@@ -294,6 +294,9 @@ export default function Home() {
                         <Link className="sidebar-link active" to={homePath}>
                             {homeLabel}
                         </Link>
+                        <Link className="sidebar-link" to="/tickets">
+                            Tickets
+                        </Link>
                         <Link className="sidebar-link" to="/profile">
                             Profile
                         </Link>

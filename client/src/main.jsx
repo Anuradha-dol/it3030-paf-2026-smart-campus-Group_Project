@@ -7,6 +7,11 @@ import AddResourcePage from './pages/AddResourcePage';
 import EditResourcePage from './pages/EditResourcePage';
 import ResourceDetailsPage from './pages/ResourceDetailsPage';
 
+import TicketDashboard from './pages/TicketDashboard';
+import CreateTicket from './pages/CreateTicket';
+import TicketDetail from './pages/TicketDetail';
+import TechnicianTickets from './auth/user/TechnicianTickets';
+
 
 import Login from './auth/auths/Login';
 import Signup from './auth/auths/Signup';
@@ -46,6 +51,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           <Route path="/techome" element={<Navigate to="/techhome" replace />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/settings" element={<Settings />} />
+
+          <Route path="/tickets" element={<TicketDashboard />} />
+          <Route path="/tickets/create" element={<CreateTicket />} />
+          <Route path="/tickets/:id" element={<TicketDetail />} />
+          <Route path="/technician/my-tickets" element={<TechnicianTickets />} />
       </Routes>
     </Router>
   </React.StrictMode>,
