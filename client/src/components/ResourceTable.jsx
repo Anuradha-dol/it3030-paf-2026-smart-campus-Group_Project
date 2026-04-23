@@ -1,6 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+import { useNavigate } from "react-router-dom";
+
+
+
 const resolveResourceImage = (resource) => {
     const rawImage = resource?.imageUrl || resource?.image || resource?.imageBase64 || resource?.resourceImage;
     if (!rawImage || typeof rawImage !== 'string') {
@@ -24,6 +28,9 @@ const ResourceTable = ({ resources, onDeleteClick, basePath = '/resources', canM
             </div>
         );
     }
+
+    const navigate = useNavigate();
+    
 
     return (
         <div className="resource-grid">
@@ -119,9 +126,24 @@ const ResourceTable = ({ resources, onDeleteClick, basePath = '/resources', canM
                                         </>
                                     )}
                                     {!canManage && showBook && (
-                                        <button type="button" className="btn btn-primary">
-                                            Book Now
-                                        </button>
+                                         <button
+                                           type="button"
+                                           className="btn btn-primary"
+                                           onClick={() =>
+                                               navigate('/bookings', {
+                                                  state: {
+                                                     resourceId: resource.id,
+                                                     facilityName: resource.name,
+                                                     location: resource.location,
+                                                     capacity: resource.capacity,
+                                                     availableFrom: resource.availableFrom,
+                                                     availableTo: resource.availableTo,
+                                         },
+                                     })
+                            }
+                        >
+                             Book Now
+                        </button>
                                     )}
                                 </div>
                             </div>

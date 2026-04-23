@@ -227,7 +227,7 @@ export default function Home() {
     const roleNavigationLinks = [
         { label: "Tickets", description: "Your ticket requests", to: "/tickets", icon: "ticket" },
         { label: "Bookings", description: "Create new booking", to: "/bookings", icon: "booking" },
-        { label: "View Bookings", description: "Your booking history", to: "/bookings/my", icon: "history" },
+        { label: "View Bookings", description: "Your booking history", to: "/my-bookings", icon: "history" },
     ];
     const firstName = profile?.name || profile?.firstname || "";
     const lastName = profile?.lastName || profile?.lastname || "";
