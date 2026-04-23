@@ -4,6 +4,7 @@ import { getAllResources, deleteResource } from '../services/resourceService';
 import ResourceTable from '../components/ResourceTable';
 import SearchFilterBar from '../components/SearchFilterBar';
 import DeleteConfirmModal from '../components/DeleteConfirmModal';
+import ResourceModal from '../components/ResourceModal';
 import './ResourceTheme.css';
 
 const ResourceListPage = ({ embedded = false, basePath = '/resources', canManage = true, showBook = false }) => {
@@ -14,8 +15,12 @@ const ResourceListPage = ({ embedded = false, basePath = '/resources', canManage
     const [successMsg, setSuccessMsg] = useState('');
 
     // Modal state
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [resourceToDelete, setResourceToDelete] = useState(null);
+
+    const [modalOpen, setModalOpen] = useState(false);
+    const [modalMode, setModalMode] = useState(''); // 'add', 'edit', 'view'
+    const [modalResourceId, setModalResourceId] = useState(null);
 
     useEffect(() => {
         fetchResources();
@@ -66,14 +71,14 @@ const ResourceListPage = ({ embedded = false, basePath = '/resources', canManage
 
     const confirmDelete = (resource) => {
         setResourceToDelete(resource);
-        setIsModalOpen(true);
+        setIsDeleteModalOpen(true);
     };
 
     const handleDelete = async () => {
         try {
             await deleteResource(resourceToDelete.id);
             setSuccessMsg('Resource deleted successfully!');
-            setIsModalOpen(false);
+            setIsDeleteModalOpen(false);
             setResourceToDelete(null);
             fetchResources(); // Refresh table
             setTimeout(() => setSuccessMsg(''), 3000);
@@ -81,6 +86,19 @@ const ResourceListPage = ({ embedded = false, basePath = '/resources', canManage
             setError('Failed to delete resource.');
             console.error(err);
         }
+    };
+
+    const openModal = (mode, id = null) => {
+        setModalMode(mode);
+        setModalResourceId(id);
+        setModalOpen(true);
+    };
+
+    const handleModalSaved = () => {
+        setModalOpen(false);
+        setSuccessMsg(modalMode === 'add' ? 'Resource created successfully!' : 'Resource updated successfully!');
+        fetchResources();
+        setTimeout(() => setSuccessMsg(''), 3000);
     };
 
     return (
@@ -93,9 +111,9 @@ const ResourceListPage = ({ embedded = false, basePath = '/resources', canManage
             <div className="top-bar">
                 <SearchFilterBar onSearch={handleSearch} />
                 {canManage && (
-                    <Link to={`${basePath}/add`} className="btn btn-primary">
+                    <button onClick={() => openModal('add')} className="btn btn-primary" style={{ padding: '12px 24px', fontSize: '0.95rem' }}>
                         + Add New Resource
-                    </Link>
+                    </button>
                 )}
             </div>
 
@@ -108,16 +126,26 @@ const ResourceListPage = ({ embedded = false, basePath = '/resources', canManage
                     canManage={canManage}
                     showBook={showBook}
                     onDeleteClick={confirmDelete} 
+                    onOpenModal={openModal}
                 />
             )}
 
-            {isModalOpen && (
+            {isDeleteModalOpen && (
                 <DeleteConfirmModal 
                     resourceName={resourceToDelete?.name}
                     onConfirm={handleDelete}
-                    onCancel={() => setIsModalOpen(false)}
+                    onCancel={() => setIsDeleteModalOpen(false)}
                 />
             )}
+
+            <ResourceModal
+                isOpen={modalOpen}
+                onClose={() => setModalOpen(false)}
+                mode={modalMode}
+                resourceId={modalResourceId}
+                onSaved={handleModalSaved}
+                isAdmin={canManage}
+            />
         </div>
     );
 };
