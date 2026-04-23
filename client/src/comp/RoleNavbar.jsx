@@ -33,7 +33,7 @@ export default function RoleNavbar({ role }) {
     return (
         <>
             <Link className={getLinkClass("nav-link", homeActive)} to={homePath}>
-                Home
+                Dashboard
             </Link>
             <Link className={getLinkClass("nav-link", profileActive)} to="/profile">
                 Profile

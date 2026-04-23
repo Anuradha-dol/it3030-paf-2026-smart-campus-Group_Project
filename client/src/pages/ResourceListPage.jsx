@@ -4,8 +4,9 @@ import { getAllResources, deleteResource } from '../services/resourceService';
 import ResourceTable from '../components/ResourceTable';
 import SearchFilterBar from '../components/SearchFilterBar';
 import DeleteConfirmModal from '../components/DeleteConfirmModal';
+import './ResourceTheme.css';
 
-const ResourceListPage = () => {
+const ResourceListPage = ({ embedded = false, basePath = '/resources', canManage = true, showBook = false }) => {
     const [resources, setResources] = useState([]);
     const [filteredResources, setFilteredResources] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -35,18 +36,26 @@ const ResourceListPage = () => {
         }
     };
 
-    const handleSearch = useCallback(({ text, type, status }) => {
+    const handleSearch = useCallback(({ location, type, minCapacity, maxCapacity, status }) => {
         let filtered = resources;
-        const normalizedText = text.trim().toLowerCase();
+        const normalizedText = (location || '').trim().toLowerCase();
+        const minCapacityValue = minCapacity === '' ? null : Number(minCapacity);
+        const maxCapacityValue = maxCapacity === '' ? null : Number(maxCapacity);
         
         if (normalizedText) {
             filtered = filtered.filter(item => 
-                (item.name || '').toLowerCase().includes(normalizedText) || 
-                (item.location || '').toLowerCase().includes(normalizedText)
+                (item.location || '').toLowerCase().includes(normalizedText) ||
+                (item.name || '').toLowerCase().includes(normalizedText)
             );
         }
         if (type) {
             filtered = filtered.filter(item => item.type === type);
+        }
+        if (minCapacityValue !== null && !Number.isNaN(minCapacityValue)) {
+            filtered = filtered.filter(item => Number(item.capacity) >= minCapacityValue);
+        }
+        if (maxCapacityValue !== null && !Number.isNaN(maxCapacityValue)) {
+            filtered = filtered.filter(item => Number(item.capacity) <= maxCapacityValue);
         }
         if (status) {
             filtered = filtered.filter(item => item.status === status);
@@ -75,17 +84,19 @@ const ResourceListPage = () => {
     };
 
     return (
-        <div className="resource-list-container">
-            <h1>Facilities & Assets Catalogue</h1>
+        <div className={`resource-list-container ${!embedded ? 'resource-theme-root' : ''}`} style={!embedded ? { padding: '40px 20px' } : {}}>
+            {!embedded && <h1>Facilities & Assets Catalogue</h1>}
 
             {error && <div className="alert error">{error}</div>}
             {successMsg && <div className="alert success">{successMsg}</div>}
 
             <div className="top-bar">
                 <SearchFilterBar onSearch={handleSearch} />
-                <Link to="/resources/add" className="btn btn-primary">
-                    + Add New Resource
-                </Link>
+                {canManage && (
+                    <Link to={`${basePath}/add`} className="btn btn-primary">
+                        + Add New Resource
+                    </Link>
+                )}
             </div>
 
             {loading ? (
@@ -93,6 +104,9 @@ const ResourceListPage = () => {
             ) : (
                 <ResourceTable 
                     resources={filteredResources} 
+                    basePath={basePath}
+                    canManage={canManage}
+                    showBook={showBook}
                     onDeleteClick={confirmDelete} 
                 />
             )}

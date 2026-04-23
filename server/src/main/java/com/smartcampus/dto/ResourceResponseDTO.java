@@ -21,6 +21,7 @@ public class ResourceResponseDTO {
 
     private ResourceStatus status;
     private String description;
+    private String imageUrl;
 
     public Long getId() {
         return id;
@@ -92,5 +93,13 @@ public class ResourceResponseDTO {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

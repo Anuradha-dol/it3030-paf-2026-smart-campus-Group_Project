@@ -2,8 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
-import ResourceListPage from './pages/ResourceListPage';
-
 import AddResourcePage from './pages/AddResourcePage';
 import EditResourcePage from './pages/EditResourcePage';
 import ResourceDetailsPage from './pages/ResourceDetailsPage';
@@ -26,8 +24,12 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <Router>
       <Routes>
-        <Route path="/" element={<Navigate to="/resources" />} />
-        <Route path="/resources" element={<ResourceListPage />} />
+        <Route path="/" element={<Navigate to="/login" />} />
+        <Route path="/dashboard/resources/add" element={<AddResourcePage />} />
+        <Route path="/dashboard/resources/edit/:id" element={<EditResourcePage />} />
+        <Route path="/dashboard/resources/:id" element={<ResourceDetailsPage />} />
+
+        <Route path="/resources" element={<Navigate to="/dashboard" replace />} />
         <Route path="/resources/add" element={<AddResourcePage />} />
         <Route path="/resources/edit/:id" element={<EditResourcePage />} />
         <Route path="/resources/:id" element={<ResourceDetailsPage />} />

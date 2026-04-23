@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../../api";
+import "./Dashboard.css"; // Reuse the advanced Dashboard styling
 import RoleNavbar from "../../comp/RoleNavbar";
-import "./Home.css";
+import ResourceListPage from "../../pages/ResourceListPage";
 
 export default function Home() {
     const navigate = useNavigate();
@@ -10,9 +11,30 @@ export default function Home() {
     const [homeData, setHomeData] = useState(null);
     const [profile, setProfile] = useState(null);
     const [error, setError] = useState("");
+    const [time, setTime] = useState(new Date());
+
+    useEffect(() => {
+        const timer = setInterval(() => setTime(new Date()), 1000);
+        return () => clearInterval(timer);
+    }, []);
 
     useEffect(() => {
         const loadData = async () => {
+            try {
+                const [dashboardResponse, profileResponse] = await Promise.all([
+                    api.get("/user/Admin/dashboard"),
+                    api.get("/user/Admin/me"),
+                ]);
+
+                setHomeData(dashboardResponse.data);
+                setProfile(profileResponse.data);
+                return;
+            } catch (adminErr) {
+                if (adminErr.response?.status !== 401 && adminErr.response?.status !== 403) {
+                    console.error(adminErr);
+                }
+            }
+
             try {
                 const [homeResponse, profileResponse] = await Promise.all([
                     api.get("/user/home"),
@@ -22,9 +44,7 @@ export default function Home() {
                 setHomeData(homeResponse.data);
                 setProfile(profileResponse.data);
             } catch (err) {
-                const status = err.response?.status;
-
-                if (status === 401 || status === 403) {
+                if (err.response?.status === 401 || err.response?.status === 403) {
                     navigate("/login");
                     return;
                 }
@@ -38,76 +58,171 @@ export default function Home() {
 
     const handleLogout = async () => {
         try {
-            // Call logout endpoint to clear cookies on backend
             await api.post("/auth/logout", {}, { withCredentials: true });
         } catch (err) {
             console.log("Logout error:", err.message);
         } finally {
-            // Redirect to login regardless of API result
             navigate("/login", { replace: true });
         }
     };
 
     if (!homeData && !error) {
         return (
-            <div className="home-screen loading-center">
-                <div className="spinner" />
-                <p>Loading home...</p>
+            <div className="md-screen loading">
+                <div className="md-spinner" />
+                <p>Loading Home...</p>
             </div>
         );
     }
 
-    const role = String(profile?.role || "").replace("ROLE_", "");
+    const roleLabel = String(profile?.role || "").replace("ROLE_", "") || "USER";
+    const isAdmin = String(profile?.role || "").toUpperCase().includes("ADMIN");
+    const homePath = isAdmin ? "/dashboard" : "/home";
+
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const currentMonth = monthNames[time.getMonth()];
+    const currentYear = time.getFullYear();
+    const currentDay = time.getDate();
+    
+    // Build calendar mock grid
+    const daysInMonth = new Date(currentYear, time.getMonth() + 1, 0).getDate();
+    const firstDayIndex = new Date(currentYear, time.getMonth(), 1).getDay();
+    const calCells = Array.from({ length: 42 });
 
     return (
-        <div className="home-screen page-shell">
-            <div className="bg-layer bg-user" />
-            <div className="panel page-panel">
-                <header className="top-nav">
-                    <div>
-                        <h1 className="brand">Uni Learn Hub</h1>
-                        <p className="subtitle">{homeData?.welcomeMessage || "Welcome back."}</p>
-                    </div>
-
-                    <div className="nav-group">
-                        <RoleNavbar role={profile?.role} />
-                        <button className="btn btn-danger" type="button" onClick={handleLogout}>
-                            Logout
-                        </button>
-                    </div>
-                </header>
-
-                {error && <p className="message error">{error}</p>}
-
-                {!error && (
-                    <>
-                        <div className="stats">
-                            <article className="stat-card">
-                                <h3>Notifications</h3>
-                                <p className="value">{homeData?.notifications ?? 0}</p>
-                            </article>
-                            <article className="stat-card">
-                                <h3>Tasks</h3>
-                                <p className="value">{homeData?.tasks ?? 0}</p>
-                            </article>
-                            <article className="stat-card">
-                                <h3>Role</h3>
-                                <p className="value">{role || "USER"}</p>
-                            </article>
+        <div className="md-screen">
+            <div className="md-layout">
+                {/* --- Left Floating Sidebar --- */}
+                <aside className="md-sidebar">
+                    <div className="md-sidebar-profile">
+                        <div className="md-avatar">
+                            {profile?.name ? profile.name[0].toUpperCase() : 'U'}
                         </div>
+                        <div className="md-user-info">
+                            <h5>{profile?.name || "User"} {profile?.lastName || ""}</h5>
+                            <span>{profile?.email || "user@example.com"}</span>
+                        </div>
+                    </div>
 
-                        <section className="section">
-                            <h3>Quick Actions</h3>
-                            <div className="actions-row">
-                                <Link className="btn btn-secondary" to="/profile">View Profile</Link>
-                                <Link className="btn btn-secondary" to="/settings">Manage Settings</Link>
-                                {role.includes("ADMIN") && (
-                                    <Link className="btn btn-secondary" to="/dashboard">Open Dashboard</Link>
+                    <div className="md-nav-group">
+                        <p className="md-nav-label">QUICK NAVIGATION</p>
+                        <nav className="md-nav">
+                            <Link to={homePath} className="md-nav-item">Dashboard</Link>
+                            <Link to="/profile" className="md-nav-item">Profile</Link>
+                            <Link to="/settings" className="md-nav-item">Settings</Link>
+                            {isAdmin && (
+                                <Link to="/dashboard" className="md-nav-item">Admin Dashboard</Link>
+                            )}
+                        </nav>
+                    </div>
+
+                    <div className="md-nav-group">
+                        <p className="md-nav-label">PROFILE STATUS</p>
+                        <div className="md-status-grid">
+                            <span>Completion</span> <strong>44%</strong>
+                            <span>Role</span> <strong>{roleLabel}</strong>
+                            <span>Recovery</span> <strong className="md-status-missing">Missing</strong>
+                        </div>
+                    </div>
+
+                    <div className="md-nav-group">
+                        <p className="md-nav-label">DASHBOARD STATS</p>
+                        <div className="md-sidebar-stats">
+                            <div className="md-stat-card-slim">
+                                <div className="md-stat-icon-slim">🔔</div>
+                                <div className="details">
+                                    <p>Notifications</p>
+                                    <h3>{homeData?.notifications ?? 0}</h3>
+                                </div>
+                            </div>
+                            <div className="md-stat-card-slim">
+                                <div className="md-stat-icon-slim">📋</div>
+                                <div className="details">
+                                    <p>Tasks</p>
+                                    <h3>{homeData?.tasks ?? 0}</h3>
+                                </div>
+                            </div>
+                            <div className="md-stat-card-slim">
+                                <div className="md-stat-icon-slim">{isAdmin ? '🛡️' : '👤'}</div>
+                                <div className="details">
+                                    <p>Current Role</p>
+                                    <h3>{roleLabel}</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="md-nav-group md-calendar-widget">
+                        <p className="md-nav-label">CALENDAR</p>
+                        <div className="md-cal-header">
+                            <strong>{currentMonth} {currentYear}</strong>
+                            <span className="md-today-badge">Today {currentDay}</span>
+                        </div>
+                        <p className="md-cal-time">{time.toLocaleTimeString()}</p>
+                        <div className="md-cal-grid">
+                            <div className="cal-day-label">Su</div>
+                            <div className="cal-day-label">Mo</div>
+                            <div className="cal-day-label">Tu</div>
+                            <div className="cal-day-label">We</div>
+                            <div className="cal-day-label">Th</div>
+                            <div className="cal-day-label">Fr</div>
+                            <div className="cal-day-label">Sa</div>
+                            {calCells.map((_, i) => {
+                                const dayNum = i - firstDayIndex + 1;
+                                const isCurrentMonth = dayNum > 0 && dayNum <= daysInMonth;
+                                const isToday = isCurrentMonth && dayNum === currentDay;
+                                return (
+                                    <div key={i} className={`cal-cell ${isToday ? 'active' : ''} ${!isCurrentMonth ? 'dim' : ''}`}>
+                                        {dayNum > 0 && dayNum <= daysInMonth ? dayNum : (dayNum <= 0 ? 30+dayNum : dayNum-daysInMonth)}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </aside>
+
+                {/* --- Main Home Content --- */}
+                <main className="md-main">
+                    <header className="md-topbar">
+                        <div className="md-topbar-left">
+                            <h1 className="md-title">User Dashboard</h1>
+                            <p className="md-subtitle">{homeData?.welcomeMessage || "Welcome back to your portal."}</p>
+                            
+                            <div className="md-header-actions">
+                                <Link className="md-btn md-btn-outline md-btn-sm" to="/profile">Manage Profile</Link>
+                                <Link className="md-btn md-btn-outline md-btn-sm" to="/settings">User Settings</Link>
+                                {isAdmin && (
+                                    <Link className="md-btn md-btn-outline md-btn-sm" to="/dashboard" style={{borderColor: '#8a4f3d', color: '#8a4f3d'}}>Open Admin Panel</Link>
                                 )}
                             </div>
-                        </section>
-                    </>
-                )}
+                        </div>
+                        <div className="md-topbar-actions">
+                            <RoleNavbar role={profile?.role} />
+                            <button className="md-btn-logout" onClick={handleLogout}>Logout</button>
+                        </div>
+                    </header>
+
+                    {error && <div className="md-alert error">{error}</div>}
+
+                    {!error && (
+                        <div className="md-content-scroll">
+                            {/* Resources Panel takes full clean layout footprint */}
+                            <div className="md-panel md-resource-wrapper">
+                                <div className="md-panel-header" style={{ display: 'none' }}>
+                                    <h2>Resources</h2>
+                                </div>
+                                <div className="md-panel-body p-0">
+                                    <ResourceListPage 
+                                        embedded 
+                                        basePath="/dashboard/resources" 
+                                        canManage={isAdmin} 
+                                        showBook={!isAdmin} 
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </main>
             </div>
         </div>
     );
