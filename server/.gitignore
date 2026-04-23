@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 target/
 *.jar
 *.class
@@ -7,3 +8,14 @@ node_modules/
 .tools/
 server/target/
 uploads/
+=======
+# Maven / build output
+target/
+*.class
+
+# Runtime uploads generated locally
+uploads/
+
+# Logs
+*.log
+>>>>>>> Development
