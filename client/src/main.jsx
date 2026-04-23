@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import './index.css';
 
 import AddResourcePage from './pages/AddResourcePage';
 import EditResourcePage from './pages/EditResourcePage';
@@ -14,11 +15,9 @@ import OAuth2Success from './auth/auths/OAuth2Success';
 import Dashboard from './auth/user/Dashboard';
 import ForgotPassword from './auth/user/ForgotPassword';
 import Home from './auth/user/Home';
+import TechHome from './auth/user/TechHome';
 import Profile from './auth/user/Profile';
 import Settings from './auth/user/Settings';
-
-
-import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -43,7 +42,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/home" element={<Home />} />
-          <Route path="/techome" element={<Home />} />
+          <Route path="/techhome" element={<TechHome />} />
+          <Route path="/techome" element={<Navigate to="/techhome" replace />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/settings" element={<Settings />} />
       </Routes>

@@ -15,7 +15,7 @@ const resolveResourceImage = (resource) => {
     return `data:image/jpeg;base64,${rawImage}`;
 };
 
-const ResourceTable = ({ resources, onDeleteClick, basePath = '/resources', canManage = true, showBook = false }) => {
+const ResourceTable = ({ resources, onDeleteClick, basePath = '/resources', canManage = true, showBook = false, onOpenModal }) => {
     if (!resources || resources.length === 0) {
         return (
             <div className="glass-panel" style={{ padding: '40px', textAlign: 'center', marginTop: '20px' }}>
@@ -105,14 +105,14 @@ const ResourceTable = ({ resources, onDeleteClick, basePath = '/resources', canM
 
                             <div className="card-footer">
                                 <div className="action-buttons">
-                                    <Link to={`${basePath}/${resource.id}`} className="btn btn-view">
+                                    <button onClick={() => onOpenModal('view', resource.id)} className="btn btn-view" style={{ border: 'none', cursor: 'pointer' }}>
                                         View
-                                    </Link>
+                                    </button>
                                     {canManage && (
                                         <>
-                                            <Link to={`${basePath}/edit/${resource.id}`} className="btn btn-edit">
+                                            <button onClick={() => onOpenModal('edit', resource.id)} className="btn btn-edit" style={{ border: 'none', cursor: 'pointer' }}>
                                                 Edit
-                                            </Link>
+                                            </button>
                                             <button onClick={() => onDeleteClick(resource)} className="btn btn-delete">
                                                 Delete
                                             </button>

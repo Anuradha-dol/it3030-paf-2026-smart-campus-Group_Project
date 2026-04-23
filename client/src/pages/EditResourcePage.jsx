@@ -99,9 +99,9 @@ const EditResourcePage = () => {
 
     const topPanelStyle = {
         background: 'rgba(255, 255, 255, 0.96)',
-        border: '1px solid rgba(220, 210, 195, 0.8)',
+        border: '1px solid rgba(241, 220, 205, 0.92)',
         borderRadius: '22px',
-        boxShadow: '0 18px 38px rgba(112, 87, 62, 0.1)',
+        boxShadow: '0 18px 38px rgba(217, 106, 50, 0.16)',
         padding: 'clamp(20px, 2.6vw, 32px)'
     };
 
@@ -116,9 +116,9 @@ const EditResourcePage = () => {
 
     const formPanelStyle = {
         background: 'rgba(255, 255, 255, 0.94)',
-        border: '1px solid rgba(226, 216, 202, 0.85)',
+        border: '1px solid rgba(241, 220, 205, 0.9)',
         borderRadius: '22px',
-        boxShadow: '0 14px 30px rgba(112, 87, 62, 0.08)',
+        boxShadow: '0 14px 30px rgba(217, 106, 50, 0.12)',
         padding: 'clamp(18px, 2.3vw, 30px)'
     };
 
@@ -143,7 +143,7 @@ const EditResourcePage = () => {
     const calCells = Array.from({ length: 42 });
 
     return (
-        <div className="md-screen resource-theme-root" style={{ background: 'linear-gradient(180deg, #f7f3ed 0%, #f2e9dc 100%)' }}>
+        <div className="md-screen resource-theme-root" style={{ background: 'linear-gradient(145deg, #fffdf9 0%, #fff8ee 100%)' }}>
             <div className="md-layout" style={{ gap: '40px', padding: '32px 32px 40px' }}>
                 <aside className="md-sidebar">
                     <div className="md-sidebar-profile">
@@ -237,7 +237,7 @@ const EditResourcePage = () => {
                                 <h1 style={{ margin: 0, fontSize: 'clamp(2rem, 4vw, 2.8rem)' }}>Edit Resource</h1>
                                 <Link to={listPath} className="btn btn-clear" style={{ whiteSpace: 'nowrap' }}>Back to List</Link>
                             </div>
-                            <p style={{ margin: 0, color: '#7a6350', fontSize: '0.95rem' }}>
+                            <p style={{ margin: 0, color: '#7d6656', fontSize: '0.95rem' }}>
                                 Update resource information, status, availability, and media while keeping data consistent.
                             </p>
                         </section>
@@ -252,7 +252,7 @@ const EditResourcePage = () => {
                                     isLoading={isLoading} 
                                 />
                             ) : (
-                                !error && <p style={{ margin: 0, color: '#8c7865' }}>Loading resource data...</p>
+                                !error && <p style={{ margin: 0, color: '#7d6656' }}>Loading resource data...</p>
                             )}
                         </section>
                     </div>

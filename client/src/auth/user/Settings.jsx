@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import api from '../../api';
 import './Settings.css';
 
 function getRoleHomePath(role) {
-    const normalized = String(role || '').replace('ROLE_', '').toUpperCase();
+    const normalized = normalizeRole(role);
 
     if (normalized.includes('ADMIN')) {
         return '/dashboard';
@@ -15,6 +15,80 @@ function getRoleHomePath(role) {
     }
 
     return '/home';
+}
+
+function normalizeRole(role) {
+    return String(role || '').replace('ROLE_', '').toUpperCase();
+}
+
+function getRoleNavigationLinks(role) {
+    const normalized = normalizeRole(role);
+
+    if (normalized.includes('ADMIN')) {
+        return [
+            { label: 'All Tickets', description: 'View every ticket', to: '/admin/tickets', icon: 'ticket' },
+            { label: 'All Bookings', description: 'View every booking', to: '/admin/bookings', icon: 'history' },
+        ];
+    }
+
+    if (normalized.includes('TECHNICIAN')) {
+        return [
+            { label: 'Work Appointments', description: 'Assigned appointments', to: '/technician/appointments', icon: 'appointment' },
+            { label: 'Completed Works', description: 'Finished work list', to: '/technician/completed-works', icon: 'completed' },
+        ];
+    }
+
+    return [
+        { label: 'Tickets', description: 'Your ticket requests', to: '/tickets', icon: 'ticket' },
+        { label: 'Bookings', description: 'Create new booking', to: '/bookings', icon: 'booking' },
+        { label: 'View Bookings', description: 'Your booking history', to: '/bookings/my', icon: 'history' },
+    ];
+}
+
+function renderRoleNavIcon(icon) {
+    if (icon === 'booking') {
+        return (
+            <svg viewBox='0 0 24 24' role='img' aria-hidden='true' focusable='false'>
+                <path d='M7 3v2M17 3v2M4 9h16M6 5h12a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z' />
+                <path d='M12 12v5M9.5 14.5h5' />
+            </svg>
+        );
+    }
+
+    if (icon === 'history') {
+        return (
+            <svg viewBox='0 0 24 24' role='img' aria-hidden='true' focusable='false'>
+                <path d='M3 12a9 9 0 1 0 3-6.7' />
+                <path d='M3 4v4h4M12 7v5l3 2' />
+            </svg>
+        );
+    }
+
+    if (icon === 'appointment') {
+        return (
+            <svg viewBox='0 0 24 24' role='img' aria-hidden='true' focusable='false'>
+                <path d='M7 3v2M17 3v2M4 9h16M6 5h12a2 2 0 0 1 2 2v4.5M4 12V7a2 2 0 0 1 2-2' />
+                <path d='m14.5 16.5 2 2 4-4' />
+                <circle cx='17.5' cy='17.5' r='4.5' />
+            </svg>
+        );
+    }
+
+    if (icon === 'completed') {
+        return (
+            <svg viewBox='0 0 24 24' role='img' aria-hidden='true' focusable='false'>
+                <circle cx='12' cy='12' r='9' />
+                <path d='m8.5 12.5 2.3 2.3 4.8-4.8' />
+            </svg>
+        );
+    }
+
+    return (
+        <svg viewBox='0 0 24 24' role='img' aria-hidden='true' focusable='false'>
+            <path d='M4 7.5h16v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z' />
+            <path d='M9 7.5V6a3 3 0 0 1 6 0v1.5M10 12h4' />
+        </svg>
+    );
 }
 
 function buildAssetUrl(path) {
@@ -43,6 +117,7 @@ const toast = {
 
 export default function Settings() {
     const navigate = useNavigate();
+    const location = useLocation();
 
     const [initialLoading, setInitialLoading] = useState(true);
     const [working, setWorking] = useState(false);
@@ -86,6 +161,7 @@ export default function Settings() {
         ...Array.from({ length: calendarFirstDay }, () => null),
         ...Array.from({ length: calendarDaysCount }, (_, index) => index + 1),
     ];
+    const roleNavigationLinks = getRoleNavigationLinks(user.role);
 
     const loadProfile = async () => {
         try {
@@ -119,7 +195,7 @@ export default function Settings() {
                 firstName,
                 lastName,
                 email: data.email || '',
-                role: String(data.role || '').replace('ROLE_', ''),
+                role: normalizeRole(data.role),
                 provider,
                 profileImageUrl: data.profileImageUrl || '',
                 coverImageUrl: data.coverImageUrl || '',
@@ -429,9 +505,27 @@ export default function Settings() {
 
                 <main className='settings-main'>
                     <header className='settings-main__header'>
-                        <div>
+                        <div className='settings-header__title'>
                             <h1>Preferences</h1>
                             <p>Manage profile, credentials, image uploads, and account security.</p>
+
+                            <div className='settings-role-nav-inline'>
+                                {roleNavigationLinks.map((item) => (
+                                    <Link
+                                        key={item.to}
+                                        className={`settings-role-nav-link${location.pathname === item.to ? ' active' : ''}`}
+                                        to={item.to}
+                                    >
+                                        <span className='settings-role-nav-icon'>
+                                            {renderRoleNavIcon(item.icon)}
+                                        </span>
+                                        <span className='settings-role-nav-text'>
+                                            <strong>{item.label}</strong>
+                                            <small>{item.description}</small>
+                                        </span>
+                                    </Link>
+                                ))}
+                            </div>
                         </div>
                         <span className={`status-chip${working ? ' active' : ''}`}>
                             {working ? 'Processing...' : 'Ready'}

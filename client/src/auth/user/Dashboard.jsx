@@ -1,17 +1,76 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import api from "../../api";
 import "./Dashboard.css";
-import RoleNavbar from "../../comp/RoleNavbar";
+import "./Profile.css";
 import ResourceListPage from "../../pages/ResourceListPage";
+
+function extractProfileImagePath(profileLike) {
+    if (!profileLike || typeof profileLike !== "object") {
+        return "";
+    }
+
+    return (
+        profileLike.profileImageUrl ||
+        profileLike.imageUrl ||
+        profileLike.image ||
+        profileLike.profileImage ||
+        profileLike.avatarUrl ||
+        ""
+    );
+}
+
+function buildAssetUrl(path) {
+    if (!path) {
+        return "";
+    }
+
+    const normalizedPath = String(path).trim().replace(/\\/g, "/");
+
+    if (!normalizedPath) {
+        return "";
+    }
+
+    if (
+        normalizedPath.startsWith("http://") ||
+        normalizedPath.startsWith("https://") ||
+        normalizedPath.startsWith("data:image/")
+    ) {
+        return normalizedPath;
+    }
+
+    return normalizedPath.startsWith("/")
+        ? `${api.defaults.baseURL}${normalizedPath}`
+        : `${api.defaults.baseURL}/${normalizedPath}`;
+}
+
+function renderHeaderNavIcon(icon) {
+    if (icon === "history") {
+        return (
+            <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
+                <path d="M3 12a9 9 0 1 0 3-6.7" />
+                <path d="M3 4v4h4M12 7v5l3 2" />
+            </svg>
+        );
+    }
+
+    return (
+        <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
+            <path d="M4 7.5h16v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z" />
+            <path d="M9 7.5V6a3 3 0 0 1 6 0v1.5M10 12h4" />
+        </svg>
+    );
+}
 
 export default function Dashboard() {
     const navigate = useNavigate();
+    const location = useLocation();
 
     const [homeData, setHomeData] = useState(null);
     const [profile, setProfile] = useState(null);
     const [error, setError] = useState("");
     const [time, setTime] = useState(new Date());
+    const [avatarFailed, setAvatarFailed] = useState(false);
 
     useEffect(() => {
         const timer = setInterval(() => setTime(new Date()), 1000);
@@ -19,41 +78,115 @@ export default function Dashboard() {
     }, []);
 
     useEffect(() => {
+        let cancelled = false;
+
+        const enrichProfileWithAuthImage = async (profileData) => {
+            const safeProfile = profileData || {};
+
+            if (extractProfileImagePath(safeProfile)) {
+                return safeProfile;
+            }
+
+            try {
+                const authResponse = await api.get("/auth/me");
+                const authUser = authResponse?.data?.user;
+                const authImagePath = extractProfileImagePath(authUser);
+
+                if (!authImagePath) {
+                    return safeProfile;
+                }
+
+                return {
+                    ...safeProfile,
+                    profileImageUrl: authImagePath,
+                };
+            } catch {
+                return safeProfile;
+            }
+        };
+
         const loadDashboard = async () => {
             try {
                 const [dashboardResponse, profileResponse] = await Promise.all([
                     api.get("/user/Admin/dashboard"),
                     api.get("/user/Admin/me"),
                 ]);
+                const enrichedProfile = await enrichProfileWithAuthImage(profileResponse.data);
+
+                if (cancelled) {
+                    return;
+                }
 
                 setHomeData(dashboardResponse.data);
-                setProfile(profileResponse.data);
+                setProfile(enrichedProfile);
             } catch (adminErr) {
+                if (cancelled) {
+                    return;
+                }
+
                 if (adminErr.response?.status === 401) {
                     navigate("/login");
                     return;
                 }
 
-                try {
-                    const [homeResponse, profileResponse] = await Promise.all([
-                        api.get("/user/home"),
-                        api.get("/user/me"),
-                    ]);
+                if (adminErr.response?.status === 403) {
+                    try {
+                        const authResponse = await api.get("/auth/me");
+                        const role = String(authResponse?.data?.user?.role || "").toUpperCase();
 
-                    setHomeData(homeResponse.data);
-                    setProfile(profileResponse.data);
-                } catch (fallbackErr) {
-                    if (fallbackErr.response?.status === 401 || fallbackErr.response?.status === 403) {
-                        navigate("/login");
+                        if (role.includes("TECHNICIAN")) {
+                            navigate("/techhome", { replace: true });
+                            return;
+                        }
+
+                        navigate("/home", { replace: true });
+                        return;
+                    } catch {
+                        navigate("/login", { replace: true });
                         return;
                     }
-                    setError(fallbackErr.response?.data?.message || "Failed to load dashboard.");
                 }
+
+                setError(adminErr.response?.data?.message || "Failed to load dashboard.");
             }
         };
 
         loadDashboard();
+
+        return () => {
+            cancelled = true;
+        };
     }, [navigate]);
+
+    useEffect(() => {
+        setAvatarFailed(false);
+    }, [profile?.profileImageUrl, profile?.imageUrl, profile?.image, profile?.avatarUrl]);
+
+    useEffect(() => {
+        const normalizedRole = String(profile?.role || "").toUpperCase();
+
+        if (!normalizedRole) {
+            return;
+        }
+
+        if (normalizedRole.includes("ADMIN")) {
+            if (location.pathname !== "/dashboard") {
+                navigate("/dashboard", { replace: true });
+            }
+            return;
+        }
+
+        if (normalizedRole.includes("TECHNICIAN")) {
+            if (location.pathname !== "/techhome") {
+                navigate("/techhome", { replace: true });
+            }
+            return;
+        }
+
+        if (location.pathname !== "/home") {
+            navigate("/home", { replace: true });
+        }
+    }, [profile?.role, location.pathname, navigate]);
 
     const handleLogout = async () => {
         try {
@@ -75,105 +208,130 @@ export default function Dashboard() {
     }
 
     const roleLabel = String(profile?.role || "").replace("ROLE_", "") || "USER";
-    const isAdmin = String(profile?.role || "").toUpperCase().includes("ADMIN");
-    const homePath = isAdmin ? "/dashboard" : "/home";
-
-    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    const currentMonth = monthNames[time.getMonth()];
-    const currentYear = time.getFullYear();
+    const normalizedRole = String(profile?.role || "").toUpperCase();
+    const isAdmin = normalizedRole.includes("ADMIN");
+    const isTechnician = normalizedRole.includes("TECHNICIAN");
+    const dashboardTitle = "Admin Dashboard";
+    const dashboardSubtitle = "Welcome back to your administration portal.";
+    const homePath = "/dashboard";
+    const homeLabel = "Dashboard";
+    const roleNavigationLinks = [
+        { label: "All Tickets", description: "View every ticket", to: "/admin/tickets", icon: "ticket" },
+        { label: "All Bookings", description: "View every booking", to: "/admin/bookings", icon: "history" },
+    ];
+    const firstName = profile?.name || profile?.firstname || "";
+    const lastName = profile?.lastName || profile?.lastname || "";
+    const fullName = `${firstName} ${lastName}`.trim();
+    const initials = (firstName[0] || "U").toUpperCase();
+    const profileImage = buildAssetUrl(extractProfileImagePath(profile));
+    const showAvatarImage = Boolean(profileImage) && !avatarFailed;
     const currentDay = time.getDate();
-    
-    // Build calendar mock grid
-    const daysInMonth = new Date(currentYear, time.getMonth() + 1, 0).getDate();
-    const firstDayIndex = new Date(currentYear, time.getMonth(), 1).getDay();
-    const calCells = Array.from({ length: 42 });
+    const calendarLabel = time.toLocaleString("default", { month: "long", year: "numeric" });
+    const clockLabel = time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+    const calendarYear = time.getFullYear();
+    const calendarMonth = time.getMonth();
+    const calendarFirstDay = new Date(calendarYear, calendarMonth, 1).getDay();
+    const calendarDaysCount = new Date(calendarYear, calendarMonth + 1, 0).getDate();
+    const calendarCells = [
+        ...Array.from({ length: calendarFirstDay }, () => null),
+        ...Array.from({ length: calendarDaysCount }, (_, index) => index + 1),
+    ];
+    const completionFields = [
+        firstName,
+        lastName,
+        profile?.email,
+        profile?.phoneNumber,
+        profile?.tempEmail,
+        profile?.year,
+        profile?.semester,
+        profile?.profileImageUrl || profile?.imageUrl,
+        profile?.coverImageUrl,
+    ];
+    const filledFieldsCount = completionFields.filter((field) => field && String(field).trim()).length;
+    const completionPercentage = Math.round((filledFieldsCount / completionFields.length) * 100);
 
     return (
         <div className="md-screen">
             <div className="md-layout">
-                {/* --- Left Floating Sidebar --- */}
-                <aside className="md-sidebar">
-                    {/* User Mini Profile (Optional but good for context) */}
-                    <div className="md-sidebar-profile">
-                        <div className="md-avatar">
-                            {profile?.name ? profile.name[0].toUpperCase() : 'U'}
-                        </div>
-                        <div className="md-user-info">
-                            <h5>{profile?.name || "User"} {profile?.lastName || ""}</h5>
-                            <span>{profile?.email || "user@example.com"}</span>
-                        </div>
-                    </div>
-
-                    <div className="md-nav-group">
-                        <p className="md-nav-label">QUICK NAVIGATION</p>
-                        <nav className="md-nav">
-                            <Link to={homePath} className="md-nav-item">Dashboard</Link>
-                            <Link to="/profile" className="md-nav-item">Profile</Link>
-                            <Link to="/settings" className="md-nav-item">Settings</Link>
-                        </nav>
-                    </div>
-
-                    <div className="md-nav-group">
-                        <p className="md-nav-label">PROFILE STATUS</p>
-                        <div className="md-status-grid">
-                            <span>Completion</span> <strong>44%</strong>
-                            <span>Role</span> <strong>{roleLabel}</strong>
-                            <span>Recovery</span> <strong className="md-status-missing">Missing</strong>
+                <aside className="md-sidebar profile-sidebar">
+                    <div className="sidebar-brand">
+                        <span
+                            className="brand-avatar"
+                            style={
+                                showAvatarImage
+                                    ? undefined
+                                    : { background: "linear-gradient(130deg, #ed7b3f, #ffc292)", color: "#fff" }
+                            }
+                        >
+                            {showAvatarImage ? (
+                                <img
+                                    src={profileImage}
+                                    alt="Profile avatar"
+                                    onError={() => setAvatarFailed(true)}
+                                />
+                            ) : (
+                                initials
+                            )}
+                        </span>
+                        <div className="brand-info">
+                            <strong>{fullName || "User"}</strong>
+                            <small>{profile?.email || "No email"}</small>
                         </div>
                     </div>
 
-                    <div className="md-nav-group">
-                        <p className="md-nav-label">DASHBOARD STATS</p>
-                        <div className="md-sidebar-stats">
-                            <div className="md-stat-card-slim">
-                                <div className="md-stat-icon-slim">🔔</div>
-                                <div className="details">
-                                    <p>Notifications</p>
-                                    <h3>{homeData?.notifications ?? 0}</h3>
-                                </div>
+                    <nav className="sidebar-nav">
+                        <p className="sidebar-label">Quick Navigation</p>
+                        <Link className="sidebar-link active" to={homePath}>
+                            {homeLabel}
+                        </Link>
+                        <Link className="sidebar-link" to="/profile">
+                            Profile
+                        </Link>
+                        <Link className="sidebar-link" to="/settings">
+                            Settings
+                        </Link>
+                    </nav>
+
+                    <div className="sidebar-card">
+                        <p className="sidebar-label">Profile Status</p>
+                        <div className="sidebar-item">
+                            <span>Completion</span>
+                            <strong>{completionPercentage}%</strong>
+                        </div>
+                        <div className="sidebar-item">
+                            <span>Role</span>
+                            <strong>{roleLabel}</strong>
+                        </div>
+                        <div className="sidebar-item">
+                            <span>Recovery</span>
+                            <strong>{profile?.tempEmail ? "Added" : "Missing"}</strong>
+                        </div>
+                    </div>
+
+                    <div className="sidebar-calendar-card">
+                        <p className="sidebar-label">Calendar</p>
+                        <div className="sidebar-calendar-header">
+                            <strong>{calendarLabel}</strong>
+                            <span className="sidebar-today-badge">Today {currentDay}</span>
+                        </div>
+                        <div className="sidebar-clock">{clockLabel}</div>
+                        <div className="sidebar-calendar-grid">
+                            <div className="sidebar-calendar-weekdays">
+                                {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((day) => (
+                                    <span key={day} className="weekday">{day}</span>
+                                ))}
                             </div>
-                            <div className="md-stat-card-slim">
-                                <div className="md-stat-icon-slim">🗂️</div>
-                                <div className="details">
-                                    <p>Tasks</p>
-                                    <h3>{homeData?.tasks ?? 0}</h3>
-                                </div>
+                            <div className="sidebar-calendar-days">
+                                {calendarCells.map((day, index) => (
+                                    <span
+                                        key={`day-${index}`}
+                                        className={`day${day === null ? " empty" : ""}${day === currentDay ? " today" : ""}`}
+                                        aria-hidden={day === null}
+                                    >
+                                        {day ?? ""}
+                                    </span>
+                                ))}
                             </div>
-                            <div className="md-stat-card-slim">
-                                <div className="md-stat-icon-slim">{isAdmin ? '🛡️' : '👤'}</div>
-                                <div className="details">
-                                    <p>Current Role</p>
-                                    <h3>{roleLabel}</h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="md-nav-group md-calendar-widget">
-                        <p className="md-nav-label">CALENDAR</p>
-                        <div className="md-cal-header">
-                            <strong>{currentMonth} {currentYear}</strong>
-                            <span className="md-today-badge">Today {currentDay}</span>
-                        </div>
-                        <p className="md-cal-time">{time.toLocaleTimeString()}</p>
-                        <div className="md-cal-grid">
-                            <div className="cal-day-label">Su</div>
-                            <div className="cal-day-label">Mo</div>
-                            <div className="cal-day-label">Tu</div>
-                            <div className="cal-day-label">We</div>
-                            <div className="cal-day-label">Th</div>
-                            <div className="cal-day-label">Fr</div>
-                            <div className="cal-day-label">Sa</div>
-                            {calCells.map((_, i) => {
-                                const dayNum = i - firstDayIndex + 1;
-                                const isCurrentMonth = dayNum > 0 && dayNum <= daysInMonth;
-                                const isToday = isCurrentMonth && dayNum === currentDay;
-                                return (
-                                    <div key={i} className={`cal-cell ${isToday ? 'active' : ''} ${!isCurrentMonth ? 'dim' : ''}`}>
-                                        {dayNum > 0 && dayNum <= daysInMonth ? dayNum : (dayNum <= 0 ? 30+dayNum : dayNum-daysInMonth)}
-                                    </div>
-                                );
-                            })}
                         </div>
                     </div>
                 </aside>
@@ -182,16 +340,27 @@ export default function Dashboard() {
                 <main className="md-main">
                     <header className="md-topbar">
                         <div className="md-topbar-left">
-                            <h1 className="md-title">Admin Dashboard</h1>
-                            <p className="md-subtitle">{homeData?.welcomeMessage || "Welcome back to your administration portal."}</p>
-                            
-                            <div className="md-header-actions">
-                                <Link className="md-btn md-btn-outline md-btn-sm" to="/profile">Manage Profile</Link>
-                                <Link className="md-btn md-btn-outline md-btn-sm" to="/settings">Admin Settings</Link>
+                            <h1 className="md-title">{dashboardTitle}</h1>
+                            <p className="md-subtitle">{dashboardSubtitle}</p>
+                            <div className="profile-role-nav-inline">
+                                {roleNavigationLinks.map((item) => (
+                                    <Link
+                                        key={item.to}
+                                        className={`profile-role-nav-link${location.pathname === item.to ? " active" : ""}`}
+                                        to={item.to}
+                                    >
+                                        <span className="profile-role-nav-icon">
+                                            {renderHeaderNavIcon(item.icon)}
+                                        </span>
+                                        <span className="profile-role-nav-text">
+                                            <strong>{item.label}</strong>
+                                            <small>{item.description}</small>
+                                        </span>
+                                    </Link>
+                                ))}
                             </div>
                         </div>
                         <div className="md-topbar-actions">
-                            <RoleNavbar role={profile?.role} />
                             <button className="md-btn-logout" onClick={handleLogout}>Logout</button>
                         </div>
                     </header>
