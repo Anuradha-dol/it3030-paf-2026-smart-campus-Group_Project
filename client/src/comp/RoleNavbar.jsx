@@ -4,18 +4,18 @@ function normalizeRole(role) {
     return String(role || "").replace("ROLE_", "").toUpperCase();
 }
 
-function getHomePath(role) {
+function getPrimaryNav(role) {
     const normalized = normalizeRole(role);
 
     if (normalized.includes("ADMIN")) {
-        return "/dashboard";
+        return { label: "Dashboard", to: "/dashboard" };
     }
 
     if (normalized.includes("TECHNICIAN")) {
-        return "/techome";
+        return { label: "Technician", to: "/techhome" };
     }
 
-    return "/home";
+    return { label: "Home", to: "/home" };
 }
 
 function getLinkClass(baseClass, isActive) {
@@ -24,16 +24,16 @@ function getLinkClass(baseClass, isActive) {
 
 export default function RoleNavbar({ role }) {
     const location = useLocation();
-    const homePath = getHomePath(role);
+    const primaryNav = getPrimaryNav(role);
 
-    const homeActive = location.pathname === homePath;
+    const primaryActive = location.pathname === primaryNav.to;
     const profileActive = location.pathname === "/profile";
     const settingsActive = location.pathname === "/settings";
 
     return (
-        <>
-            <Link className={getLinkClass("nav-link", homeActive)} to={homePath}>
-                Dashboard
+        <nav className="role-navbar" aria-label="Primary navigation">
+            <Link className={getLinkClass("nav-link", primaryActive)} to={primaryNav.to}>
+                {primaryNav.label}
             </Link>
             <Link className={getLinkClass("nav-link", profileActive)} to="/profile">
                 Profile
@@ -41,6 +41,6 @@ export default function RoleNavbar({ role }) {
             <Link className={getLinkClass("nav-link", settingsActive)} to="/settings">
                 Settings
             </Link>
-        </>
+        </nav>
     );
 }

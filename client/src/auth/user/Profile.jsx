@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import api from '../../api';
 import './Profile.css';
 
@@ -16,7 +16,7 @@ const SEMESTER_OPTIONS = [
 ];
 
 function getRoleHomePath(role) {
-    const normalized = String(role || '').replace('ROLE_', '').toUpperCase();
+    const normalized = normalizeRole(role);
 
     if (normalized.includes('ADMIN')) {
         return '/dashboard';
@@ -27,6 +27,80 @@ function getRoleHomePath(role) {
     }
 
     return '/home';
+}
+
+function normalizeRole(role) {
+    return String(role || '').replace('ROLE_', '').toUpperCase();
+}
+
+function getRoleNavigationLinks(role) {
+    const normalized = normalizeRole(role);
+
+    if (normalized.includes('ADMIN')) {
+        return [
+            { label: 'All Tickets', description: 'View every ticket', to: '/admin/tickets', icon: 'ticket' },
+            { label: 'All Bookings', description: 'View every booking', to: '/admin/bookings', icon: 'history' },
+        ];
+    }
+
+    if (normalized.includes('TECHNICIAN')) {
+        return [
+            { label: 'Work Appointments', description: 'Assigned appointments', to: '/technician/appointments', icon: 'appointment' },
+            { label: 'Completed Works', description: 'Finished work list', to: '/technician/completed-works', icon: 'completed' },
+        ];
+    }
+
+    return [
+        { label: 'Tickets', description: 'Your ticket requests', to: '/tickets', icon: 'ticket' },
+        { label: 'Bookings', description: 'Create new booking', to: '/bookings', icon: 'booking' },
+        { label: 'View Bookings', description: 'Your booking history', to: '/bookings/my', icon: 'history' },
+    ];
+}
+
+function renderRoleNavIcon(icon) {
+    if (icon === 'booking') {
+        return (
+            <svg viewBox='0 0 24 24' role='img' aria-hidden='true' focusable='false'>
+                <path d='M7 3v2M17 3v2M4 9h16M6 5h12a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z' />
+                <path d='M12 12v5M9.5 14.5h5' />
+            </svg>
+        );
+    }
+
+    if (icon === 'history') {
+        return (
+            <svg viewBox='0 0 24 24' role='img' aria-hidden='true' focusable='false'>
+                <path d='M3 12a9 9 0 1 0 3-6.7' />
+                <path d='M3 4v4h4M12 7v5l3 2' />
+            </svg>
+        );
+    }
+
+    if (icon === 'appointment') {
+        return (
+            <svg viewBox='0 0 24 24' role='img' aria-hidden='true' focusable='false'>
+                <path d='M7 3v2M17 3v2M4 9h16M6 5h12a2 2 0 0 1 2 2v4.5M4 12V7a2 2 0 0 1 2-2' />
+                <path d='m14.5 16.5 2 2 4-4' />
+                <circle cx='17.5' cy='17.5' r='4.5' />
+            </svg>
+        );
+    }
+
+    if (icon === 'completed') {
+        return (
+            <svg viewBox='0 0 24 24' role='img' aria-hidden='true' focusable='false'>
+                <circle cx='12' cy='12' r='9' />
+                <path d='m8.5 12.5 2.3 2.3 4.8-4.8' />
+            </svg>
+        );
+    }
+
+    return (
+        <svg viewBox='0 0 24 24' role='img' aria-hidden='true' focusable='false'>
+            <path d='M4 7.5h16v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z' />
+            <path d='M9 7.5V6a3 3 0 0 1 6 0v1.5M10 12h4' />
+        </svg>
+    );
 }
 
 function buildAssetUrl(path) {
@@ -43,6 +117,7 @@ function buildAssetUrl(path) {
 
 export default function Profile() {
     const navigate = useNavigate();
+    const location = useLocation();
 
     const [profile, setProfile] = useState(null);
     const [error, setError] = useState('');
@@ -111,8 +186,9 @@ export default function Profile() {
     const firstName = profile?.name || profile?.firstname || '';
     const lastName = profile?.lastName || profile?.lastname || '';
     const fullName = `${firstName} ${lastName}`.trim();
-    const roleLabel = String(profile?.role || '').replace('ROLE_', '') || 'USER';
+    const roleLabel = normalizeRole(profile?.role) || 'USER';
     const roleHomePath = getRoleHomePath(profile?.role);
+    const roleNavigationLinks = getRoleNavigationLinks(profile?.role);
     const profileImage = buildAssetUrl(profile?.profileImageUrl || profile?.imageUrl);
     const coverImage = buildAssetUrl(profile?.coverImageUrl);
     const initials = (firstName[0] || 'U').toUpperCase();
@@ -381,9 +457,27 @@ export default function Profile() {
 
                 <main className='profile-main'>
                     <header className='profile-header'>
-                        <div>
+                        <div className='profile-header__title'>
                             <h1>Profile</h1>
                             <p>Manage your personal details and completion progress.</p>
+
+                            <div className='profile-role-nav-inline'>
+                                {roleNavigationLinks.map((item) => (
+                                    <Link
+                                        key={item.to}
+                                        className={`profile-role-nav-link${location.pathname === item.to ? ' active' : ''}`}
+                                        to={item.to}
+                                    >
+                                        <span className='profile-role-nav-icon'>
+                                            {renderRoleNavIcon(item.icon)}
+                                        </span>
+                                        <span className='profile-role-nav-text'>
+                                            <strong>{item.label}</strong>
+                                            <small>{item.description}</small>
+                                        </span>
+                                    </Link>
+                                ))}
+                            </div>
                         </div>
                         <div className='profile-header__actions'>
                             <button className='btn btn-danger' type='button' onClick={handleLogout}>
