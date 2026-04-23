@@ -17,4 +17,5 @@ public interface UserRepo extends JpaRepository<User, Long> {
 
     Optional<User> findByPhoneNumber(String phoneNumber);
 
+    java.util.List<User> findByRole(com.smartcampus.enums.Role role);
 }
