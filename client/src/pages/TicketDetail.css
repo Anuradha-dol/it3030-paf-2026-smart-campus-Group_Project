@@ -60,9 +60,9 @@
 }
 
 .status-banner.closed {
-  background: #f1f5f9;
-  color: #475569;
-  border: 1px solid #e2e8f0;
+  background: #fff1e4;
+  color: #a3562d;
+  border: 1px solid #f4ccad;
 }
 
 .status-actions,
