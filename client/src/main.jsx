@@ -66,7 +66,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           <Route path="/tickets" element={<TicketDashboard />} />
           <Route path="/tickets/create" element={<CreateTicket />} />
           <Route path="/tickets/:id" element={<TicketDetail />} />
+          <Route path="/admin/tickets" element={<TicketDashboard />} />
+          <Route path="/admin/tickets/create" element={<CreateTicket />} />
+          <Route path="/admin/tickets/:id" element={<TicketDetail />} />
           <Route path="/technician/my-tickets" element={<TechnicianTickets />} />
+          <Route path="/technician/appointments" element={<TechnicianTickets />} />
       </Routes>
     </Router>
   </React.StrictMode>,

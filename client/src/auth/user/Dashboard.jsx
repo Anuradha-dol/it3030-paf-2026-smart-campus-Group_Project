@@ -124,15 +124,19 @@ export default function Dashboard() {
                     return;
                 }
 
-                if (adminErr.response?.status === 401) {
-                    navigate("/login");
-                    return;
-                }
-
-                if (adminErr.response?.status === 403) {
+                if (
+                    adminErr.response?.status === 400 ||
+                    adminErr.response?.status === 401 ||
+                    adminErr.response?.status === 403
+                ) {
                     try {
                         const authResponse = await api.get("/auth/me");
                         const role = String(authResponse?.data?.user?.role || "").toUpperCase();
+
+                        if (role.includes("ADMIN")) {
+                            navigate("/dashboard", { replace: true });
+                            return;
+                        }
 
                         if (role.includes("TECHNICIAN")) {
                             navigate("/techhome", { replace: true });
@@ -141,8 +145,13 @@ export default function Dashboard() {
 
                         navigate("/home", { replace: true });
                         return;
-                    } catch {
-                        navigate("/login", { replace: true });
+                    } catch (authErr) {
+                        if (authErr.response?.status === 401 || authErr.response?.status === 403) {
+                            navigate("/login", { replace: true });
+                            return;
+                        }
+
+                        setError("Unable to verify your session right now. Please refresh and try again.");
                         return;
                     }
                 }

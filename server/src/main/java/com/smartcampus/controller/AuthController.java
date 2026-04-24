@@ -15,10 +15,14 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Map;
 
@@ -54,8 +58,12 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(
             @RequestBody LoginRequest req,
+            HttpServletRequest request,
             HttpServletResponse response
     ) {
+        if (request.getSession(false) != null) {
+            request.getSession(false).invalidate();
+        }
         return ResponseEntity.ok(authService.signIn(req, response));
     }
 
@@ -98,10 +106,13 @@ public class AuthController {
 
     // ================= LOGOUT =================
     @PostMapping("/logout")
-    public ResponseEntity<Map<String, String>> logout(HttpServletResponse response) {
+    public ResponseEntity<Map<String, String>> logout(HttpServletRequest request, HttpServletResponse response) {
         // Clear JWT tokens
         jwtUtils.removeToken(response, Token.ACCESS);
         jwtUtils.removeToken(response, Token.REFRESH);
+        if (request.getSession(false) != null) {
+            request.getSession(false).invalidate();
+        }
 
         return ResponseEntity.ok(Map.of("message", "Logout successful"));
     }
@@ -119,13 +130,27 @@ public class AuthController {
     // ================= ME =================
     @GetMapping("/me")
     public ResponseEntity<Map<String, Object>> getMe(
-            @AuthenticationPrincipal UserDetails userDetails
+            @AuthenticationPrincipal UserDetails userDetails,
+            Authentication authentication
     ) {
-        User user = userRepo.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = resolveAuthenticatedUser(userDetails, authentication);
 
         Map<String, Object> response = new java.util.HashMap<>();
-        response.put("user", user);
+        Map<String, Object> userPayload = new java.util.HashMap<>();
+        userPayload.put("userId", user.getUserId());
+        userPayload.put("firstname", user.getFirstname());
+        userPayload.put("lastName", user.getLastName());
+        userPayload.put("email", user.getEmail());
+        userPayload.put("imageUrl", user.getImageUrl());
+        userPayload.put("coverImageUrl", user.getCoverImageUrl());
+        userPayload.put("phoneNumber", user.getPhoneNumber());
+        userPayload.put("role", user.getRole());
+        userPayload.put("year", user.getYear());
+        userPayload.put("semester", user.getSemester());
+        userPayload.put("provider", user.getProvider());
+        userPayload.put("isVerified", user.getIsVerified());
+
+        response.put("user", userPayload);
         response.put("provider", user.getProvider());
         response.put("authenticated", true);
 
@@ -148,7 +173,7 @@ public class AuthController {
 
         try {
             String username = jwtUtils.extractUsername(refreshToken);
-            User user = userRepo.findByEmail(username).orElseThrow(() -> new RuntimeException("User not found"));
+            User user = userRepo.findByEmailIgnoreCase(username).orElseThrow(() -> new RuntimeException("User not found"));
 
             // Validate the token and check if it matches the user's stored refresh token
             if (jwtUtils.validateToken(refreshToken, user) && refreshToken.equals(user.getRefreshToken())) {
@@ -179,11 +204,59 @@ public class AuthController {
     private String getCookie(HttpServletRequest request, String name) {
         if (request.getCookies() == null) return null;
 
+        String latestValue = null;
         for (Cookie c : request.getCookies()) {
             if (name.equals(c.getName())) {
-                return c.getValue();
+                String value = c.getValue();
+                if (value != null && !value.isBlank()) {
+                    latestValue = value;
+                }
             }
         }
-        return null;
+        return latestValue;
+    }
+
+    private User resolveAuthenticatedUser(UserDetails userDetails, Authentication authentication) {
+        if (userDetails != null && userDetails.getUsername() != null && !userDetails.getUsername().isBlank()) {
+            return findUserByEmail(userDetails.getUsername());
+        }
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+        }
+
+        Object principal = authentication.getPrincipal();
+
+        if (principal instanceof User user) {
+            return findUserByEmail(user.getEmail());
+        }
+
+        if (principal instanceof UserDetails details) {
+            return findUserByEmail(details.getUsername());
+        }
+
+        if (principal instanceof OAuth2User oauth2User) {
+            Object emailAttr = oauth2User.getAttribute("email");
+            if (emailAttr != null) {
+                return findUserByEmail(String.valueOf(emailAttr));
+            }
+        }
+
+        if (principal instanceof String username
+                && !username.isBlank()
+                && !"anonymousUser".equalsIgnoreCase(username)) {
+            return findUserByEmail(username);
+        }
+
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authenticated user not found");
+    }
+
+    private User findUserByEmail(String email) {
+        if (email == null || email.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authenticated user email missing");
+        }
+
+        return userRepo.findByEmailIgnoreCase(email.trim())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
     }
 }

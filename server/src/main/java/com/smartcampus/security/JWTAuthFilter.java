@@ -34,13 +34,6 @@ public class JWTAuthFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        String path = request.getServletPath();
-
-        if (SecurityContextHolder.getContext().getAuthentication() != null) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
         String token = resolveToken(request);
 
         if (token == null || token.isBlank()) {
@@ -68,11 +61,17 @@ public class JWTAuthFilter extends OncePerRequestFilter {
 
         try {
             String username = jwtUtils.extractUsername(token);
-            if (username == null) return;
+            if (username == null || username.isBlank()) {
+                SecurityContextHolder.clearContext();
+                return;
+            }
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-            if (!jwtUtils.validateToken(token, userDetails)) return;
+            if (!jwtUtils.validateToken(token, userDetails)) {
+                SecurityContextHolder.clearContext();
+                return;
+            }
 
             UsernamePasswordAuthenticationToken authToken =
                     new UsernamePasswordAuthenticationToken(
@@ -89,6 +88,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
 
         } catch (Exception e) {
             log.warn("JWT error: {}", e.getMessage());
+            SecurityContextHolder.clearContext();
         }
     }
 }

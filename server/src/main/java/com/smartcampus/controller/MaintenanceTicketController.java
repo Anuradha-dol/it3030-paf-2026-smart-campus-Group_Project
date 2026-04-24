@@ -2,6 +2,7 @@ package com.smartcampus.controller;
 
 import com.smartcampus.dto.TicketRequestDTO;
 import com.smartcampus.dto.TicketResponseDTO;
+import com.smartcampus.enums.Role;
 import com.smartcampus.enums.TicketStatus;
 import com.smartcampus.model.User;
 import com.smartcampus.repository.UserRepo;
@@ -25,17 +26,15 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/tickets")
 @RequiredArgsConstructor
-@CrossOrigin("*")
 public class MaintenanceTicketController {
 
     private final MaintenanceTicketService ticketService;
     private final UserRepo userRepo;
 
-    /** Returns all users who can be assigned to a ticket (everyone except admins). */
+    /** Returns all users who can be assigned to a ticket (technicians only). */
     @GetMapping("/assignable-users")
     public ResponseEntity<List<Map<String, Object>>> getAssignableUsers() {
-        List<Map<String, Object>> users = userRepo.findAll().stream()
-                .filter(u -> u.getRole() != com.smartcampus.enums.Role.ADMIN)
+        List<Map<String, Object>> users = userRepo.findByRole(Role.TECHNICIAN).stream()
                 .map(u -> {
                     Map<String, Object> dto = new java.util.HashMap<>();
                     dto.put("userId", u.getUserId());
@@ -80,7 +79,7 @@ public class MaintenanceTicketController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TicketResponseDTO> getTicketById(@PathVariable Long id) {
+    public ResponseEntity<TicketResponseDTO> getTicketById(@PathVariable("id") Long id) {
         return ResponseEntity.ok(ticketService.getTicketById(id));
     }
 
@@ -88,9 +87,9 @@ public class MaintenanceTicketController {
     public ResponseEntity<TicketResponseDTO> updateStatus(
             @AuthenticationPrincipal User user,
             Authentication authentication,
-            @PathVariable Long id,
-            @RequestParam TicketStatus status,
-            @RequestParam(required = false) String notes) {
+            @PathVariable("id") Long id,
+            @RequestParam("status") TicketStatus status,
+            @RequestParam(value = "notes", required = false) String notes) {
 
         User currentUser = resolveLoggedUser(user, authentication);
         return ResponseEntity.ok(ticketService.updateTicketStatus(id, status, notes, currentUser));
@@ -100,8 +99,8 @@ public class MaintenanceTicketController {
     public ResponseEntity<TicketResponseDTO> assignTechnician(
             @AuthenticationPrincipal User user,
             Authentication authentication,
-            @PathVariable Long id,
-            @RequestParam Long technicianId) {
+            @PathVariable("id") Long id,
+            @RequestParam("technicianId") Long technicianId) {
 
         User currentUser = resolveLoggedUser(user, authentication);
         return ResponseEntity.ok(ticketService.assignTechnician(id, technicianId, currentUser));
@@ -111,8 +110,8 @@ public class MaintenanceTicketController {
     public ResponseEntity<TicketResponseDTO> addComment(
             @AuthenticationPrincipal User user,
             Authentication authentication,
-            @PathVariable Long id,
-            @RequestParam String message) {
+            @PathVariable("id") Long id,
+            @RequestParam("message") String message) {
 
         User currentUser = resolveLoggedUser(user, authentication);
         return ResponseEntity.ok(ticketService.addComment(id, message, currentUser));
@@ -122,8 +121,8 @@ public class MaintenanceTicketController {
     public ResponseEntity<Void> deleteComment(
             @AuthenticationPrincipal User user,
             Authentication authentication,
-            @PathVariable Long ticketId,
-            @PathVariable Long commentId) {
+            @PathVariable("ticketId") Long ticketId,
+            @PathVariable("commentId") Long commentId) {
 
         User currentUser = resolveLoggedUser(user, authentication);
         ticketService.deleteComment(ticketId, commentId, currentUser);

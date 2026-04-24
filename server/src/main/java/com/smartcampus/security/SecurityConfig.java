@@ -1,6 +1,8 @@
 package com.smartcampus.security;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -10,6 +12,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestResolver;
@@ -18,18 +21,25 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsUtils;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
+@Slf4j
 public class SecurityConfig {
 
     private final JWTAuthFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final OAuth2UserService oAuth2UserService;
+    private final HttpCookieOAuth2AuthorizationRequestRepository oAuth2AuthorizationRequestRepository;
+
+    @Value("${app.frontend.login-url:http://localhost:5173/login}")
+    private String loginRedirectUrl;
 
     @Bean
     public SecurityFilterChain filterChain(
@@ -64,7 +74,7 @@ public class SecurityConfig {
                 )
 
                 .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                        session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 )
 
                 .exceptionHandling(ex -> ex
@@ -87,10 +97,27 @@ public class SecurityConfig {
                 .oauth2Login(oauth -> oauth
                         .authorizationEndpoint(authorization -> authorization
                                 .authorizationRequestResolver(oauth2AuthorizationRequestResolver)
+                                .authorizationRequestRepository(oAuth2AuthorizationRequestRepository)
                         )
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(oAuth2UserService)
                         )
+                        .failureHandler((request, response, exception) -> {
+                            log.error("OAuth2 login failed", exception);
+
+                            String message = "Google login failed. Please try again.";
+                            if (exception instanceof OAuth2AuthenticationException oauth2Ex
+                                    && oauth2Ex.getError() != null
+                                    && "authorization_request_not_found".equals(oauth2Ex.getError().getErrorCode())) {
+                                message = "Google login session expired. Please click Login with Google again.";
+                            }
+
+                            String errorMessage = URLEncoder.encode(
+                                    message,
+                                    StandardCharsets.UTF_8
+                            );
+                            response.sendRedirect(loginRedirectUrl + "?oauthError=" + errorMessage);
+                        })
                         .successHandler(oAuth2SuccessHandler)
                 );
 

@@ -58,7 +58,7 @@ function renderHeaderNavIcon(icon) {
   );
 }
 
-export default function HomeWithBooking() {
+function BookingPageView() {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -396,3 +396,5 @@ export default function HomeWithBooking() {
     </div>
   );
 }
+
+export default BookingPageView;

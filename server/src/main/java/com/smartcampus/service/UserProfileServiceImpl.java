@@ -31,7 +31,7 @@ public class UserProfileServiceImpl implements UserProfileService {
     // ================= CURRENT USER =================
     @Override
     public User getCurrentUser(String email) {
-        return userRepo.findByEmail(email)
+        return userRepo.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
@@ -134,7 +134,7 @@ public class UserProfileServiceImpl implements UserProfileService {
 
         String newEmail = dto.newEmail();
 
-        if (userRepo.findByEmail(newEmail).isPresent()) {
+        if (userRepo.findByEmailIgnoreCase(newEmail).isPresent()) {
             throw new RuntimeException("Email already in use");
         }
 
@@ -201,12 +201,16 @@ public class UserProfileServiceImpl implements UserProfileService {
     // ================= HOME =================
     @Override
     public UserDto.UserHomeDto getUserHome(Long userId) {
-
-        User user = userRepo.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        String firstName = "User";
+        if (userId != null) {
+            firstName = userRepo.findById(userId)
+                    .map(User::getFirstname)
+                    .filter(name -> name != null && !name.trim().isEmpty())
+                    .orElse("User");
+        }
 
         return new UserDto.UserHomeDto(
-                "Welcome back, " + user.getFirstname() + "!",
+                "Welcome back, " + firstName + "!",
                 3,
                 5
         );
