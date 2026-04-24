@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import api from "../api";
+import NotificationBell from "../components/NotificationBell";
+import TicketWorkspaceSidebar from "../components/TicketWorkspaceSidebar";
 import "../auth/user/Dashboard.css";
 import "./TicketTheme.css";
 import "./TicketDetail.css";
@@ -202,6 +204,7 @@ const TicketDetail = () => {
     return (
       <div className="md-screen ticket-page-shell">
         <div className="md-layout ticket-layout-shell">
+          <TicketWorkspaceSidebar mode={isAdminView ? "admin" : "user"} />
           <main className="md-main">
             <div className="md-alert error">Ticket not found</div>
           </main>
@@ -217,6 +220,7 @@ const TicketDetail = () => {
     user?.userId != null &&
     String(ticket.assignedTechnicianId) === String(user.userId);
   const canUpdateStatus = isAdmin || isAssignedTech;
+  const sidebarMode = isAdmin ? "admin" : role === "TECHNICIAN" ? "technician" : "user";
 
   const statusValue = String(ticket.status || "OPEN").toUpperCase();
   const statusClass = statusValue.toLowerCase();
@@ -225,6 +229,7 @@ const TicketDetail = () => {
   return (
     <div className="md-screen ticket-page-shell">
       <div className="md-layout ticket-layout-shell">
+        <TicketWorkspaceSidebar mode={sidebarMode} />
         <main className="md-main">
           {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
@@ -233,9 +238,12 @@ const TicketDetail = () => {
               <h1 className="md-title">Ticket #{ticket.id}</h1>
               <p className="md-subtitle">Track status, assignment, and discussion in one place.</p>
             </div>
-            <button onClick={() => navigate(ticketBasePath)} className="ticket-back-btn">
-              Back to Tickets
-            </button>
+            <div className="ticket-topbar-actions">
+              <NotificationBell />
+              <button onClick={() => navigate(ticketBasePath)} className="ticket-back-btn">
+                Back to Tickets
+              </button>
+            </div>
           </header>
 
           <div className="md-content-scroll">

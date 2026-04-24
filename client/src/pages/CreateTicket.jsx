@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "../api";
+import NotificationBell from "../components/NotificationBell";
+import TicketWorkspaceSidebar from "../components/TicketWorkspaceSidebar";
 import "../auth/user/Dashboard.css";
 import "./TicketTheme.css";
 import "./CreateTicket.css";
@@ -75,6 +77,7 @@ const CreateTicket = () => {
   return (
     <div className="md-screen ticket-page-shell">
       <div className="md-layout ticket-layout-shell">
+        <TicketWorkspaceSidebar mode={isAdminView ? "admin" : "user"} />
         <main className="md-main">
           <header className="md-topbar ticket-topbar">
             <div className="md-topbar-left">
@@ -83,9 +86,12 @@ const CreateTicket = () => {
                 Provide clear details so the maintenance team can resolve this quickly.
               </p>
             </div>
-            <button type="button" onClick={() => navigate(ticketBasePath)} className="ticket-back-btn">
-              Back to Tickets
-            </button>
+            <div className="ticket-topbar-actions">
+              <NotificationBell />
+              <button type="button" onClick={() => navigate(ticketBasePath)} className="ticket-back-btn">
+                Back to Tickets
+              </button>
+            </div>
           </header>
 
           {error && <div className="md-alert error">{error}</div>}

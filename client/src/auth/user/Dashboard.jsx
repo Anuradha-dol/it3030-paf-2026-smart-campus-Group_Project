@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import api from "../../api";
+import NotificationBell from "../../components/NotificationBell";
 import "./Dashboard.css";
 import "./Profile.css";
 import ResourceListPage from "../../pages/ResourceListPage";
@@ -373,6 +374,7 @@ export default function Dashboard() {
                             </div>
                         </div>
                         <div className="md-topbar-actions">
+                            <NotificationBell />
                             <button className="md-btn-logout" onClick={handleLogout}>Logout</button>
                         </div>
                     </header>

@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import api from "../../api";
+import NotificationBell from "../../components/NotificationBell";
+import TicketWorkspaceSidebar from "../../components/TicketWorkspaceSidebar";
 import "./Dashboard.css";
 import "../../pages/TicketTheme.css";
 import "./TechnicianTickets.css";
@@ -190,6 +192,7 @@ const TechnicianTickets = () => {
   return (
     <div className="md-screen ticket-page-shell">
       <div className="md-layout ticket-layout-shell">
+        <TicketWorkspaceSidebar mode="technician" />
         <main className="md-main">
           {toast && (
             <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
@@ -203,9 +206,12 @@ const TechnicianTickets = () => {
                 {isAppointmentsView ? "review your assigned work appointments." : "manage your assigned tasks."}
               </p>
             </div>
-            <button onClick={() => navigate("/techhome")} className="ticket-back-btn">
-              Back to Dashboard
-            </button>
+            <div className="ticket-topbar-actions">
+              <NotificationBell />
+              <button onClick={() => navigate("/techhome")} className="ticket-back-btn">
+                Back to Dashboard
+              </button>
+            </div>
           </header>
 
           <div className="md-content-scroll">

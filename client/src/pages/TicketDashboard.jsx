@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import api from "../api";
+import NotificationBell from "../components/NotificationBell";
+import TicketWorkspaceSidebar from "../components/TicketWorkspaceSidebar";
 import "../auth/user/Dashboard.css";
 import "./TicketTheme.css";
 import "./TicketDashboard.css";
@@ -89,6 +91,7 @@ const TicketDashboard = () => {
   return (
     <div className="md-screen ticket-page-shell">
       <div className="md-layout ticket-layout-shell">
+        <TicketWorkspaceSidebar mode={isAdminView ? "admin" : "user"} />
         <main className="md-main">
           <header className="md-topbar ticket-topbar">
             <div className="md-topbar-left">
@@ -99,9 +102,12 @@ const TicketDashboard = () => {
                   : "Create and track campus maintenance requests."}
               </p>
             </div>
-            <Link to={`${ticketBasePath}/create`} className="create-btn">
-              <span>+</span> Create New Ticket
-            </Link>
+            <div className="ticket-topbar-actions">
+              <NotificationBell />
+              <Link to={`${ticketBasePath}/create`} className="create-btn">
+                <span>+</span> Create New Ticket
+              </Link>
+            </div>
           </header>
 
           {error && <div className="md-alert error">{error}</div>}
