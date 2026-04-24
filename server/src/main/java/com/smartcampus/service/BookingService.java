@@ -5,7 +5,12 @@ import com.smartcampus.dto.BookingResponseDTO;
 import com.smartcampus.dto.DashboardStatsDTO;
 import com.smartcampus.entity.Booking;
 import com.smartcampus.enums.BookingStatus;
+import com.smartcampus.enums.NotificationTargetType;
+import com.smartcampus.enums.NotificationType;
+import com.smartcampus.enums.Role;
+import com.smartcampus.model.User;
 import com.smartcampus.repository.BookingRepository;
+import com.smartcampus.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,6 +21,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class BookingService {
@@ -23,7 +30,13 @@ public class BookingService {
     @Autowired
     private BookingRepository bookingRepository;
 
-    public BookingResponseDTO createBooking(BookingRequestDTO dto) {
+    @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
+    private UserRepo userRepo;
+
+    public BookingResponseDTO createBooking(BookingRequestDTO dto, User createdByUser) {
 
         validateTimeRange(dto);
         validateConflict(dto, null);
@@ -35,12 +48,35 @@ public class BookingService {
         booking.setEndTime(dto.getEndTime());
         booking.setAttendees(dto.getAttendees());
         booking.setPurpose(dto.getPurpose());
-        booking.setBookedBy(dto.getBookedBy());
+        booking.setBookedBy(formatBookedByValue(createdByUser, dto.getBookedBy()));
 
         // Set default status
         booking.setStatus(BookingStatus.PENDING);
 
         Booking savedBooking = bookingRepository.save(booking);
+
+        if (createdByUser != null) {
+            notificationService.createNotification(
+                    createdByUser,
+                    NotificationType.BOOKING_CREATED,
+                    NotificationTargetType.BOOKING,
+                    savedBooking.getId(),
+                    "Your booking request for " + savedBooking.getFacilityName()
+                            + " on " + savedBooking.getBookingDate()
+                            + " is created and pending approval."
+            );
+        }
+
+        notificationService.notifyAdmins(
+                NotificationType.BOOKING_CREATED,
+                NotificationTargetType.BOOKING,
+                savedBooking.getId(),
+                "New booking request from " + savedBooking.getBookedBy()
+                        + " for " + savedBooking.getFacilityName()
+                        + " on " + savedBooking.getBookingDate() + ".",
+                createdByUser != null ? createdByUser.getUserId() : null
+        );
+
         return mapToDTO(savedBooking);
     }
 
@@ -57,7 +93,9 @@ public class BookingService {
         existingBooking.setEndTime(dto.getEndTime());
         existingBooking.setAttendees(dto.getAttendees());
         existingBooking.setPurpose(dto.getPurpose());
-        existingBooking.setBookedBy(dto.getBookedBy());
+        if (dto.getBookedBy() != null && !dto.getBookedBy().isBlank()) {
+            existingBooking.setBookedBy(mergeBookedByPreservingEmail(existingBooking.getBookedBy(), dto.getBookedBy()));
+        }
 
         Booking updatedBooking = bookingRepository.save(existingBooking);
         return mapToDTO(updatedBooking);
@@ -82,12 +120,31 @@ public class BookingService {
         bookingRepository.delete(booking);
     }
 
-    public BookingResponseDTO updateStatus(Long id, BookingStatus status) {
+    public BookingResponseDTO updateStatus(Long id, BookingStatus status, User actor) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
 
+        if (booking.getStatus() == status) {
+            return mapToDTO(booking);
+        }
+
         booking.setStatus(status);
         Booking updatedBooking = bookingRepository.save(booking);
+
+        if (status == BookingStatus.APPROVED || status == BookingStatus.REJECTED) {
+            NotificationType notificationType = status == BookingStatus.APPROVED
+                    ? NotificationType.BOOKING_APPROVED
+                    : NotificationType.BOOKING_REJECTED;
+
+            notificationService.createNotification(
+                    resolveBookingOwnerUserId(updatedBooking),
+                    notificationType,
+                    NotificationTargetType.BOOKING,
+                    updatedBooking.getId(),
+                    buildBookingStatusMessage(updatedBooking, status, actor)
+            );
+        }
+
         return mapToDTO(updatedBooking);
     }
 
@@ -198,5 +255,147 @@ public class BookingService {
         dto.setBookedBy(booking.getBookedBy());
         dto.setStatus(booking.getStatus());
         return dto;
+    }
+
+    private String formatUserDisplayName(User user, String fallback) {
+        String safeFallback = fallback != null ? fallback.trim() : "";
+        if (user == null) {
+            return safeFallback.isBlank() ? "User" : safeFallback;
+        }
+
+        String firstName = user.getFirstname() != null ? user.getFirstname().trim() : "";
+        String lastName = user.getLastName() != null ? user.getLastName().trim() : "";
+        String fullName = (firstName + " " + lastName).trim();
+
+        if (!fullName.isBlank()) {
+            return fullName;
+        }
+        if (user.getEmail() != null && !user.getEmail().isBlank()) {
+            return user.getEmail();
+        }
+        return safeFallback.isBlank() ? "User" : safeFallback;
+    }
+
+    private String formatBookedByValue(User user, String fallback) {
+        if (user == null) {
+            return formatUserDisplayName(null, fallback);
+        }
+
+        String displayName = formatUserDisplayName(user, fallback);
+        String email = user.getEmail() != null ? user.getEmail().trim() : "";
+        if (!email.isBlank()) {
+            return displayName + " <" + email + ">";
+        }
+        return displayName;
+    }
+
+    private Long resolveBookingOwnerUserId(Booking booking) {
+        if (booking == null || booking.getBookedBy() == null || booking.getBookedBy().isBlank()) {
+            return notificationService.findBookingOwnerFromCreateNotification(
+                    booking != null ? booking.getId() : null
+            );
+        }
+
+        String email = extractEmailFromBookedBy(booking.getBookedBy());
+        if (email != null && !email.isBlank()) {
+            Long userIdByEmail = userRepo.findByEmailIgnoreCase(email.trim())
+                    .map(User::getUserId)
+                    .orElse(null);
+            if (userIdByEmail != null) {
+                return userIdByEmail;
+            }
+        }
+
+        Long userIdByName = resolveByDisplayName(booking.getBookedBy());
+        if (userIdByName != null) {
+            return userIdByName;
+        }
+
+        return notificationService.findBookingOwnerFromCreateNotification(booking.getId());
+    }
+
+    private String extractEmailFromBookedBy(String bookedBy) {
+        if (bookedBy == null) {
+            return null;
+        }
+
+        String value = bookedBy.trim();
+        if (value.isBlank()) {
+            return null;
+        }
+
+        Pattern bracketEmailPattern = Pattern.compile("<([^>]+@[^>]+)>");
+        Matcher matcher = bracketEmailPattern.matcher(value);
+        if (matcher.find()) {
+            return matcher.group(1).trim();
+        }
+
+        if (value.contains("@") && !value.contains(" ")) {
+            return value;
+        }
+
+        return null;
+    }
+
+    private Long resolveByDisplayName(String bookedBy) {
+        if (bookedBy == null || bookedBy.isBlank()) {
+            return null;
+        }
+
+        String normalized = bookedBy.replaceAll("<[^>]+>", "").trim();
+        if (normalized.isBlank()) {
+            return null;
+        }
+
+        String[] parts = normalized.split("\\s+");
+        if (parts.length < 2) {
+            return null;
+        }
+
+        String firstName = parts[0];
+        String lastName = parts[parts.length - 1];
+
+        return userRepo.findFirstByFirstnameIgnoreCaseAndLastNameIgnoreCase(firstName, lastName)
+                .map(User::getUserId)
+                .orElse(null);
+    }
+
+    private String mergeBookedByPreservingEmail(String existingValue, String incomingValue) {
+        String incoming = incomingValue == null ? "" : incomingValue.trim();
+        if (incoming.isBlank()) {
+            return existingValue;
+        }
+
+        String incomingEmail = extractEmailFromBookedBy(incoming);
+        if (incomingEmail != null) {
+            return incoming;
+        }
+
+        String existingEmail = extractEmailFromBookedBy(existingValue);
+        if (existingEmail == null || existingEmail.isBlank()) {
+            return incoming;
+        }
+
+        return incoming + " <" + existingEmail + ">";
+    }
+
+    private String buildBookingStatusMessage(Booking booking, BookingStatus status, User actor) {
+        String actorName = formatActionActorLabel(actor);
+        if (status == BookingStatus.APPROVED) {
+            return "Your booking for " + booking.getFacilityName() + " on " + booking.getBookingDate()
+                    + " has been approved by " + actorName + ".";
+        }
+        return "Your booking for " + booking.getFacilityName() + " on " + booking.getBookingDate()
+                + " has been rejected by " + actorName + ".";
+    }
+
+    private String formatActionActorLabel(User actor) {
+        if (actor == null) {
+            return "System";
+        }
+        if (actor.getRole() == Role.ADMIN) {
+            return "Admin";
+        }
+        return formatUserDisplayName(actor, "User");
     }
 }

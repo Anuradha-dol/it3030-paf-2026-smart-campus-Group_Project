@@ -27,6 +27,7 @@ public class UserProfileServiceImpl implements UserProfileService {
     private final PasswordEncoder passwordEncoder;
     private final ForgotPasswordRepository forgotPasswordRepository;
     private final EmailUtils emailUtils;
+    private final NotificationService notificationService;
 
     // ================= CURRENT USER =================
     @Override
@@ -209,11 +210,10 @@ public class UserProfileServiceImpl implements UserProfileService {
                     .orElse("User");
         }
 
-        return new UserDto.UserHomeDto(
-                "Welcome back, " + firstName + "!",
-                3,
-                5
-        );
+        long unreadNotifications = notificationService.getUnreadCount(userId);
+        int unreadCount = (int) Math.min(unreadNotifications, Integer.MAX_VALUE);
+
+        return new UserDto.UserHomeDto("Welcome back, " + firstName + "!", unreadCount, 5);
     }
 
     // ================= PROFILE (FIXED - NO INTEREST) =================

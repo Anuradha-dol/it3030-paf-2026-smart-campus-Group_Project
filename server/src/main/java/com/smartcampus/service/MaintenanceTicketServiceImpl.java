@@ -3,6 +3,8 @@ package com.smartcampus.service;
 import com.smartcampus.dto.CommentDTO;
 import com.smartcampus.dto.TicketRequestDTO;
 import com.smartcampus.dto.TicketResponseDTO;
+import com.smartcampus.enums.NotificationTargetType;
+import com.smartcampus.enums.NotificationType;
 import com.smartcampus.enums.Role;
 import com.smartcampus.enums.TicketStatus;
 import com.smartcampus.exception.ResourceNotFoundException;
@@ -38,6 +40,7 @@ public class MaintenanceTicketServiceImpl implements MaintenanceTicketService {
     private final AttachmentRepository attachmentRepository;
     private final CommentRepository commentRepository;
     private final UserRepo userRepository;
+    private final NotificationService notificationService;
 
     private final String uploadDir = "uploads/tickets/";
     
@@ -92,6 +95,7 @@ public class MaintenanceTicketServiceImpl implements MaintenanceTicketService {
             }
         }
 
+        notifyTicketCreated(savedTicket, user);
         return mapToResponseDTO(savedTicket);
     }
 
@@ -126,6 +130,8 @@ public class MaintenanceTicketServiceImpl implements MaintenanceTicketService {
             throw new RuntimeException("Unauthorized to update ticket status");
         }
 
+        TicketStatus previousStatus = ticket.getStatus();
+
         if (status == TicketStatus.REJECTED) {
             if (!isAdmin) throw new RuntimeException("Only admins can reject tickets");
             ticket.setRejectionReason(notes);
@@ -134,7 +140,10 @@ public class MaintenanceTicketServiceImpl implements MaintenanceTicketService {
         }
 
         ticket.setStatus(status);
-        return mapToResponseDTO(ticketRepository.save(ticket));
+        MaintenanceTicket updatedTicket = ticketRepository.save(ticket);
+        notifyTicketStatusChanged(updatedTicket, previousStatus, user);
+
+        return mapToResponseDTO(updatedTicket);
     }
 
     @Override
@@ -155,9 +164,14 @@ public class MaintenanceTicketServiceImpl implements MaintenanceTicketService {
             throw new RuntimeException("Only technician users can be assigned to a ticket");
         }
 
+        TicketStatus previousStatus = ticket.getStatus();
         ticket.setAssignedTechnician(technician);
         ticket.setStatus(TicketStatus.IN_PROGRESS);
-        return mapToResponseDTO(ticketRepository.save(ticket));
+        MaintenanceTicket updatedTicket = ticketRepository.save(ticket);
+
+        notifyTicketStatusChanged(updatedTicket, previousStatus, admin);
+
+        return mapToResponseDTO(updatedTicket);
     }
 
     @Override
@@ -173,6 +187,7 @@ public class MaintenanceTicketServiceImpl implements MaintenanceTicketService {
                 .build();
 
         commentRepository.save(comment);
+        notifyTicketCommentAdded(ticket, user, message);
         return mapToResponseDTO(ticket);
     }
 
@@ -309,5 +324,116 @@ public class MaintenanceTicketServiceImpl implements MaintenanceTicketService {
         } catch (RuntimeException ex) {
             return fallback;
         }
+    }
+
+    private void notifyTicketCreated(MaintenanceTicket ticket, User reporter) {
+        notificationService.createNotification(
+                reporter,
+                NotificationType.TICKET_CREATED,
+                NotificationTargetType.TICKET,
+                ticket.getId(),
+                "Your ticket #" + ticket.getId() + " (" + ticket.getTitle() + ") has been created."
+        );
+
+        String reporterName = formatFullName(reporter, "a user");
+        notificationService.notifyAdmins(
+                NotificationType.TICKET_CREATED,
+                NotificationTargetType.TICKET,
+                ticket.getId(),
+                "New ticket #" + ticket.getId() + " created by " + reporterName + ": " + ticket.getTitle() + ".",
+                reporter != null ? reporter.getUserId() : null
+        );
+    }
+
+    private void notifyTicketStatusChanged(MaintenanceTicket ticket, TicketStatus previousStatus, User actor) {
+        if (ticket == null || ticket.getStatus() == null) {
+            return;
+        }
+        if (previousStatus == ticket.getStatus()) {
+            return;
+        }
+
+        String actorName = formatNotificationActorLabel(actor);
+        String statusLabel = ticket.getStatus().name().replace("_", " ");
+        String message = "Ticket #" + ticket.getId() + " status changed to " + statusLabel + " by " + actorName + ".";
+
+        Long actorUserId = actor != null ? actor.getUserId() : null;
+        Long reporterId = ticket.getReporter() != null ? ticket.getReporter().getUserId() : null;
+        Long assignedId = ticket.getAssignedTechnician() != null ? ticket.getAssignedTechnician().getUserId() : null;
+
+        if (ticket.getReporter() != null
+                && (actorUserId == null || !actorUserId.equals(reporterId))) {
+            notificationService.createNotification(
+                    ticket.getReporter(),
+                    NotificationType.TICKET_STATUS_CHANGED,
+                    NotificationTargetType.TICKET,
+                    ticket.getId(),
+                    message
+            );
+        }
+
+        if (ticket.getAssignedTechnician() != null
+                && (actorUserId == null || !actorUserId.equals(assignedId))
+                && (reporterId == null || !reporterId.equals(assignedId))) {
+            notificationService.createNotification(
+                    ticket.getAssignedTechnician(),
+                    NotificationType.TICKET_STATUS_CHANGED,
+                    NotificationTargetType.TICKET,
+                    ticket.getId(),
+                    message
+            );
+        }
+    }
+
+    private void notifyTicketCommentAdded(MaintenanceTicket ticket, User commentAuthor, String commentMessage) {
+        if (ticket == null || commentAuthor == null) {
+            return;
+        }
+
+        String authorName = formatNotificationActorLabel(commentAuthor);
+        String trimmed = commentMessage == null ? "" : commentMessage.trim();
+        String preview = trimmed.length() > 80 ? trimmed.substring(0, 80) + "..." : trimmed;
+        String message = "New comment on ticket #" + ticket.getId() + " by " + authorName
+                + (preview.isBlank() ? "." : ": " + preview);
+
+        Long authorId = commentAuthor.getUserId();
+        Long reporterId = ticket.getReporter() != null ? ticket.getReporter().getUserId() : null;
+        Long assignedId = ticket.getAssignedTechnician() != null ? ticket.getAssignedTechnician().getUserId() : null;
+
+        if (ticket.getReporter() != null
+                && (authorId == null || !authorId.equals(reporterId))) {
+            notificationService.createNotification(
+                    ticket.getReporter(),
+                    NotificationType.TICKET_COMMENT_ADDED,
+                    NotificationTargetType.TICKET,
+                    ticket.getId(),
+                    message
+            );
+        }
+
+        if (ticket.getAssignedTechnician() != null
+                && (authorId == null || !authorId.equals(assignedId))
+                && (reporterId == null || !reporterId.equals(assignedId))) {
+            notificationService.createNotification(
+                    ticket.getAssignedTechnician(),
+                    NotificationType.TICKET_COMMENT_ADDED,
+                    NotificationTargetType.TICKET,
+                    ticket.getId(),
+                    message
+            );
+        }
+    }
+
+    private String formatNotificationActorLabel(User actor) {
+        if (actor == null) {
+            return "System";
+        }
+        if (actor.getRole() == Role.ADMIN) {
+            return "Admin";
+        }
+        if (actor.getRole() == Role.TECHNICIAN) {
+            return "Technician";
+        }
+        return formatFullName(actor, "User");
     }
 }
