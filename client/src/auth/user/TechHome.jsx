@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import api from "../../api";
+import NotificationBell from "../../components/NotificationBell";
 import "./Dashboard.css";
 import "./Profile.css";
 import ResourceListPage from "../../pages/ResourceListPage";
@@ -125,7 +126,7 @@ export default function TechHome() {
                     return;
                 }
 
-                if (err.response?.status === 401 || err.response?.status === 403) {
+                if (err.response?.status === 400 || err.response?.status === 401 || err.response?.status === 403) {
                     try {
                         const authResponse = await api.get("/auth/me");
                         const role = String(authResponse?.data?.user?.role || "").toUpperCase();
@@ -135,10 +136,20 @@ export default function TechHome() {
                             return;
                         }
 
+                        if (role.includes("TECHNICIAN")) {
+                            navigate("/techhome", { replace: true });
+                            return;
+                        }
+
                         navigate("/home", { replace: true });
                         return;
-                    } catch {
-                        navigate("/login", { replace: true });
+                    } catch (authErr) {
+                        if (authErr.response?.status === 401 || authErr.response?.status === 403) {
+                            navigate("/login", { replace: true });
+                            return;
+                        }
+
+                        setError("Unable to verify your session right now. Please refresh and try again.");
                         return;
                     }
                 }
@@ -368,6 +379,7 @@ export default function TechHome() {
                             </div>
                         </div>
                         <div className="md-topbar-actions">
+                            <NotificationBell />
                             <button className="md-btn-logout" onClick={handleLogout}>Logout</button>
                         </div>
                     </header>

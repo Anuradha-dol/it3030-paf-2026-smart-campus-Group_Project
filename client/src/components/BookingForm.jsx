@@ -31,7 +31,15 @@ function BookingForm({ onCreate, initialData = {} }) {
     setTouched({});
     setErrors({});
     setBackendError("");
-  }, [initialData]);
+  }, [
+    initialData.facilityName,
+    initialData.bookingDate,
+    initialData.startTime,
+    initialData.endTime,
+    initialData.attendees,
+    initialData.purpose,
+    initialData.bookedBy,
+  ]);
 
   // Validate a single field
   const validateField = useCallback((name, value, allData = formData) => {

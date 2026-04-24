@@ -14,7 +14,6 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.WebUtils;
 
 import java.security.Key;
 import java.util.*;
@@ -53,11 +52,14 @@ public class JwtUtils {
                         .collect(Collectors.toList())
         );
 
-        long expiration = switch (tokenType) {
-            case ACCESS -> ACCESS_EXPIRATION_MS;
-            case REFRESH -> REFRESH_EXPIRATION_MS;
-            case VERIFY -> VERIFY_EXPIRATION_MS;
-        };
+        long expiration;
+        if (tokenType == Token.ACCESS) {
+            expiration = ACCESS_EXPIRATION_MS;
+        } else if (tokenType == Token.REFRESH) {
+            expiration = REFRESH_EXPIRATION_MS;
+        } else {
+            expiration = VERIFY_EXPIRATION_MS;
+        }
 
         String token = Jwts.builder()
                 .setClaims(claims)
@@ -80,8 +82,20 @@ public class JwtUtils {
     }
 
     public String getTokenFromCookie(HttpServletRequest request, Token type) {
-        Cookie cookie = WebUtils.getCookie(request, type.name());
-        return cookie != null ? cookie.getValue() : null;
+        if (request.getCookies() == null) {
+            return null;
+        }
+
+        String latestToken = null;
+        for (Cookie cookie : request.getCookies()) {
+            if (type.name().equals(cookie.getName())
+                    && cookie.getValue() != null
+                    && !cookie.getValue().isBlank()) {
+                latestToken = cookie.getValue();
+            }
+        }
+
+        return latestToken;
     }
     public void removeToken(HttpServletResponse response, Token tokenType) {
         response.addHeader(

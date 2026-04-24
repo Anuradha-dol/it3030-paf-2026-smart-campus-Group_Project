@@ -27,11 +27,12 @@ public class UserProfileServiceImpl implements UserProfileService {
     private final PasswordEncoder passwordEncoder;
     private final ForgotPasswordRepository forgotPasswordRepository;
     private final EmailUtils emailUtils;
+    private final NotificationService notificationService;
 
     // ================= CURRENT USER =================
     @Override
     public User getCurrentUser(String email) {
-        return userRepo.findByEmail(email)
+        return userRepo.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
@@ -134,7 +135,7 @@ public class UserProfileServiceImpl implements UserProfileService {
 
         String newEmail = dto.newEmail();
 
-        if (userRepo.findByEmail(newEmail).isPresent()) {
+        if (userRepo.findByEmailIgnoreCase(newEmail).isPresent()) {
             throw new RuntimeException("Email already in use");
         }
 
@@ -201,15 +202,18 @@ public class UserProfileServiceImpl implements UserProfileService {
     // ================= HOME =================
     @Override
     public UserDto.UserHomeDto getUserHome(Long userId) {
+        String firstName = "User";
+        if (userId != null) {
+            firstName = userRepo.findById(userId)
+                    .map(User::getFirstname)
+                    .filter(name -> name != null && !name.trim().isEmpty())
+                    .orElse("User");
+        }
 
-        User user = userRepo.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        long unreadNotifications = notificationService.getUnreadCount(userId);
+        int unreadCount = (int) Math.min(unreadNotifications, Integer.MAX_VALUE);
 
-        return new UserDto.UserHomeDto(
-                "Welcome back, " + user.getFirstname() + "!",
-                3,
-                5
-        );
+        return new UserDto.UserHomeDto("Welcome back, " + firstName + "!", unreadCount, 5);
     }
 
     // ================= PROFILE (FIXED - NO INTEREST) =================

@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../api";
+import NotificationBell from "../components/NotificationBell";
 import { getAllBookings, deleteBooking } from "../services/bookingService";
 import "../auth/user/profile.css";
 import "../auth/user/Dashboard.css";
@@ -395,6 +396,7 @@ export default function MyBookingsPage() {
               </div>
             </div>
             <div className="md-topbar-actions">
+              <NotificationBell />
               <button className="md-btn-logout" onClick={handleLogout}>Logout</button>
             </div>
           </header>

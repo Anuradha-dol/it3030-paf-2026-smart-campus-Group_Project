@@ -46,7 +46,7 @@ public class AuthServiceimpl implements AuthService {
                     .build();
         }
 
-        Optional<User> existing = userRepo.findByEmail(request.email());
+        Optional<User> existing = userRepo.findByEmailIgnoreCase(request.email());
 
         if (existing.isPresent() && existing.get().getIsVerified()) {
             return AuthResponse.builder()
@@ -124,7 +124,7 @@ public class AuthServiceimpl implements AuthService {
     @Override
     public AuthResponse signIn(LoginRequest request, HttpServletResponse response) {
 
-        User user = userRepo.findByEmail(request.email()).orElse(null);
+        User user = userRepo.findByEmailIgnoreCase(request.email()).orElse(null);
 
         if (user == null) {
             return AuthResponse.builder()
@@ -158,6 +158,10 @@ public class AuthServiceimpl implements AuthService {
         claims.put("email", user.getEmail());
         claims.put("role", user.getRole());
 
+        // Reset any previous session cookies before issuing new login tokens.
+        jwtUtils.removeToken(response, Token.ACCESS);
+        jwtUtils.removeToken(response, Token.REFRESH);
+
         String accessToken = jwtUtils.generateToken(claims, user, response, Token.ACCESS);
         String refreshToken = jwtUtils.generateToken(claims, user, response, Token.REFRESH);
 
@@ -180,7 +184,7 @@ public class AuthServiceimpl implements AuthService {
     @Override
     public AuthResponse verifyCode(String email, String code) {
 
-        User user = userRepo.findByEmail(email)
+        User user = userRepo.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         if (user.getIsVerified()) {
@@ -220,7 +224,7 @@ public class AuthServiceimpl implements AuthService {
     @Override
     public AuthResponse resendOtp(String email) {
 
-        User user = userRepo.findByEmail(email)
+        User user = userRepo.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         int otp = (int) (Math.random() * 900000) + 100000;

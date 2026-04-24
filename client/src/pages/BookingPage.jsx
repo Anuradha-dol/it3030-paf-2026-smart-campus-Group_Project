@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import api from "../api";
+import NotificationBell from "../components/NotificationBell";
 import BookingForm from "../components/BookingForm";
 import { createBooking } from "../services/bookingService";
 import "../auth/user/profile.css";
@@ -58,7 +59,7 @@ function renderHeaderNavIcon(icon) {
   );
 }
 
-export default function HomeWithBooking() {
+function BookingPageView() {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -336,6 +337,7 @@ export default function HomeWithBooking() {
               </div>
             </div>
             <div className="md-topbar-actions">
+              <NotificationBell />
               <button className="md-btn-logout" onClick={handleLogout}>Logout</button>
             </div>
           </header>
@@ -396,3 +398,5 @@ export default function HomeWithBooking() {
     </div>
   );
 }
+
+export default BookingPageView;

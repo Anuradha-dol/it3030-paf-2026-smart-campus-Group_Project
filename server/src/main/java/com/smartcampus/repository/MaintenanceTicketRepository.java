@@ -14,6 +14,6 @@ public interface MaintenanceTicketRepository extends JpaRepository<MaintenanceTi
     
     @org.springframework.data.jpa.repository.Modifying
     @org.springframework.transaction.annotation.Transactional
-    @org.springframework.data.jpa.repository.Query(value = "ALTER TABLE maintenance_tickets MODIFY resource_id BIGINT NULL, MODIFY reporter_id BIGINT NULL, MODIFY created_by_id BIGINT NULL", nativeQuery = true)
+    @org.springframework.data.jpa.repository.Query(value = "ALTER TABLE maintenance_tickets MODIFY resource_id BIGINT NULL", nativeQuery = true)
     void fixResourceIdConstraint();
 }

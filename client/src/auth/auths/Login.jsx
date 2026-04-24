@@ -54,6 +54,13 @@ export default function Login() {
         setMessage('');
 
         try {
+            // Clear any previous auth cookies before starting a fresh login.
+            try {
+                await api.post('/auth/logout', {}, { withCredentials: true });
+            } catch {
+                // Ignore if there is no active session.
+            }
+
             const res = await api.post('/auth/login', form, {
                 withCredentials: true,
                 headers: { 'Content-Type': 'application/json' },
@@ -61,8 +68,6 @@ export default function Login() {
 
             if (res.data.success) {
                 setMessage('Login successful! Redirecting...');
-
-                // Get role and navigate immediately (no localStorage needed - cookies handle auth)
                 const role = String(res.data.role || '').toUpperCase();
 
                 // Navigate based on role

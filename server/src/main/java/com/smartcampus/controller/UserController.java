@@ -8,7 +8,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -92,7 +91,6 @@ public class UserController {
     }
 
     // ================= HOME =================
-    @PreAuthorize("hasRole('USER')")
     @GetMapping("/home")
     public ResponseEntity<UserDto.UserHomeDto> getHome(
             @AuthenticationPrincipal User loggedUser,
@@ -270,7 +268,13 @@ public class UserController {
 
     private User resolveLoggedUser(User loggedUser, Authentication authentication) {
         if (loggedUser != null) {
-            return loggedUser;
+            if (loggedUser.getEmail() != null && !loggedUser.getEmail().isBlank()) {
+                return findUserByEmail(loggedUser.getEmail());
+            }
+            if (loggedUser.getUserId() != null) {
+                return userRepo.findById(loggedUser.getUserId())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
+            }
         }
 
         if (authentication == null || !authentication.isAuthenticated()) {
@@ -280,7 +284,13 @@ public class UserController {
         Object principal = authentication.getPrincipal();
 
         if (principal instanceof User user) {
-            return user;
+            if (user.getEmail() != null && !user.getEmail().isBlank()) {
+                return findUserByEmail(user.getEmail());
+            }
+            if (user.getUserId() != null) {
+                return userRepo.findById(user.getUserId())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
+            }
         }
 
         if (principal instanceof UserDetails userDetails) {

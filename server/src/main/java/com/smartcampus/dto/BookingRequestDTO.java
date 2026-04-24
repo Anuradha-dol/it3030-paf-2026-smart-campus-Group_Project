@@ -15,8 +15,7 @@ public class BookingRequestDTO {
     @Size(min = 2, max = 100, message = "Facility name must be between 2 and 100 characters")
     private String facilityName;
 
-    @NotBlank(message = "Booked by is required")
-    @Size(min = 2, max = 100, message = "Booked by must be between 2 and 100 characters")
+    @Size(max = 100, message = "Booked by must be at most 100 characters")
     private String bookedBy;
 
     @NotNull(message = "Booking date is required")
