@@ -11,5 +11,6 @@
     "server/src/main/java",
     "server/src/test/java"
   ],
-  "java.project.outputPath": "server/target/classes"
+  "java.project.outputPath": "server/target/classes",
+  "java.debug.settings.onBuildFailureProceed": true
 }
