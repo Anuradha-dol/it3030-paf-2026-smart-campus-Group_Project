@@ -35,7 +35,7 @@ public class AuthController {
     private final UserRepo userRepo;
     private final JwtUtils jwtUtils;
 
-    // ================= REGISTER =================
+    // Register user and send OTP email.
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(
             @Valid @RequestBody UserDto.RegisterRequest req,
@@ -44,6 +44,7 @@ public class AuthController {
 
         AuthResponse res = authService.signUp(req);
 
+        // Store email in cookie for OTP verify/resend.
         Cookie cookie = new Cookie("userEmail", req.email());
         cookie.setHttpOnly(true);
         cookie.setPath("/");
@@ -54,26 +55,28 @@ public class AuthController {
         return ResponseEntity.ok(res);
     }
 
-    // ================= LOGIN =================
+    // Login and issue auth cookies.
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(
             @RequestBody LoginRequest req,
             HttpServletRequest request,
             HttpServletResponse response
     ) {
+        // Clear previous session state.
         if (request.getSession(false) != null) {
             request.getSession(false).invalidate();
         }
         return ResponseEntity.ok(authService.signIn(req, response));
     }
 
-    // ================= VERIFY OTP =================
+    // Verify signup OTP using cookie email.
     @PostMapping("/verify-code")
     public ResponseEntity<AuthResponse> verify(
             @RequestBody UserDto.VerifyCodeDto dto,
             HttpServletRequest request
     ) {
 
+        // Read email captured during registration.
         String email = getCookie(request, "userEmail");
 
         if (email == null) {
@@ -87,7 +90,7 @@ public class AuthController {
         return ResponseEntity.ok(authService.verifyCode(email, dto.verifyCode()));
     }
 
-    // ================= RESEND OTP =================
+    // Resend signup OTP to cookie email.
     @PostMapping("/resend-otp")
     public ResponseEntity<AuthResponse> resend(HttpServletRequest request) {
 
@@ -104,12 +107,13 @@ public class AuthController {
         return ResponseEntity.ok(authService.resendOtp(email));
     }
 
-    // ================= LOGOUT =================
+    // Logout and clear auth cookies.
     @PostMapping("/logout")
     public ResponseEntity<Map<String, String>> logout(HttpServletRequest request, HttpServletResponse response) {
-        // Clear JWT tokens
+        // Remove access and refresh cookies.
         jwtUtils.removeToken(response, Token.ACCESS);
         jwtUtils.removeToken(response, Token.REFRESH);
+        // Invalidate server session if present.
         if (request.getSession(false) != null) {
             request.getSession(false).invalidate();
         }
@@ -117,7 +121,7 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("message", "Logout successful"));
     }
 
-    // ================= PHONE CHECK =================
+    // Check if phone number is available.
     @PostMapping("/check-phone")
     public ResponseEntity<Map<String, Boolean>> checkPhone(@RequestBody Map<String, String> body) {
 
@@ -127,7 +131,7 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("available", available));
     }
 
-    // ================= ME =================
+    // Return logged-in user profile data.
     @GetMapping("/me")
     public ResponseEntity<Map<String, Object>> getMe(
             @AuthenticationPrincipal UserDetails userDetails,
@@ -162,9 +166,10 @@ public class AuthController {
         return ResponseEntity.ok(userRepo.findAll());
     }
 
-    // ================= REFRESH =================
+    // Refresh access and refresh JWT cookies.
     @PostMapping("/refresh")
     public ResponseEntity<?> refresh(HttpServletRequest request, HttpServletResponse response) {
+        // Read refresh token from cookie.
         String refreshToken = getCookie(request, "REFRESH");
 
         if (refreshToken == null || refreshToken.isBlank()) {
@@ -175,12 +180,13 @@ public class AuthController {
             String username = jwtUtils.extractUsername(refreshToken);
             User user = userRepo.findByEmailIgnoreCase(username).orElseThrow(() -> new RuntimeException("User not found"));
 
-            // Validate the token and check if it matches the user's stored refresh token
+            // Token must be valid and match stored refresh token.
             if (jwtUtils.validateToken(refreshToken, user) && refreshToken.equals(user.getRefreshToken())) {
                 Map<String, Object> claims = new java.util.HashMap<>();
                 claims.put("email", user.getEmail());
                 claims.put("role", user.getRole().name());
 
+                // Rotate both JWT cookies.
                 String newAccessToken = jwtUtils.generateToken(claims, user, response, Token.ACCESS);
                 String newRefreshToken = jwtUtils.generateToken(claims, user, response, Token.REFRESH);
 
@@ -200,11 +206,12 @@ public class AuthController {
         }
     }
 
-    // ================= COOKIE HELPER =================
+    // Read latest non-empty cookie value.
     private String getCookie(HttpServletRequest request, String name) {
         if (request.getCookies() == null) return null;
 
         String latestValue = null;
+        // Keep latest value when duplicate cookie names exist.
         for (Cookie c : request.getCookies()) {
             if (name.equals(c.getName())) {
                 String value = c.getValue();

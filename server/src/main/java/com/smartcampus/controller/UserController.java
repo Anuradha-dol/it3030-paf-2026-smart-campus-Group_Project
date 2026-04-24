@@ -29,7 +29,7 @@ public class UserController {
     private final UserProfileService userProfileService;
     private final UserRepo userRepo;
 
-    // ================= UPDATE NAME =================
+    // Update first and last name.
     @PutMapping("/update-name")
     public ResponseEntity<String> updateName(
             @AuthenticationPrincipal User loggedUser,
@@ -41,7 +41,7 @@ public class UserController {
         return ResponseEntity.ok("Name updated successfully");
     }
 
-    // ================= UPDATE EMAIL =================
+    // Start email update with OTP.
     @PutMapping("/update-email")
     public ResponseEntity<String> updateEmail(
             @AuthenticationPrincipal User loggedUser,
@@ -53,7 +53,7 @@ public class UserController {
         return ResponseEntity.ok("OTP sent to new email for verification");
     }
 
-    // ================= VERIFY NEW EMAIL =================
+    // Confirm new email using OTP.
     @PostMapping("/verify-new-email")
     public ResponseEntity<String> verifyNewEmail(
             @AuthenticationPrincipal User loggedUser,
@@ -65,7 +65,7 @@ public class UserController {
         return ResponseEntity.ok("Email updated successfully");
     }
 
-    // ================= UPDATE PASSWORD =================
+    // Change account password.
     @PutMapping("/update-password")
     public ResponseEntity<String> updatePassword(
             @AuthenticationPrincipal User loggedUser,
@@ -77,7 +77,7 @@ public class UserController {
         return ResponseEntity.ok("Password updated successfully");
     }
 
-    // ================= GET PROFILE =================
+    // Get profile data for current user.
     @GetMapping("/me")
     public ResponseEntity<UserDto.UserProfileDto> getProfile(
             @AuthenticationPrincipal User loggedUser,
@@ -90,7 +90,7 @@ public class UserController {
         );
     }
 
-    // ================= HOME =================
+    // Get home summary for current user.
     @GetMapping("/home")
     public ResponseEntity<UserDto.UserHomeDto> getHome(
             @AuthenticationPrincipal User loggedUser,
@@ -103,7 +103,7 @@ public class UserController {
         );
     }
 
-    // ================= DELETE ACCOUNT =================
+    // Delete local account with password check.
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteAccount(
             @AuthenticationPrincipal User loggedUser,
@@ -125,7 +125,7 @@ public class UserController {
         return ResponseEntity.ok("OAuth account deleted successfully");
     }
 
-    // ================= REQUEST DELETE OTP =================
+    // Send OTP for account deletion flow.
     @PostMapping("/delete-forgot-request")
     public ResponseEntity<String> deleteForgotRequest(
             @AuthenticationPrincipal User loggedUser,
@@ -136,7 +136,7 @@ public class UserController {
         return ResponseEntity.ok("OTP sent to email");
     }
 
-    // ================= VERIFY DELETE OTP =================
+    // Verify deletion OTP and delete account.
     @PostMapping("/delete-forgot-verify")
     public ResponseEntity<String> deleteForgotVerify(
             @AuthenticationPrincipal User loggedUser,
@@ -148,7 +148,7 @@ public class UserController {
         return ResponseEntity.ok("Account deleted successfully");
     }
 
-    // ================= PROFILE IMAGE UPLOAD =================
+    // Upload and save profile image path.
     @PostMapping("/upload-profile-image")
     public ResponseEntity<String> uploadProfileImage(
             @AuthenticationPrincipal User user,
@@ -175,7 +175,7 @@ public class UserController {
         return ResponseEntity.ok(currentUser.getImageUrl());
     }
 
-    // ================= COVER IMAGE UPLOAD =================
+    // Upload and save cover image path.
     @PostMapping("/upload-cover-image")
     public ResponseEntity<String> uploadCoverImage(
             @AuthenticationPrincipal User user,
@@ -202,7 +202,7 @@ public class UserController {
         return ResponseEntity.ok(currentUser.getCoverImageUrl());
     }
 
-    // ================= UPDATE PHONE NUMBER =================
+    // Update phone number only.
     @PutMapping({"/update-phone", "/updatePhone"})
     public ResponseEntity<String> updatePhone(
             @AuthenticationPrincipal User loggedUser,
@@ -214,7 +214,7 @@ public class UserController {
         return ResponseEntity.ok("Phone number updated successfully");
     }
 
-    // ================= UPDATE YEAR =================
+    // Update academic year only.
     @PutMapping({"/update-year", "/updateYear"})
     public ResponseEntity<String> updateYear(
             @AuthenticationPrincipal User loggedUser,
@@ -226,7 +226,7 @@ public class UserController {
         return ResponseEntity.ok("Year updated successfully");
     }
 
-    // ================= UPDATE SEMESTER =================
+    // Update semester only.
     @PutMapping({"/update-semester", "/updateSemester"})
     public ResponseEntity<String> updateSemester(
             @AuthenticationPrincipal User loggedUser,
@@ -238,7 +238,7 @@ public class UserController {
         return ResponseEntity.ok("Semester updated successfully");
     }
 
-    // ================= GENERIC UPDATE PROFILE FIELD =================
+    // Update one supported profile field by name.
     @PutMapping({"/update-profile-field", "/updateProfileField"})
     public ResponseEntity<String> updateProfileField(
             @AuthenticationPrincipal User loggedUser,

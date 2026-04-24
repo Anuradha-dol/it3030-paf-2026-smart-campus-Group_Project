@@ -12,10 +12,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestResolver;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -48,10 +48,11 @@ public class SecurityConfig {
     ) throws Exception {
 
         http
+                // Allow local frontend origins and credentials.
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration crf = new CorsConfiguration();
                     crf.setAllowedOriginPatterns(List.of("http://localhost:*"));
-                    crf.setAllowedMethods(List.of("GET","POST","PUT","DELETE","PATCH","OPTIONS"));
+                    crf.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
                     crf.setAllowedHeaders(List.of("*"));
                     crf.setAllowCredentials(true);
                     return crf;
@@ -59,10 +60,12 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
 
                 .authorizeHttpRequests(auth -> auth
-                        // ✅ FIX: allow preflight
+                        // Allow browser preflight requests.
                         .requestMatchers(request -> CorsUtils.isPreFlightRequest(request)).permitAll()
 
+                        // Protect authenticated session endpoints.
                         .requestMatchers("/auth/me", "/auth/logout").authenticated()
+                        // Keep auth and oauth entry points public.
                         .requestMatchers(
                                 "/auth/**",
                                 "/forgotpass/**",
@@ -92,8 +95,10 @@ public class SecurityConfig {
 
                 .authenticationProvider(authenticationProvider)
 
+                // Resolve JWT before username/password auth.
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
 
+                // Configure OAuth2 login and redirects.
                 .oauth2Login(oauth -> oauth
                         .authorizationEndpoint(authorization -> authorization
                                 .authorizationRequestResolver(oauth2AuthorizationRequestResolver)
@@ -103,6 +108,7 @@ public class SecurityConfig {
                                 .userService(oAuth2UserService)
                         )
                         .failureHandler((request, response, exception) -> {
+                            // Convert OAuth2 errors to frontend query param.
                             log.error("OAuth2 login failed", exception);
 
                             String message = "Google login failed. Please try again.";
@@ -128,12 +134,14 @@ public class SecurityConfig {
     public OAuth2AuthorizationRequestResolver oauth2AuthorizationRequestResolver(
             ClientRegistrationRepository clientRegistrationRepository
     ) {
+        // Resolve /oauth2/authorization/{provider} calls.
         DefaultOAuth2AuthorizationRequestResolver resolver =
                 new DefaultOAuth2AuthorizationRequestResolver(
                         clientRegistrationRepository,
                         "/oauth2/authorization"
                 );
 
+        // Ask provider to show account chooser every time.
         resolver.setAuthorizationRequestCustomizer(customizer ->
                 customizer.additionalParameters(params ->
                         params.put("prompt", "select_account")

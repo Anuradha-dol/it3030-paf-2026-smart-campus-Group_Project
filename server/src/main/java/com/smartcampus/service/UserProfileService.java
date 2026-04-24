@@ -5,25 +5,25 @@ import com.smartcampus.model.User;
 
 public interface UserProfileService {
 
-    // ================= PROFILE =================
+    // Profile read operations.
     UserDto.UserProfileDto getProfile(Long userId);
 
     UserDto.UserHomeDto getUserHome(Long userId);
 
     User getCurrentUser(String email);
 
-    // ================= NAME =================
+    // Name update operation.
     UserDto.UpdateNameDto updateName(User user, UserDto.UpdateNameDto dto);
 
-    // ================= EMAIL =================
+    // Email update and verification operations.
     UserDto.UpdateEmailDto updateEmail(User user, UserDto.UpdateEmailDto dto);
 
     void verifyNewEmail(User user, String otp);
 
-    // ================= PASSWORD =================
+    // Password update operation.
     void updatePassword(User user, UserDto.UpdatePasswordDto dto);
 
-    // ================= PROFILE FIELDS =================
+    // Individual profile field updates.
     void updatePhoneNumber(User user, String phoneNumber);
     
     void updateYear(User user, String year);
@@ -32,7 +32,7 @@ public interface UserProfileService {
     
     void updateProfileField(User user, UserDto.UpdateProfileFieldDto dto);
 
-    // ================= ACCOUNT DELETE =================
+    // Account deletion operations.
     void deleteAccount(User user, UserDto.DeleteAccountDto dto);
     void deleteOAuthAccount(User user);
 

@@ -34,13 +34,16 @@ public class JWTAuthFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
+        // Read token from header or cookie.
         String token = resolveToken(request);
 
+        // Continue without auth if token missing.
         if (token == null || token.isBlank()) {
             filterChain.doFilter(request, response);
             return;
         }
 
+        // Try to authenticate request from token.
         authenticate(token, request);
 
         filterChain.doFilter(request, response);
@@ -49,10 +52,12 @@ public class JWTAuthFilter extends OncePerRequestFilter {
     private String resolveToken(HttpServletRequest request) {
         String header = request.getHeader("Authorization");
 
+        // Prefer Bearer token when present.
         if (header != null && header.startsWith("Bearer ")) {
             return header.substring(7);
         }
 
+        // Fallback to ACCESS cookie token.
         String cookieToken = jwtUtils.getTokenFromCookie(request, Token.ACCESS);
         return (cookieToken != null && !cookieToken.isBlank()) ? cookieToken : null;
     }
@@ -60,12 +65,14 @@ public class JWTAuthFilter extends OncePerRequestFilter {
     private void authenticate(String token, HttpServletRequest request) {
 
         try {
+            // Extract username from token subject.
             String username = jwtUtils.extractUsername(token);
             if (username == null || username.isBlank()) {
                 SecurityContextHolder.clearContext();
                 return;
             }
 
+            // Load user and validate token integrity.
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
             if (!jwtUtils.validateToken(token, userDetails)) {
@@ -73,6 +80,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
                 return;
             }
 
+            // Put authenticated user into security context.
             UsernamePasswordAuthenticationToken authToken =
                     new UsernamePasswordAuthenticationToken(
                             userDetails,
@@ -87,6 +95,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authToken);
 
         } catch (Exception e) {
+            // Any parsing/validation error clears auth state.
             log.warn("JWT error: {}", e.getMessage());
             SecurityContextHolder.clearContext();
         }

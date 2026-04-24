@@ -25,6 +25,7 @@ import java.util.List;
 @Setter
 @Builder
 @ToString(exclude = {"forgotPassword"})
+
 public class User implements UserDetails {
 
     @Id
@@ -65,6 +66,7 @@ public class User implements UserDetails {
     private Date otpBlockUntil;
 
     // ✅ OAUTH2 FIELDS
+    /** OAuth provider metadata for social-login users. */
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
     private AuthProvider provider;

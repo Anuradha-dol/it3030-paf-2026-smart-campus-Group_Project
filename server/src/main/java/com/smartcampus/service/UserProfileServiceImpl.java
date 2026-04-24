@@ -29,14 +29,14 @@ public class UserProfileServiceImpl implements UserProfileService {
     private final EmailUtils emailUtils;
     private final NotificationService notificationService;
 
-    // ================= CURRENT USER =================
+    // Resolve current user by email.
     @Override
     public User getCurrentUser(String email) {
         return userRepo.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    // ================= DELETE ACCOUNT =================
+    // Delete local or OAuth account.
     @Transactional
     @Override
     public void deleteAccount(User user, UserDto.DeleteAccountDto dto) {
@@ -67,7 +67,7 @@ public class UserProfileServiceImpl implements UserProfileService {
         userRepo.delete(user);
     }
 
-    // ================= REQUEST DELETE OTP =================
+    // Send OTP before account deletion.
     @Transactional
     @Override
     public void requestDeletion(User user) {
@@ -92,7 +92,7 @@ public class UserProfileServiceImpl implements UserProfileService {
         ));
     }
 
-    // ================= VERIFY + DELETE =================
+    // Verify OTP and delete account.
     @Transactional
     @Override
     public void verifyAndDelete(User user, UserDto.DeleteAccountForgotVerifyDto dto) {
@@ -112,7 +112,7 @@ public class UserProfileServiceImpl implements UserProfileService {
         forgotPasswordRepository.delete(fp);
     }
 
-    // ================= UPDATE NAME =================
+    // Update first and last name.
     @Transactional
     @Override
     public UserDto.UpdateNameDto updateName(User user, UserDto.UpdateNameDto dto) {
@@ -128,7 +128,7 @@ public class UserProfileServiceImpl implements UserProfileService {
         );
     }
 
-    // ================= UPDATE EMAIL =================
+    // Send OTP to verify new email.
     @Transactional
     @Override
     public UserDto.UpdateEmailDto updateEmail(User user, UserDto.UpdateEmailDto dto) {
@@ -157,7 +157,7 @@ public class UserProfileServiceImpl implements UserProfileService {
         return new UserDto.UpdateEmailDto(newEmail);
     }
 
-    // ================= VERIFY NEW EMAIL =================
+    // Confirm new email with OTP.
     @Transactional
     @Override
     public void verifyNewEmail(User user, String otp) {
@@ -182,7 +182,7 @@ public class UserProfileServiceImpl implements UserProfileService {
         userRepo.save(user);
     }
 
-    // ================= UPDATE PASSWORD =================
+    // Update account password.
     @Transactional
     @Override
     public void updatePassword(User user, UserDto.UpdatePasswordDto dto) {
@@ -199,7 +199,7 @@ public class UserProfileServiceImpl implements UserProfileService {
         userRepo.save(user);
     }
 
-    // ================= HOME =================
+    // Build quick home summary.
     @Override
     public UserDto.UserHomeDto getUserHome(Long userId) {
         String firstName = "User";
@@ -216,7 +216,7 @@ public class UserProfileServiceImpl implements UserProfileService {
         return new UserDto.UserHomeDto("Welcome back, " + firstName + "!", unreadCount, 5);
     }
 
-    // ================= PROFILE (FIXED - NO INTEREST) =================
+    // Return full profile data.
     @Override
     public UserDto.UserProfileDto getProfile(Long userId) {
 
@@ -238,7 +238,7 @@ public class UserProfileServiceImpl implements UserProfileService {
         );
     }
 
-    // ================= UPDATE PHONE NUMBER =================
+    // Update phone number.
     @Transactional
     @Override
     public void updatePhoneNumber(User user, String phoneNumber) {
@@ -249,7 +249,7 @@ public class UserProfileServiceImpl implements UserProfileService {
         userRepo.save(user);
     }
 
-    // ================= UPDATE YEAR =================
+    // Update academic year.
     @Transactional
     @Override
     public void updateYear(User user, String year) {
@@ -264,7 +264,7 @@ public class UserProfileServiceImpl implements UserProfileService {
         }
     }
 
-    // ================= UPDATE SEMESTER =================
+    // Update semester.
     @Transactional
     @Override
     public void updateSemester(User user, String semester) {
@@ -279,7 +279,7 @@ public class UserProfileServiceImpl implements UserProfileService {
         }
     }
 
-    // ================= GENERIC PROFILE FIELD UPDATE =================
+    // Route field update by field name.
     @Transactional
     @Override
     public void updateProfileField(User user, UserDto.UpdateProfileFieldDto dto) {

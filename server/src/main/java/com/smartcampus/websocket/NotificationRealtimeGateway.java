@@ -22,14 +22,17 @@ public class NotificationRealtimeGateway {
 
     private final ObjectMapper objectMapper;
 
+    // Maps username -> all active websocket sessions.
     private final ConcurrentHashMap<String, Set<WebSocketSession>> sessionsByUser = new ConcurrentHashMap<>();
 
     public void registerSession(String username, WebSocketSession session) {
+        // Normalize username for stable map keys.
         String key = normalizeUsername(username);
         if (key == null || session == null) {
             return;
         }
 
+        // Create set when first session connects.
         sessionsByUser.computeIfAbsent(
                 key,
                 ignored -> Collections.newSetFromMap(new ConcurrentHashMap<>())
@@ -37,6 +40,7 @@ public class NotificationRealtimeGateway {
     }
 
     public void unregisterSession(String username, WebSocketSession session) {
+        // Remove one session from user session set.
         String key = normalizeUsername(username);
         if (key == null || session == null) {
             return;
@@ -47,6 +51,7 @@ public class NotificationRealtimeGateway {
             return;
         }
 
+        // Cleanup empty session sets.
         sessions.remove(session);
         if (sessions.isEmpty()) {
             sessionsByUser.remove(key);
@@ -54,6 +59,7 @@ public class NotificationRealtimeGateway {
     }
 
     public void pushToUser(String username, NotificationResponseDTO payload) {
+        // Skip invalid push requests.
         String key = normalizeUsername(username);
         if (key == null || payload == null) {
             return;
@@ -64,18 +70,21 @@ public class NotificationRealtimeGateway {
             return;
         }
 
+        // Serialize payload once for all sessions.
         String jsonMessage = toJson(payload);
         if (jsonMessage == null) {
             return;
         }
 
         for (WebSocketSession session : sessions) {
+            // Drop closed sessions.
             if (session == null || !session.isOpen()) {
                 unregisterSession(username, session);
                 continue;
             }
 
             try {
+                // Push notification to one live session.
                 session.sendMessage(new TextMessage(jsonMessage));
             } catch (IOException ex) {
                 log.warn("Failed to push real-time notification to session {}: {}", session.getId(), ex.getMessage());
@@ -101,6 +110,7 @@ public class NotificationRealtimeGateway {
         try {
             return objectMapper.writeValueAsString(payload);
         } catch (JsonProcessingException ex) {
+            // Skip push when payload serialization fails.
             log.warn("Failed to serialize notification payload: {}", ex.getMessage());
             return null;
         }

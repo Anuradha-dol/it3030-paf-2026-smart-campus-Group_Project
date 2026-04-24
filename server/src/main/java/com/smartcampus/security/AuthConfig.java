@@ -21,12 +21,14 @@ public class AuthConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
+        // Load user by email for Spring AuthenticationManager.
         return email -> userRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
     }
 
     @Bean
     public AuthenticationProvider authenticationProvider(UserDetailsService userDetailsService) {
+        // Use DB-backed user details + BCrypt password check.
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
@@ -35,11 +37,13 @@ public class AuthConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        // Reuse Spring-managed authentication manager.
         return config.getAuthenticationManager();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
+        // BCrypt for password hashing.
         return new BCryptPasswordEncoder();
     }
 }

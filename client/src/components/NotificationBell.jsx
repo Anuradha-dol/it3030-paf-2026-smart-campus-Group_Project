@@ -20,6 +20,7 @@ function formatTimestamp(value) {
 }
 
 function normalizeNotification(notificationLike) {
+  // Keep a stable shape for UI rendering.
   const notification = notificationLike || {};
   return {
     id: notification.id,
@@ -33,6 +34,7 @@ function normalizeNotification(notificationLike) {
 }
 
 function buildWebSocketUrl() {
+  // Convert API base URL to websocket URL.
   const baseUrl = String(api?.defaults?.baseURL || "http://localhost:8081").replace(/\/+$/, "");
   if (baseUrl.startsWith("https://")) {
     return `wss://${baseUrl.slice("https://".length)}/ws/notifications`;
@@ -50,6 +52,7 @@ export default function NotificationBell() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const panelRef = useRef(null);
+  // Track ids already shown to avoid badge over-counting.
   const knownIdsRef = useRef(new Set());
 
   const refreshUnreadCount = async () => {
@@ -65,6 +68,7 @@ export default function NotificationBell() {
     setLoading(true);
     setError("");
     try {
+      // Load latest notifications when panel opens.
       const rows = await getNotifications(MAX_NOTIFICATIONS);
       setNotifications(rows.map(normalizeNotification));
       await refreshUnreadCount();
@@ -76,12 +80,14 @@ export default function NotificationBell() {
   };
 
   useEffect(() => {
+    // Keep unread badge fresh in background.
     refreshUnreadCount();
     const timer = setInterval(refreshUnreadCount, 30000);
     return () => clearInterval(timer);
   }, []);
 
   useEffect(() => {
+    // Rebuild quick lookup set when list changes.
     knownIdsRef.current = new Set(
       notifications
         .map((item) => item.id)
@@ -95,6 +101,7 @@ export default function NotificationBell() {
     let shouldReconnect = true;
 
     const connect = () => {
+      // Open notification websocket channel.
       socket = new WebSocket(buildWebSocketUrl());
 
       socket.onmessage = (event) => {
@@ -112,6 +119,7 @@ export default function NotificationBell() {
           return;
         }
 
+        // Track whether this is a brand-new notification.
         const wasKnown = knownIdsRef.current.has(incoming.id);
 
         setNotifications((prev) => {
@@ -131,6 +139,7 @@ export default function NotificationBell() {
 
       socket.onclose = () => {
         if (!shouldReconnect) return;
+        // Retry websocket connection after short delay.
         reconnectTimer = setTimeout(connect, WS_RECONNECT_DELAY_MS);
       };
 
@@ -157,6 +166,7 @@ export default function NotificationBell() {
   }, []);
 
   useEffect(() => {
+    // Fetch list only when panel becomes visible.
     if (isOpen) {
       loadNotifications();
     }
@@ -166,6 +176,7 @@ export default function NotificationBell() {
     if (!isOpen) return undefined;
 
     const handleOutsideClick = (event) => {
+      // Close panel when clicking outside.
       if (!panelRef.current || panelRef.current.contains(event.target)) {
         return;
       }
@@ -178,6 +189,7 @@ export default function NotificationBell() {
 
   const handleMarkOneRead = async (id) => {
     try {
+      // Update one notification and badge count.
       const updated = normalizeNotification(await markNotificationAsRead(id));
       setNotifications((prev) => prev.map((item) => (item.id === id ? updated : item)));
       setUnreadCount((prev) => Math.max(0, prev - 1));
@@ -188,6 +200,7 @@ export default function NotificationBell() {
 
   const handleMarkAllRead = async () => {
     try {
+      // Mark all notifications as read in one call.
       const updatedCount = await markAllNotificationsAsRead();
       if (updatedCount > 0) {
         setNotifications((prev) => prev.map((item) => ({ ...item, read: true })));
@@ -200,6 +213,7 @@ export default function NotificationBell() {
 
   const handleDelete = async (id) => {
     try {
+      // Delete one notification and sync local state.
       const target = notifications.find((item) => item.id === id);
       await deleteNotificationById(id);
       setNotifications((prev) => prev.filter((item) => item.id !== id));

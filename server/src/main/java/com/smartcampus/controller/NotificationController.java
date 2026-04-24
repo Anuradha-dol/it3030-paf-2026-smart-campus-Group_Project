@@ -31,7 +31,9 @@ public class NotificationController {
             Authentication authentication,
             @RequestParam(defaultValue = "20") int limit
     ) {
+        // Resolve current user from principal/authentication.
         User currentUser = resolveLoggedUser(user, authentication);
+        // Return latest notifications up to the given limit.
         return ResponseEntity.ok(notificationService.getNotificationsForUser(currentUser.getUserId(), limit));
     }
 
@@ -40,6 +42,7 @@ public class NotificationController {
             @AuthenticationPrincipal User user,
             Authentication authentication
     ) {
+        // Return unread count for bell badge.
         User currentUser = resolveLoggedUser(user, authentication);
         return ResponseEntity.ok(Map.of("count", notificationService.getUnreadCount(currentUser.getUserId())));
     }
@@ -50,6 +53,7 @@ public class NotificationController {
             Authentication authentication,
             @PathVariable("id") Long id
     ) {
+        // Mark one notification as read for current user.
         User currentUser = resolveLoggedUser(user, authentication);
         NotificationResponseDTO response = notificationService.markAsRead(currentUser.getUserId(), id);
         return ResponseEntity.ok(response);
@@ -60,6 +64,7 @@ public class NotificationController {
             @AuthenticationPrincipal User user,
             Authentication authentication
     ) {
+        // Mark all unread notifications as read.
         User currentUser = resolveLoggedUser(user, authentication);
         int updated = notificationService.markAllAsRead(currentUser.getUserId());
         return ResponseEntity.ok(Map.of("updated", updated));
@@ -71,12 +76,14 @@ public class NotificationController {
             Authentication authentication,
             @PathVariable("id") Long id
     ) {
+        // Delete one notification owned by current user.
         User currentUser = resolveLoggedUser(user, authentication);
         notificationService.deleteForUser(currentUser.getUserId(), id);
         return ResponseEntity.noContent().build();
     }
 
     private User resolveLoggedUser(User loggedUser, Authentication authentication) {
+        // First try injected principal model.
         if (loggedUser != null) {
             if (loggedUser.getEmail() != null && !loggedUser.getEmail().isBlank()) {
                 return findUserByEmail(loggedUser.getEmail());
@@ -87,6 +94,7 @@ public class NotificationController {
             }
         }
 
+        // Then fallback to Spring Authentication principal types.
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         }
