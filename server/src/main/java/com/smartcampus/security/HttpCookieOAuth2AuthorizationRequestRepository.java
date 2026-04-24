@@ -36,6 +36,7 @@ public class HttpCookieOAuth2AuthorizationRequestRepository
 
     @Override
     public OAuth2AuthorizationRequest loadAuthorizationRequest(HttpServletRequest request) {
+        // Read OAuth2 request from cookie and deserialize.
         return getCookieValue(request, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME)
                 .map(this::deserialize)
                 .orElse(null);
@@ -47,17 +48,20 @@ public class HttpCookieOAuth2AuthorizationRequestRepository
             HttpServletRequest request,
             HttpServletResponse response
     ) {
+        // Remove cookie when auth request is missing.
         if (authorizationRequest == null) {
             removeAuthorizationRequest(request, response);
             return;
         }
 
+        // Serialize request object into cookie-safe string.
         String serializedRequest = serialize(authorizationRequest);
         if (serializedRequest == null) {
             removeAuthorizationRequest(request, response);
             return;
         }
 
+        // Keep OAuth2 request short-lived.
         addCookie(response, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME, serializedRequest, COOKIE_EXPIRE_SECONDS);
     }
 
@@ -66,6 +70,7 @@ public class HttpCookieOAuth2AuthorizationRequestRepository
             HttpServletRequest request,
             HttpServletResponse response
     ) {
+        // Return current request before removing cookie.
         OAuth2AuthorizationRequest authRequest = loadAuthorizationRequest(request);
         removeCookie(response, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME);
         return authRequest;
@@ -78,6 +83,7 @@ public class HttpCookieOAuth2AuthorizationRequestRepository
         }
 
         String latestValue = null;
+        // Pick latest non-empty value for the same cookie name.
         for (Cookie cookie : cookies) {
             if (name.equals(cookie.getName())
                     && cookie.getValue() != null
@@ -91,6 +97,7 @@ public class HttpCookieOAuth2AuthorizationRequestRepository
 
     private String serialize(OAuth2AuthorizationRequest authorizationRequest) {
         try {
+            // Java object -> byte[] -> Base64 URL string.
             byte[] serialized = toBytes(authorizationRequest);
             if (serialized == null || serialized.length == 0) {
                 return null;
@@ -104,6 +111,7 @@ public class HttpCookieOAuth2AuthorizationRequestRepository
 
     private OAuth2AuthorizationRequest deserialize(String cookieValue) {
         try {
+            // Base64 URL string -> byte[] -> Java object.
             byte[] decoded = Base64.getUrlDecoder().decode(cookieValue);
             Object object = fromBytes(decoded);
             if (object instanceof OAuth2AuthorizationRequest request) {
@@ -117,6 +125,7 @@ public class HttpCookieOAuth2AuthorizationRequestRepository
     }
 
     private void addCookie(HttpServletResponse response, String name, String value, int maxAgeSeconds) {
+        // Store OAuth2 auth request in HttpOnly cookie.
         ResponseCookie cookie = ResponseCookie.from(name, value)
                 .httpOnly(true)
                 .secure(cookieSecure)
@@ -129,6 +138,7 @@ public class HttpCookieOAuth2AuthorizationRequestRepository
     }
 
     private void removeCookie(HttpServletResponse response, String name) {
+        // Delete cookie by setting maxAge to 0.
         addCookie(response, name, "", 0);
     }
 
@@ -139,6 +149,7 @@ public class HttpCookieOAuth2AuthorizationRequestRepository
 
         String normalized = cookieSameSite.trim().toLowerCase();
 
+        // SameSite=None requires secure cookie.
         if (!cookieSecure && "none".equals(normalized)) {
             return "Lax";
         }

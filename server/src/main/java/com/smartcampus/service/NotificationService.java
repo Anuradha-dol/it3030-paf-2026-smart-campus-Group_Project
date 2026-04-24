@@ -37,11 +37,13 @@ public class NotificationService {
             Long targetId,
             String message
     ) {
+        // Skip invalid recipients.
         if (recipient == null || recipient.getUserId() == null) {
             return null;
         }
 
         try {
+            // Persist one notification row.
             Notification notification = Notification.builder()
                     .recipient(recipient)
                     .type(type)
@@ -52,6 +54,7 @@ public class NotificationService {
                     .build();
 
             Notification savedNotification = notificationRepository.save(notification);
+            // Push new notification to active websocket sessions.
             pushRealtime(recipient, savedNotification);
             return savedNotification;
         } catch (RuntimeException ex) {
@@ -68,6 +71,7 @@ public class NotificationService {
             Long targetId,
             String message
     ) {
+        // Skip when user id is missing.
         if (recipientUserId == null) {
             return null;
         }
@@ -91,10 +95,12 @@ public class NotificationService {
             Long targetId,
             String message
     ) {
+        // Skip empty recipient collections.
         if (recipients == null || recipients.isEmpty()) {
             return;
         }
 
+        // Use set to avoid sending duplicates.
         Set<Long> sentTo = new LinkedHashSet<>();
         for (User user : recipients) {
             if (user == null || user.getUserId() == null) {
@@ -119,6 +125,7 @@ public class NotificationService {
             Long excludeUserId
     ) {
         try {
+            // Broadcast to all admin users.
             List<User> admins = userRepo.findByRole(Role.ADMIN);
             createForUsers(admins, excludeUserId, type, targetType, targetId, message);
         } catch (RuntimeException ex) {
@@ -128,10 +135,12 @@ public class NotificationService {
 
     @Transactional(readOnly = true)
     public List<NotificationResponseDTO> getNotificationsForUser(Long userId, int limit) {
+        // Guard against missing user id.
         if (userId == null) {
             return List.of();
         }
 
+        // Keep API limit within safe range.
         int safeLimit = Math.min(Math.max(limit, 1), 100);
 
         try {
@@ -161,9 +170,11 @@ public class NotificationService {
 
     @Transactional
     public NotificationResponseDTO markAsRead(Long userId, Long notificationId) {
+        // Only allow updates to user's own notifications.
         Notification notification = notificationRepository.findByIdAndRecipientUserId(notificationId, userId)
                 .orElseThrow(() -> new RuntimeException("Notification not found"));
 
+        // Avoid extra update when already read.
         if (!notification.isRead()) {
             notification.setRead(true);
             notification = notificationRepository.save(notification);
@@ -184,6 +195,7 @@ public class NotificationService {
 
     @Transactional
     public void deleteForUser(Long userId, Long notificationId) {
+        // Only delete notifications owned by current user.
         Notification notification = notificationRepository.findByIdAndRecipientUserId(notificationId, userId)
                 .orElseThrow(() -> new RuntimeException("Notification not found"));
         notificationRepository.delete(notification);
@@ -191,6 +203,7 @@ public class NotificationService {
 
     @Transactional(readOnly = true)
     public Long findBookingOwnerFromCreateNotification(Long bookingId) {
+        // Resolve booking owner from earliest booking-created notification.
         if (bookingId == null) {
             return null;
         }
@@ -225,10 +238,12 @@ public class NotificationService {
     }
 
     private void pushRealtime(User recipient, Notification notification) {
+        // Skip when recipient or payload is missing.
         if (recipient == null || notification == null) {
             return;
         }
 
+        // Use email as websocket user key.
         String username = recipient.getEmail();
         if (username == null || username.isBlank()) {
             return;

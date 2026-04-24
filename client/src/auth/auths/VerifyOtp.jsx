@@ -29,6 +29,7 @@ export default function VerifyOtp() {
         setLoading(true);
 
         try {
+            // Verify OTP against backend cookie email.
             const response = await api.post('/auth/verify-code', {
                 verifyCode: otp.trim(),
             });
@@ -38,7 +39,7 @@ export default function VerifyOtp() {
                 return;
             }
 
-            // Email stored in backend cookie, no localStorage cleanup needed
+            // Email lives in backend cookie, so no local storage cleanup.
             setSuccess('Account verified successfully.');
             navigate('/login');
         } catch (err) {
@@ -54,6 +55,7 @@ export default function VerifyOtp() {
         setResending(true);
 
         try {
+            // Resend OTP using email from backend cookie.
             const response = await api.post('/auth/resend-otp');
 
             if (!response.data?.success) {

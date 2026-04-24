@@ -30,23 +30,32 @@ public class AuthServiceimpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
 
-    // ================= EMAIL VALIDATION =================
+    // Allow only SLIIT email pattern.
     private boolean isValidEmail(String email) {
-        return email != null && email.matches("^IT\\d+@my\\.sliit\\.lk$");
+        return email != null && email.matches("(?i)^it\\d+@my\\.sliit\\.lk$");
     }
 
-    // ================= SIGN UP =================
+    // Trim and normalize email for consistent checks.
+    private String normalizeEmail(String email) {
+        if (email == null) {
+            return null;
+        }
+        return email.trim().toLowerCase(Locale.ROOT);
+    }
+
+    // Register user and send verification OTP.
     @Override
     public AuthResponse signUp(UserDto.RegisterRequest request) {
+        String normalizedEmail = normalizeEmail(request.email());
 
-        if (!isValidEmail(request.email())) {
+        if (!isValidEmail(normalizedEmail)) {
             return AuthResponse.builder()
                     .message("Invalid email! Example: IT23687882@my.sliit.lk")
                     .success(false)
                     .build();
         }
 
-        Optional<User> existing = userRepo.findByEmailIgnoreCase(request.email());
+        Optional<User> existing = userRepo.findByEmailIgnoreCase(normalizedEmail);
 
         if (existing.isPresent() && existing.get().getIsVerified()) {
             return AuthResponse.builder()
@@ -63,7 +72,7 @@ public class AuthServiceimpl implements AuthService {
 
         user.setFirstname(request.firstname());
         user.setLastName(request.lastName());
-        user.setEmail(request.email());
+        user.setEmail(normalizedEmail);
         user.setPassword(passwordEncoder.encode(request.password()));
         user.setPhoneNumber(phoneNumber);
         user.setTempEmail(request.tempEmail());
@@ -123,8 +132,9 @@ public class AuthServiceimpl implements AuthService {
 
     @Override
     public AuthResponse signIn(LoginRequest request, HttpServletResponse response) {
+        String normalizedEmail = normalizeEmail(request.email());
 
-        User user = userRepo.findByEmailIgnoreCase(request.email()).orElse(null);
+        User user = userRepo.findByEmailIgnoreCase(normalizedEmail).orElse(null);
 
         if (user == null) {
             return AuthResponse.builder()
@@ -143,7 +153,7 @@ public class AuthServiceimpl implements AuthService {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            request.email(),
+                            normalizedEmail,
                             request.password()
                     )
             );
@@ -158,7 +168,7 @@ public class AuthServiceimpl implements AuthService {
         claims.put("email", user.getEmail());
         claims.put("role", user.getRole());
 
-        // Reset any previous session cookies before issuing new login tokens.
+        // Clear old cookies before issuing new JWT cookies.
         jwtUtils.removeToken(response, Token.ACCESS);
         jwtUtils.removeToken(response, Token.REFRESH);
 
@@ -180,7 +190,7 @@ public class AuthServiceimpl implements AuthService {
                 .build();
     }
 
-    // ================= VERIFY OTP =================
+    // Verify registration OTP and activate account.
     @Override
     public AuthResponse verifyCode(String email, String code) {
 
@@ -220,7 +230,7 @@ public class AuthServiceimpl implements AuthService {
                 .build();
     }
 
-    // ================= RESEND OTP =================
+    // Generate and resend a new OTP.
     @Override
     public AuthResponse resendOtp(String email) {
 

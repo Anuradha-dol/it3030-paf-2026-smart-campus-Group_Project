@@ -24,6 +24,7 @@ export default function ForgotPassword() {
             return undefined;
         }
 
+        // Simple resend countdown timer.
         const timeout = setTimeout(() => setTimer((prev) => prev - 1), 1000);
         return () => clearTimeout(timeout);
     }, [timer]);
@@ -45,6 +46,7 @@ export default function ForgotPassword() {
         setLoading(true);
 
         try {
+            // Start forgot-password flow by email.
             const response = await api.post('/forgotpass/send-otp', {
                 email: form.email.trim(),
             });
@@ -71,6 +73,7 @@ export default function ForgotPassword() {
         setLoading(true);
 
         try {
+            // Verify OTP and let backend issue verify JWT cookie.
             const response = await api.post('/forgotpass/verify-otp', {
                 otp: form.otp.trim(),
             });
@@ -90,6 +93,7 @@ export default function ForgotPassword() {
         setLoading(true);
 
         try {
+            // Resend OTP while server tracks resend limits.
             const response = await api.post('/forgotpass/resend-otp');
             setMessage(response.data || 'OTP resent.');
             setTimer(60);
@@ -117,6 +121,7 @@ export default function ForgotPassword() {
         setLoading(true);
 
         try {
+            // Change password using verify token cookie.
             const response = await api.post('/forgotpass/change-password', {
                 password: form.password,
                 repeatPassword: form.repeatPassword,

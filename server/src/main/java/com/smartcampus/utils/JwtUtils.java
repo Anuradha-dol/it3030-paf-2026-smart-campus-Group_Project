@@ -32,8 +32,11 @@ public class JwtUtils {
     @Value("${spring.cookie.same-site:Lax}")
     private String cookieSameSite;
 
+    // Access token lifetime.
     private static final long ACCESS_EXPIRATION_MS = 60 * 60 * 1000;
+    // Refresh token lifetime.
     private static final long REFRESH_EXPIRATION_MS = 7 * 24 * 60 * 60 * 1000L;
+    // Temporary verify token lifetime.
     private static final long VERIFY_EXPIRATION_MS = 30 * 60 * 1000;
 
     public String generateToken(
@@ -43,6 +46,7 @@ public class JwtUtils {
             Token tokenType
     ) {
 
+        // Copy caller claims and append roles.
         Map<String, Object> claims = new HashMap<>(extraClaims);
 
         claims.put("roles",
@@ -52,6 +56,7 @@ public class JwtUtils {
                         .collect(Collectors.toList())
         );
 
+        // Pick expiry by token type.
         long expiration;
         if (tokenType == Token.ACCESS) {
             expiration = ACCESS_EXPIRATION_MS;
@@ -61,6 +66,7 @@ public class JwtUtils {
             expiration = VERIFY_EXPIRATION_MS;
         }
 
+        // Build signed JWT.
         String token = Jwts.builder()
                 .setClaims(claims)
                 .setSubject(userDetails.getUsername())
@@ -69,12 +75,14 @@ public class JwtUtils {
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
 
+        // Always write token into HttpOnly cookie.
         addCookie(response, tokenType, token, expiration);
 
         return token;
     }
 
     private void addCookie(HttpServletResponse response, Token type, String token, long expiryMs) {
+        // Token cookie name matches enum name.
         response.addHeader(
                 HttpHeaders.SET_COOKIE,
                 buildCookie(type.name(), token, expiryMs / 1000).toString()
@@ -82,11 +90,13 @@ public class JwtUtils {
     }
 
     public String getTokenFromCookie(HttpServletRequest request, Token type) {
+        // No cookies means no token.
         if (request.getCookies() == null) {
             return null;
         }
 
         String latestToken = null;
+        // Pick latest non-empty cookie value.
         for (Cookie cookie : request.getCookies()) {
             if (type.name().equals(cookie.getName())
                     && cookie.getValue() != null
@@ -98,6 +108,7 @@ public class JwtUtils {
         return latestToken;
     }
     public void removeToken(HttpServletResponse response, Token tokenType) {
+        // Remove cookie by setting maxAge to 0.
         response.addHeader(
                 HttpHeaders.SET_COOKIE,
                 buildCookie(tokenType.name(), "", 0).toString()
@@ -106,6 +117,7 @@ public class JwtUtils {
 
     public boolean validateToken(String token, UserDetails userDetails) {
         try {
+            // Token is valid only for same user and unexpired.
             return extractUsername(token).equals(userDetails.getUsername())
                     && !isTokenExpired(token);
         } catch (JwtException e) {
@@ -136,6 +148,7 @@ public class JwtUtils {
     }
 
     private ResponseCookie buildCookie(String name, String value, long maxAgeSeconds) {
+        // Keep cookies HttpOnly to block JS access.
         return ResponseCookie.from(name, value)
                 .httpOnly(true)
                 .secure(cookieSecure)
@@ -152,6 +165,7 @@ public class JwtUtils {
 
         String normalized = cookieSameSite.trim().toLowerCase();
 
+        // Browser blocks SameSite=None on insecure cookies.
         if (!cookieSecure && "none".equals(normalized)) {
             return "Lax";
         }

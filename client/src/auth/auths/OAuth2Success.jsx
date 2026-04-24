@@ -11,7 +11,7 @@ export default function OAuth2Success() {
     useEffect(() => {
         const handleOAuth2Success = async () => {
             try {
-                // Get OAuth2 user information
+                // Read authenticated user from backend cookie session.
                 const response = await api.get('/auth/me', {
                     withCredentials: true
                 });
@@ -22,7 +22,7 @@ export default function OAuth2Success() {
 
                     setMessage('Login successful! Redirecting...');
 
-                    // Navigate based on role (same as regular login)
+                    // Route user by role after OAuth2 login.
                     setTimeout(() => {
                         if (role.includes('ADMIN')) {
                             navigate('/dashboard', { replace: true });

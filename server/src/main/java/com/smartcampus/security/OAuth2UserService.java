@@ -16,7 +16,9 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+        // Delegate user fetch to Spring default implementation.
         OAuth2User oauth2User = super.loadUser(userRequest);
+        // Keep raw provider user for success handler processing.
         return oauth2User;
     }
 }

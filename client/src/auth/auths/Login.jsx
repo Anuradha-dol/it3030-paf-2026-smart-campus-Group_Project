@@ -13,6 +13,7 @@ export default function Login() {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
+        // Show OAuth2 error passed from backend redirect.
         const params = new URLSearchParams(location.search);
         const oauthError = params.get('oauthError');
         if (oauthError) {
@@ -23,6 +24,7 @@ export default function Login() {
     }, [location.search]);
 
     const handleGoogleLogin = () => {
+        // Start OAuth2 login on backend.
         const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8081';
         window.location.href = `${apiBaseUrl}/oauth2/authorization/google?prompt=select_account`;
     };
@@ -54,7 +56,7 @@ export default function Login() {
         setMessage('');
 
         try {
-            // Clear any previous auth cookies before starting a fresh login.
+            // Clear old auth cookies before fresh login.
             try {
                 await api.post('/auth/logout', {}, { withCredentials: true });
             } catch {
@@ -70,7 +72,7 @@ export default function Login() {
                 setMessage('Login successful! Redirecting...');
                 const role = String(res.data.role || '').toUpperCase();
 
-                // Navigate based on role
+                // Route user by role after login.
                 if (role.includes('ADMIN')) {
                     navigate('/dashboard', { replace: true });
                 } else if (role.includes('TECHNICIAN')) {

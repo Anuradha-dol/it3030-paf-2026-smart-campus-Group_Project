@@ -34,6 +34,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private static final Pattern SLIIT_EMAIL_PATTERN =
             Pattern.compile("^IT\\d+@my\\.sliit\\.lk$", Pattern.CASE_INSENSITIVE);
+    private static final String SLIIT_EMAIL_ONLY_MESSAGE =
+            "Only SLIIT email is allowed (example: IT23687882@my.sliit.lk).";
     private static final int NAME_MAX_LENGTH = 100;
     private static final int PROVIDER_ID_MAX_LENGTH = 100;
 
@@ -54,29 +56,26 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
             Authentication authentication
     ) throws IOException {
         try {
+            // OAuth profile from provider.
             OAuth2User oauthUser = (OAuth2User) authentication.getPrincipal();
 
+            // Normalize provider attributes.
             String email = normalizeEmail(oauthUser.getAttribute("email"));
             String name = oauthUser.getAttribute("name");
             String providerId = normalizeProviderId(oauthUser.getAttribute("sub"));
 
             if (!StringUtils.hasText(email)) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Email not found from OAuth2 provider");
+                log.warn("Blocked OAuth2 login because provider email is missing");
+                rejectOAuthLogin(response, SLIIT_EMAIL_ONLY_MESSAGE);
                 return;
             }
             if (!isAllowedSliitEmail(email)) {
-                jwtUtils.removeToken(response, Token.ACCESS);
-                jwtUtils.removeToken(response, Token.REFRESH);
                 log.warn("Blocked OAuth2 login for non-SLIIT email: {}", email);
-
-                String errorMessage = URLEncoder.encode(
-                        "Use your SLIIT email (IT23687882@my.sliit.lk) for Google login.",
-                        StandardCharsets.UTF_8
-                );
-                response.sendRedirect(loginRedirectUrl + "?oauthError=" + errorMessage);
+                rejectOAuthLogin(response, SLIIT_EMAIL_ONLY_MESSAGE);
                 return;
             }
 
+            // Create new OAuth user or reuse existing account.
             User existingUser = userRepo.findByEmailIgnoreCase(email).orElse(null);
             boolean newUser = existingUser == null;
             User user = newUser ? createOAuthUser(email, name, providerId) : existingUser;
@@ -86,7 +85,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
             claims.put("email", user.getEmail());
             claims.put("role", user.getRole().name());
 
-            // Reset any previous session cookies before issuing OAuth2 tokens.
+            // Rotate auth cookies for this login.
             jwtUtils.removeToken(response, Token.ACCESS);
             jwtUtils.removeToken(response, Token.REFRESH);
 
@@ -101,6 +100,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
             response.sendRedirect(buildFrontendUrl(redirectPath));
         } catch (Exception ex) {
             log.error("OAuth2 login success handler failed", ex);
+            // Clear cookies on OAuth2 failure.
             jwtUtils.removeToken(response, Token.ACCESS);
             jwtUtils.removeToken(response, Token.REFRESH);
             String errorMessage = URLEncoder.encode(
@@ -164,6 +164,15 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private boolean isAllowedSliitEmail(String email) {
         return StringUtils.hasText(email)
                 && SLIIT_EMAIL_PATTERN.matcher(email).matches();
+    }
+
+    private void rejectOAuthLogin(HttpServletResponse response, String message) throws IOException {
+        // Clear auth cookies to prevent partial login state.
+        jwtUtils.removeToken(response, Token.ACCESS);
+        jwtUtils.removeToken(response, Token.REFRESH);
+
+        String errorMessage = URLEncoder.encode(message, StandardCharsets.UTF_8);
+        response.sendRedirect(loginRedirectUrl + "?oauthError=" + errorMessage);
     }
 
     private String normalizeEmail(Object emailAttribute) {

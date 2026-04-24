@@ -87,6 +87,7 @@ export default function Signup() {
     };
 
     const goToNextStep = () => {
+        // Validate current step before moving forward.
         setError('');
         setSuccess('');
 
@@ -153,11 +154,13 @@ export default function Signup() {
         setLoading(true);
 
         try {
+            // Normalize optional fields before API call.
             const trimmedPhone = form.phoneNumber.trim();
             const trimmedYear = form.year.trim();
             const trimmedSemester = form.semester.trim();
 
             if (trimmedPhone) {
+                // Block duplicate phone numbers early.
                 const phoneCheck = await api.post('/auth/check-phone', {
                     phoneNumber: trimmedPhone,
                 });
@@ -185,7 +188,7 @@ export default function Signup() {
                 return;
             }
 
-            // Email stored in backend cookie, no need for localStorage
+            // Backend stores email in cookie for OTP verification.
             setSuccess('Registration successful. Enter OTP to verify your account.');
             navigate('/verify', { state: { email: form.email.trim() } });
         } catch (err) {

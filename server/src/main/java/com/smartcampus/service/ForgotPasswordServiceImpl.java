@@ -30,7 +30,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
 
-    // ================= SEND OTP =================
+    // Send OTP for forgot-password flow.
     @Override
     public ResponseEntity<String> sendOtp(Map<String, String> request, HttpServletResponse response) {
 
@@ -62,7 +62,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
         return ResponseEntity.ok("OTP sent successfully");
     }
 
-    // ================= RESEND OTP =================
+    // Resend OTP with resend-limit check.
     @Override
     public ResponseEntity<String> resendOtp(HttpServletRequest request, HttpServletResponse response) {
 
@@ -95,7 +95,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
         return ResponseEntity.ok("OTP resent (" + fp.getResendCount() + "/3)");
     }
 
-    // ================= VERIFY OTP =================
+    // Verify OTP and issue short-lived verify token.
     @Override
     public ResponseEntity<String> verifyOtp(
             Map<String, String> request,
@@ -124,7 +124,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
         return ResponseEntity.ok("OTP verified successfully");
     }
 
-    // ================= CHANGE PASSWORD =================
+    // Change password after verify-token check.
     @Override
     public ResponseEntity<String> changePassword(
             HttpServletRequest request,
@@ -155,7 +155,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
         return ResponseEntity.ok("Password changed successfully");
     }
 
-    // ================= HELPERS =================
+    // Local helper methods for OTP and cookie handling.
 
     private int generateOtp() {
         return new Random().nextInt(900000) + 100000;
