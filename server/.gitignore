@@ -9,8 +9,8 @@ uploads/
 # Logs
 *.log
 
-# Local tooling / IDE
+# Local tooling and IDE files
+node_modules/
 .idea/
 *.iml
 .tools/
-node_modules/

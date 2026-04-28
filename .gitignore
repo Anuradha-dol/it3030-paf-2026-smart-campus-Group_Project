@@ -1,9 +1,9 @@
+.idea/
+*.iml
 .idea/misc.xml
 client/src/components/Navbar.jsx
 .idea/compiler.xml
 .idea/workspace.xml
-.idea/
-*.iml
 run-server.cmd
 server/.ai/
 server/src/main/java/com/smartcampus/dto/ResourceRequestDTO.java
