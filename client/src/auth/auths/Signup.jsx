@@ -10,7 +10,6 @@ import {
 } from '../../utils/faceRecognition';
 import './Signup.css';
 
-const roleOptions = ['USER', 'ADMIN', 'TECHNICIAN'];
 const yearOptions = ['FIRST', 'SECOND', 'THIRD', 'FOURTH'];
 const semesterOptions = ['SEM1', 'SEM2'];
 
@@ -26,7 +25,6 @@ export default function Signup() {
         email: '',
         tempEmail: '',
         phoneNumber: '',
-        role: 'USER',
         year: '',
         semester: '',
         password: '',
@@ -64,11 +62,6 @@ export default function Signup() {
 
         if (!form.tempEmail.trim()) {
             setError('Recovery email is required.');
-            return false;
-        }
-
-        if (!form.role) {
-            setError('Role is required.');
             return false;
         }
 
@@ -283,7 +276,7 @@ export default function Signup() {
                 email: form.email.trim(),
                 tempEmail: form.tempEmail.trim(),
                 phoneNumber: trimmedPhone || null,
-                role: form.role,
+                role: 'USER',
                 year: trimmedYear || null,
                 semester: trimmedSemester || null,
                 faceDescriptor,
@@ -427,16 +420,6 @@ export default function Signup() {
                                             />
                                         </label>
 
-                                        <label className='form-group'>
-                                            <span>Role (Required)</span>
-                                            <select name='role' value={form.role} onChange={handleChange}>
-                                                {roleOptions.map((role) => (
-                                                    <option key={role} value={role}>
-                                                        {role}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </label>
                                     </div>
                                 </div>
                             )}
