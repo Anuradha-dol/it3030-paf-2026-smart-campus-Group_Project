@@ -10,6 +10,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -26,6 +27,12 @@ public class HttpCookieOAuth2AuthorizationRequestRepository
         implements AuthorizationRequestRepository<OAuth2AuthorizationRequest> {
 
     private static final String OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME = "OAUTH2_AUTH_REQUEST";
+    private static final String OAUTH2_REDIRECT_URI_COOKIE_NAME = "OAUTH2_REDIRECT_URI";
+    private static final String OAUTH2_LOGIN_URI_COOKIE_NAME = "OAUTH2_LOGIN_URI";
+
+    private static final String REDIRECT_URI_PARAM_NAME = "redirect_uri";
+    private static final String LOGIN_URI_PARAM_NAME = "login_uri";
+
     private static final int COOKIE_EXPIRE_SECONDS = 180;
 
     @Value("${spring.cookie.secure:false}")
@@ -50,19 +57,31 @@ public class HttpCookieOAuth2AuthorizationRequestRepository
     ) {
         // Remove cookie when auth request is missing.
         if (authorizationRequest == null) {
-            removeAuthorizationRequest(request, response);
+            removeAuthorizationRequestCookies(response);
             return;
         }
 
         // Serialize request object into cookie-safe string.
         String serializedRequest = serialize(authorizationRequest);
         if (serializedRequest == null) {
-            removeAuthorizationRequest(request, response);
+            removeAuthorizationRequestCookies(response);
             return;
         }
 
         // Keep OAuth2 request short-lived.
         addCookie(response, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME, serializedRequest, COOKIE_EXPIRE_SECONDS);
+
+        // Persist frontend redirect targets provided by the SPA that initiated login.
+        saveOptionalCookie(
+                response,
+                OAUTH2_REDIRECT_URI_COOKIE_NAME,
+                request.getParameter(REDIRECT_URI_PARAM_NAME)
+        );
+        saveOptionalCookie(
+                response,
+                OAUTH2_LOGIN_URI_COOKIE_NAME,
+                request.getParameter(LOGIN_URI_PARAM_NAME)
+        );
     }
 
     @Override
@@ -74,6 +93,20 @@ public class HttpCookieOAuth2AuthorizationRequestRepository
         OAuth2AuthorizationRequest authRequest = loadAuthorizationRequest(request);
         removeCookie(response, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME);
         return authRequest;
+    }
+
+    public String loadRedirectUri(HttpServletRequest request) {
+        return getCookieValue(request, OAUTH2_REDIRECT_URI_COOKIE_NAME).orElse(null);
+    }
+
+    public String loadLoginUri(HttpServletRequest request) {
+        return getCookieValue(request, OAUTH2_LOGIN_URI_COOKIE_NAME).orElse(null);
+    }
+
+    public void removeAuthorizationRequestCookies(HttpServletResponse response) {
+        removeCookie(response, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME);
+        removeCookie(response, OAUTH2_REDIRECT_URI_COOKIE_NAME);
+        removeCookie(response, OAUTH2_LOGIN_URI_COOKIE_NAME);
     }
 
     private Optional<String> getCookieValue(HttpServletRequest request, String name) {
@@ -140,6 +173,14 @@ public class HttpCookieOAuth2AuthorizationRequestRepository
     private void removeCookie(HttpServletResponse response, String name) {
         // Delete cookie by setting maxAge to 0.
         addCookie(response, name, "", 0);
+    }
+
+    private void saveOptionalCookie(HttpServletResponse response, String name, String value) {
+        if (StringUtils.hasText(value)) {
+            addCookie(response, name, value.trim(), COOKIE_EXPIRE_SECONDS);
+            return;
+        }
+        removeCookie(response, name);
     }
 
     private String resolveSameSite() {

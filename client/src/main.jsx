@@ -28,13 +28,14 @@ import Settings from './auth/user/Settings';
 import BookingPage from './pages/BookingPage';
 import MyBookingsPage from './pages/MyBookingsPage';
 import AdminBookingsPage from './pages/AdminBookingsPage';
+import LandingPage from './pages/LandingPage';
 
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <Router>
       <Routes>
-        <Route path="/" element={<Navigate to="/login" />} />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/dashboard/resources/add" element={<AddResourcePage />} />
         <Route path="/dashboard/resources/edit/:id" element={<EditResourcePage />} />
         <Route path="/dashboard/resources/:id" element={<ResourceDetailsPage />} />

@@ -35,4 +35,11 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
               AND n.read = false
             """)
     int markAllAsReadByRecipient(@Param("userId") Long userId);
+
+    @Modifying
+    @Query("""
+            DELETE FROM Notification n
+            WHERE n.recipient.userId = :userId
+            """)
+    int deleteByRecipientUserId(@Param("userId") Long userId);
 }

@@ -5,9 +5,13 @@ import com.smartcampus.enums.AuthProvider;
 import com.smartcampus.enums.Semester;
 import com.smartcampus.enums.Year;
 import com.smartcampus.model.ForgotPassword;
+import com.smartcampus.model.MaintenanceTicket;
 import com.smartcampus.model.User;
 import com.smartcampus.records.MailBody;
+import com.smartcampus.repository.CommentRepository;
 import com.smartcampus.repository.ForgotPasswordRepository;
+import com.smartcampus.repository.MaintenanceTicketRepository;
+import com.smartcampus.repository.NotificationRepository;
 import com.smartcampus.repository.UserRepo;
 import com.smartcampus.utils.EmailUtils;
 import jakarta.transaction.Transactional;
@@ -28,6 +32,9 @@ public class UserProfileServiceImpl implements UserProfileService {
     private final ForgotPasswordRepository forgotPasswordRepository;
     private final EmailUtils emailUtils;
     private final NotificationService notificationService;
+    private final NotificationRepository notificationRepository;
+    private final CommentRepository commentRepository;
+    private final MaintenanceTicketRepository maintenanceTicketRepository;
 
     // Resolve current user by email.
     @Override
@@ -52,7 +59,7 @@ public class UserProfileServiceImpl implements UserProfileService {
             }
         }
 
-        userRepo.delete(user);
+        deleteUserAndRelatedData(user);
     }
 
     @Transactional
@@ -64,7 +71,7 @@ public class UserProfileServiceImpl implements UserProfileService {
             throw new RuntimeException("Password is required for local account deletion");
         }
 
-        userRepo.delete(user);
+        deleteUserAndRelatedData(user);
     }
 
     // Send OTP before account deletion.
@@ -108,8 +115,7 @@ public class UserProfileServiceImpl implements UserProfileService {
             throw new RuntimeException("OTP expired");
         }
 
-        userRepo.delete(user);
-        forgotPasswordRepository.delete(fp);
+        deleteUserAndRelatedData(user);
     }
 
     // Update first and last name.
@@ -337,5 +343,43 @@ public class UserProfileServiceImpl implements UserProfileService {
                 .replace("_", "")
                 .replace(" ", "")
                 .toUpperCase(Locale.ROOT);
+    }
+
+    private void deleteUserAndRelatedData(User user) {
+        if (user == null) {
+            return;
+        }
+
+        Long userId = user.getUserId();
+        if (userId == null) {
+            userRepo.delete(user);
+            return;
+        }
+
+        // Remove notification rows referencing this user.
+        notificationRepository.deleteByRecipientUserId(userId);
+        notificationRepository.flush();
+
+        // Remove comments authored by this user.
+        commentRepository.deleteByUserId(userId);
+        commentRepository.flush();
+
+        // Detach technician references from other users' tickets.
+        maintenanceTicketRepository.clearAssignedTechnician(userId);
+        maintenanceTicketRepository.flush();
+
+        // Delete tickets reported by this user (attachments/comments cascade).
+        java.util.List<MaintenanceTicket> reportedTickets = maintenanceTicketRepository.findByReporterUserId(userId);
+        if (!reportedTickets.isEmpty()) {
+            maintenanceTicketRepository.deleteAll(reportedTickets);
+            maintenanceTicketRepository.flush();
+        }
+
+        // Remove OTP reset row if present.
+        forgotPasswordRepository.findByUser(user).ifPresent(forgotPasswordRepository::delete);
+        forgotPasswordRepository.flush();
+
+        userRepo.delete(user);
+        userRepo.flush();
     }
 }

@@ -210,9 +210,11 @@
 
 .signup-card-wrap {
   display: grid;
-  place-items: center;
+  place-items: start center;
   padding: clamp(12px, 1.7vw, 24px);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(255, 243, 231, 0.62));
+  overflow-y: auto;
+  align-content: start;
 }
 
 .signup-card {
