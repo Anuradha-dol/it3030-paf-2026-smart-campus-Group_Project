@@ -17,13 +17,14 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -42,12 +43,16 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private final UserRepo userRepo;
     private final JwtUtils jwtUtils;
     private final PasswordEncoder passwordEncoder;
+    private final HttpCookieOAuth2AuthorizationRequestRepository oAuth2AuthorizationRequestRepository;
 
     @Value("${app.frontend.base-url:http://localhost:5173}")
     private String frontendBaseUrl;
 
     @Value("${app.frontend.login-url:http://localhost:5173/login}")
     private String loginRedirectUrl;
+
+    @Value("${app.frontend.oauth-success-path:/oauth-success}")
+    private String oauthSuccessPath;
 
     @Override
     public void onAuthenticationSuccess(
@@ -66,12 +71,12 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
             if (!StringUtils.hasText(email)) {
                 log.warn("Blocked OAuth2 login because provider email is missing");
-                rejectOAuthLogin(response, SLIIT_EMAIL_ONLY_MESSAGE);
+                rejectOAuthLogin(request, response, SLIIT_EMAIL_ONLY_MESSAGE);
                 return;
             }
             if (!isAllowedSliitEmail(email)) {
                 log.warn("Blocked OAuth2 login for non-SLIIT email: {}", email);
-                rejectOAuthLogin(response, SLIIT_EMAIL_ONLY_MESSAGE);
+                rejectOAuthLogin(request, response, SLIIT_EMAIL_ONLY_MESSAGE);
                 return;
             }
 
@@ -95,19 +100,17 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
             user.setRefreshToken(refreshToken);
             userRepo.save(user);
 
-            String redirectPath = resolveRedirectPath(user, newUser);
             log.info("OAuth2 login success for {} (newUser={}, role={})", user.getEmail(), newUser, user.getRole());
-            response.sendRedirect(buildFrontendUrl(redirectPath));
+            response.sendRedirect(resolveOAuthSuccessRedirectUrl(request));
         } catch (Exception ex) {
             log.error("OAuth2 login success handler failed", ex);
             // Clear cookies on OAuth2 failure.
             jwtUtils.removeToken(response, Token.ACCESS);
             jwtUtils.removeToken(response, Token.REFRESH);
-            String errorMessage = URLEncoder.encode(
-                    "Google login failed. Please try again.",
-                    StandardCharsets.UTF_8
-            );
-            response.sendRedirect(loginRedirectUrl + "?oauthError=" + errorMessage);
+            redirectToLoginWithError(request, response, "Google login failed. Please try again.");
+        } finally {
+            // Cleanup temporary OAuth flow cookies after callback handling.
+            oAuth2AuthorizationRequestRepository.removeAuthorizationRequestCookies(response);
         }
     }
 
@@ -166,13 +169,11 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                 && SLIIT_EMAIL_PATTERN.matcher(email).matches();
     }
 
-    private void rejectOAuthLogin(HttpServletResponse response, String message) throws IOException {
+    private void rejectOAuthLogin(HttpServletRequest request, HttpServletResponse response, String message) throws IOException {
         // Clear auth cookies to prevent partial login state.
         jwtUtils.removeToken(response, Token.ACCESS);
         jwtUtils.removeToken(response, Token.REFRESH);
-
-        String errorMessage = URLEncoder.encode(message, StandardCharsets.UTF_8);
-        response.sendRedirect(loginRedirectUrl + "?oauthError=" + errorMessage);
+        redirectToLoginWithError(request, response, message);
     }
 
     private String normalizeEmail(Object emailAttribute) {
@@ -211,37 +212,137 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                 : candidate.substring(0, NAME_MAX_LENGTH);
     }
 
-    private String resolveRedirectPath(User user, boolean newUser) {
-        if (newUser) {
-            return "/home";
-        }
-
-        if (user.getRole() == Role.ADMIN) {
-            return "/dashboard";
-        }
-
-        if (user.getRole() == Role.TECHNICIAN) {
-            return "/techhome";
-        }
-
-        return "/home";
+    private String resolveOAuthSuccessRedirectUrl(HttpServletRequest request) {
+        String baseUrl = resolveFrontendBaseUrl(request);
+        String callbackPath = normalizePath(oauthSuccessPath, "/oauth-success");
+        return baseUrl + callbackPath;
     }
 
-    private String buildFrontendUrl(String path) {
-        String base = StringUtils.hasText(frontendBaseUrl) ? frontendBaseUrl.trim() : "http://localhost:5173";
-        if (base.endsWith("/")) {
-            base = base.substring(0, base.length() - 1);
+    private void redirectToLoginWithError(HttpServletRequest request, HttpServletResponse response, String message) throws IOException {
+        String targetLoginUrl = resolveLoginRedirectUrl(request);
+        String redirectUrl = UriComponentsBuilder.fromUriString(targetLoginUrl)
+                .queryParam("oauthError", message)
+                .build()
+                .encode()
+                .toUriString();
+        response.sendRedirect(redirectUrl);
+    }
+
+    private String resolveFrontendBaseUrl(HttpServletRequest request) {
+        String requestedRedirectUri = oAuth2AuthorizationRequestRepository.loadRedirectUri(request);
+        String requestedBaseUrl = extractAndValidateFrontendBaseUrl(requestedRedirectUri);
+        if (requestedBaseUrl != null) {
+            return requestedBaseUrl;
         }
 
+        String configuredBaseUrl = extractAndValidateFrontendBaseUrl(frontendBaseUrl);
+        if (configuredBaseUrl != null) {
+            return configuredBaseUrl;
+        }
+
+        return "http://localhost:5173";
+    }
+
+    private String resolveLoginRedirectUrl(HttpServletRequest request) {
+        String requestedLoginUrl = normalizeAndValidateAbsoluteFrontendUrl(
+                oAuth2AuthorizationRequestRepository.loadLoginUri(request)
+        );
+        if (requestedLoginUrl != null) {
+            return requestedLoginUrl;
+        }
+
+        String configuredLoginUrl = normalizeAndValidateAbsoluteFrontendUrl(loginRedirectUrl);
+        if (configuredLoginUrl != null) {
+            return configuredLoginUrl;
+        }
+
+        return resolveFrontendBaseUrl(request) + "/login";
+    }
+
+    private String extractAndValidateFrontendBaseUrl(String candidate) {
+        if (!StringUtils.hasText(candidate)) {
+            return null;
+        }
+
+        try {
+            URI uri = URI.create(candidate.trim());
+            String scheme = uri.getScheme();
+            String host = uri.getHost();
+            String authority = uri.getAuthority();
+            if (!isHttpScheme(scheme) || !StringUtils.hasText(host) || !StringUtils.hasText(authority)) {
+                return null;
+            }
+            if (!isAllowedFrontendHost(host)) {
+                return null;
+            }
+
+            return scheme.toLowerCase(Locale.ROOT) + "://" + authority;
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    private String normalizeAndValidateAbsoluteFrontendUrl(String candidate) {
+        if (!StringUtils.hasText(candidate)) {
+            return null;
+        }
+
+        try {
+            URI uri = URI.create(candidate.trim());
+            String scheme = uri.getScheme();
+            String host = uri.getHost();
+            if (!isHttpScheme(scheme) || !StringUtils.hasText(host)) {
+                return null;
+            }
+            if (!isAllowedFrontendHost(host)) {
+                return null;
+            }
+
+            return uri.toString();
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    private boolean isHttpScheme(String scheme) {
+        if (!StringUtils.hasText(scheme)) {
+            return false;
+        }
+        String normalized = scheme.toLowerCase(Locale.ROOT);
+        return "http".equals(normalized) || "https".equals(normalized);
+    }
+
+    private boolean isAllowedFrontendHost(String host) {
+        if (!StringUtils.hasText(host)) {
+            return false;
+        }
+
+        String normalizedHost = host.toLowerCase(Locale.ROOT);
+        if (Set.of("localhost", "127.0.0.1", "::1").contains(normalizedHost)) {
+            return true;
+        }
+
+        String configuredHost = extractHost(frontendBaseUrl);
+        return StringUtils.hasText(configuredHost) && normalizedHost.equals(configuredHost.toLowerCase(Locale.ROOT));
+    }
+
+    private String extractHost(String url) {
+        if (!StringUtils.hasText(url)) {
+            return null;
+        }
+        try {
+            return URI.create(url.trim()).getHost();
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    private String normalizePath(String candidate, String fallback) {
+        String path = StringUtils.hasText(candidate) ? candidate.trim() : fallback;
         if (!StringUtils.hasText(path)) {
-            return base;
+            path = fallback;
         }
-
-        if (path.startsWith("/")) {
-            return base + path;
-        }
-
-        return base + "/" + path;
+        return path.startsWith("/") ? path : "/" + path;
     }
 }
 

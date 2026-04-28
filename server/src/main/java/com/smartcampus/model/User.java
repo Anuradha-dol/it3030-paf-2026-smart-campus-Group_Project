@@ -52,6 +52,10 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
+    @Lob
+    @Column(name = "face_descriptor", columnDefinition = "LONGTEXT")
+    private String faceDescriptor;
+
     @Column(length = 500)
     private String refreshToken;
 

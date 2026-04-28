@@ -118,7 +118,15 @@
 }
 
 .notify-item.read {
-  background: #fffefb;
+  background: #f3f8ff;
+}
+
+.notify-item.read .notify-body p {
+  color: #2d5e9e;
+}
+
+.notify-item.read .notify-body span {
+  color: #6f8fb7;
 }
 
 .notify-body p {
@@ -142,15 +150,19 @@
 .notify-link-btn {
   border: none;
   background: transparent;
-  color: #ab5d34;
+  color: #1f66d1;
   font-size: 0.74rem;
   font-weight: 700;
   cursor: pointer;
   padding: 2px 0;
 }
 
+.notify-link-btn:hover {
+  color: #174da1;
+}
+
 .notify-link-btn:disabled {
-  color: #c4a998;
+  color: #9fb8da;
   cursor: not-allowed;
 }
 
