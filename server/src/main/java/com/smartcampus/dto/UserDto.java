@@ -5,6 +5,7 @@ import com.smartcampus.enums.Semester;
 import com.smartcampus.enums.Year;
 
 import jakarta.validation.constraints.*;
+import java.util.List;
 
 public class UserDto {
 
@@ -31,6 +32,9 @@ public class UserDto {
             Year year,
 
             Semester semester,
+
+            @Size(min = 128, max = 128, message = "faceDescriptor must contain exactly 128 values")
+            List<Double> faceDescriptor,
 
             @NotBlank(message = "Password is required")
             String password

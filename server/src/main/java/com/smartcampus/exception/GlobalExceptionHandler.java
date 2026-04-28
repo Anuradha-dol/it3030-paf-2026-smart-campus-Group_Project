@@ -1,5 +1,6 @@
 package com.smartcampus.exception;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,9 +13,11 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
@@ -60,8 +63,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Map<String, Object>> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
         Map<String, Object> body = new HashMap<>();
+        String detail = extractRootCauseMessage(ex);
+        log.error("Data integrity violation: {}", detail, ex);
+
         body.put("success", false);
-        body.put("message", "Cannot complete operation due to related records");
+        body.put("message", resolveDataIntegrityUserMessage(detail));
+        body.put("detail", detail);
         return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
     }
 
@@ -92,8 +99,53 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
         Map<String, Object> body = new HashMap<>();
+        log.error("Unexpected server error", ex);
         body.put("success", false);
         body.put("message", "Unexpected error occurred");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+    }
+
+    private String extractRootCauseMessage(Throwable ex) {
+        if (ex == null) {
+            return "Unknown data integrity error";
+        }
+
+        Throwable root = ex;
+        while (root.getCause() != null && root.getCause() != root) {
+            root = root.getCause();
+        }
+
+        String message = root.getMessage();
+        if (message == null || message.isBlank()) {
+            message = ex.getMessage();
+        }
+        return (message == null || message.isBlank()) ? "Unknown data integrity error" : message;
+    }
+
+    private String resolveDataIntegrityUserMessage(String detail) {
+        String normalized = detail == null ? "" : detail.toLowerCase(Locale.ROOT);
+
+        if (normalized.contains("duplicate entry") || normalized.contains("unique constraint") || normalized.contains("uk_")) {
+            if (normalized.contains("email")) {
+                return "Email already exists";
+            }
+            if (normalized.contains("phone")) {
+                return "Phone number already exists";
+            }
+            if (normalized.contains("providerid") || normalized.contains("provider_id")) {
+                return "OAuth account is already linked";
+            }
+            return "Duplicate data violates a unique constraint";
+        }
+
+        if (normalized.contains("foreign key")) {
+            return "Cannot complete operation because this record is used by other records";
+        }
+
+        if (normalized.contains("not-null") || normalized.contains("cannot be null")) {
+            return "A required field is missing";
+        }
+
+        return "Cannot complete operation due to related records";
     }
 }
