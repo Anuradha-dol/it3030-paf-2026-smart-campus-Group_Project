@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -33,6 +34,13 @@ public class JWTAuthFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain)
             throws ServletException, IOException {
+
+        // Preserve existing authenticated context (e.g., session/OAuth2).
+        Authentication existingAuthentication = SecurityContextHolder.getContext().getAuthentication();
+        if (existingAuthentication != null && existingAuthentication.isAuthenticated()) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         // Read token from header or cookie.
         String token = resolveToken(request);
@@ -68,7 +76,6 @@ public class JWTAuthFilter extends OncePerRequestFilter {
             // Extract username from token subject.
             String username = jwtUtils.extractUsername(token);
             if (username == null || username.isBlank()) {
-                SecurityContextHolder.clearContext();
                 return;
             }
 
@@ -76,7 +83,6 @@ public class JWTAuthFilter extends OncePerRequestFilter {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
             if (!jwtUtils.validateToken(token, userDetails)) {
-                SecurityContextHolder.clearContext();
                 return;
             }
 
@@ -95,9 +101,8 @@ public class JWTAuthFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authToken);
 
         } catch (Exception e) {
-            // Any parsing/validation error clears auth state.
+            // Ignore invalid token and leave context unchanged.
             log.warn("JWT error: {}", e.getMessage());
-            SecurityContextHolder.clearContext();
         }
     }
 }

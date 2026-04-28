@@ -4,6 +4,7 @@ import com.smartcampus.dto.AuthResponse;
 import com.smartcampus.dto.UserDto;
 import com.smartcampus.enums.Token;
 import com.smartcampus.model.User;
+import com.smartcampus.records.FaceLoginRequest;
 import com.smartcampus.records.LoginRequest;
 import com.smartcampus.repository.UserRepo;
 import com.smartcampus.service.AuthService;
@@ -67,6 +68,20 @@ public class AuthController {
             request.getSession(false).invalidate();
         }
         return ResponseEntity.ok(authService.signIn(req, response));
+    }
+
+    // Face login and issue auth cookies.
+    @PostMapping("/face/login")
+    public ResponseEntity<AuthResponse> faceLogin(
+            @Valid @RequestBody FaceLoginRequest req,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        // Clear previous session state.
+        if (request.getSession(false) != null) {
+            request.getSession(false).invalidate();
+        }
+        return ResponseEntity.ok(authService.signInWithFace(req, response));
     }
 
     // Verify signup OTP using cookie email.

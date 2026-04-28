@@ -1,5 +1,6 @@
 package com.smartcampus.security;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,12 +19,15 @@ import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequest
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.util.StringUtils;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsUtils;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
+import java.net.URI;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 @Configuration
 @EnableWebSecurity
@@ -40,6 +44,9 @@ public class SecurityConfig {
 
     @Value("${app.frontend.login-url:http://localhost:5173/login}")
     private String loginRedirectUrl;
+
+    @Value("${app.frontend.base-url:http://localhost:5173}")
+    private String frontendBaseUrl;
 
     @Bean
     public SecurityFilterChain filterChain(
@@ -118,11 +125,10 @@ public class SecurityConfig {
                                 message = "Google login session expired. Please click Login with Google again.";
                             }
 
-                            String errorMessage = URLEncoder.encode(
-                                    message,
-                                    StandardCharsets.UTF_8
-                            );
-                            response.sendRedirect(loginRedirectUrl + "?oauthError=" + errorMessage);
+                            String redirectUrl = buildLoginErrorRedirectUrl(request, message);
+                            // Cleanup temporary OAuth flow cookies after callback handling.
+                            oAuth2AuthorizationRequestRepository.removeAuthorizationRequestCookies(response);
+                            response.sendRedirect(redirectUrl);
                         })
                         .successHandler(oAuth2SuccessHandler)
                 );
@@ -149,5 +155,123 @@ public class SecurityConfig {
         );
 
         return resolver;
+    }
+
+    private String buildLoginErrorRedirectUrl(HttpServletRequest request, String message) {
+        String targetLoginUrl = resolveLoginRedirectUrl(request);
+        return UriComponentsBuilder.fromUriString(targetLoginUrl)
+                .queryParam("oauthError", message)
+                .build()
+                .encode()
+                .toUriString();
+    }
+
+    private String resolveLoginRedirectUrl(HttpServletRequest request) {
+        String requestedLoginUrl = normalizeAndValidateAbsoluteFrontendUrl(
+                oAuth2AuthorizationRequestRepository.loadLoginUri(request)
+        );
+        if (requestedLoginUrl != null) {
+            return requestedLoginUrl;
+        }
+
+        String configuredLoginUrl = normalizeAndValidateAbsoluteFrontendUrl(loginRedirectUrl);
+        if (configuredLoginUrl != null) {
+            return configuredLoginUrl;
+        }
+
+        return resolveFrontendBaseUrl(request) + "/login";
+    }
+
+    private String resolveFrontendBaseUrl(HttpServletRequest request) {
+        String requestedRedirectUri = oAuth2AuthorizationRequestRepository.loadRedirectUri(request);
+        String requestedBaseUrl = extractAndValidateFrontendBaseUrl(requestedRedirectUri);
+        if (requestedBaseUrl != null) {
+            return requestedBaseUrl;
+        }
+
+        String configuredBaseUrl = extractAndValidateFrontendBaseUrl(frontendBaseUrl);
+        if (configuredBaseUrl != null) {
+            return configuredBaseUrl;
+        }
+
+        return "http://localhost:5173";
+    }
+
+    private String extractAndValidateFrontendBaseUrl(String candidate) {
+        if (!StringUtils.hasText(candidate)) {
+            return null;
+        }
+
+        try {
+            URI uri = URI.create(candidate.trim());
+            String scheme = uri.getScheme();
+            String host = uri.getHost();
+            String authority = uri.getAuthority();
+            if (!isHttpScheme(scheme) || !StringUtils.hasText(host) || !StringUtils.hasText(authority)) {
+                return null;
+            }
+            if (!isAllowedFrontendHost(host)) {
+                return null;
+            }
+
+            return scheme.toLowerCase(Locale.ROOT) + "://" + authority;
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    private String normalizeAndValidateAbsoluteFrontendUrl(String candidate) {
+        if (!StringUtils.hasText(candidate)) {
+            return null;
+        }
+
+        try {
+            URI uri = URI.create(candidate.trim());
+            String scheme = uri.getScheme();
+            String host = uri.getHost();
+            if (!isHttpScheme(scheme) || !StringUtils.hasText(host)) {
+                return null;
+            }
+            if (!isAllowedFrontendHost(host)) {
+                return null;
+            }
+
+            return uri.toString();
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    private boolean isHttpScheme(String scheme) {
+        if (!StringUtils.hasText(scheme)) {
+            return false;
+        }
+        String normalized = scheme.toLowerCase(Locale.ROOT);
+        return "http".equals(normalized) || "https".equals(normalized);
+    }
+
+    private boolean isAllowedFrontendHost(String host) {
+        if (!StringUtils.hasText(host)) {
+            return false;
+        }
+
+        String normalizedHost = host.toLowerCase(Locale.ROOT);
+        if (Set.of("localhost", "127.0.0.1", "::1").contains(normalizedHost)) {
+            return true;
+        }
+
+        String configuredHost = extractHost(frontendBaseUrl);
+        return StringUtils.hasText(configuredHost) && normalizedHost.equals(configuredHost.toLowerCase(Locale.ROOT));
+    }
+
+    private String extractHost(String url) {
+        if (!StringUtils.hasText(url)) {
+            return null;
+        }
+        try {
+            return URI.create(url.trim()).getHost();
+        } catch (Exception ex) {
+            return null;
+        }
     }
 }
